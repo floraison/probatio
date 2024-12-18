@@ -56,35 +56,26 @@ module Probatio
 
 puts "-" * 80
 pp self
-
-      children = @children.dup
-      around_all = children.find { |c| false }
     end
 
     def before(name, opts={}, &block)
-      @children << Before.new(name, opts, &block)
+      @children << Probatio::Before.new(name, opts, &block)
     end
     def after(name, opts={}, &block)
-      @children << After.new(name, opts, &block)
+      @children << Probatio::After.new(name, opts, &block)
     end
-    def around(name, opts={}, &block)
-      @children << Around.new(name, opts, &block)
-    end
+    #def around(name, opts={}, &block)
+    #  @children << Around.new(name, opts, &block)
+    #end
 
     def group(name, opts={}, &block)
-      @children << Group.new(name, opts, &block)
+      @children << Probatio::Group.new(name, opts, &block)
     end
     def test(name, opts={}, &block)
-      @children << Test.new(name, opts, &block)
+      @children << Probatio::Test.new(name, opts, &block)
     end
 
     protected
-
-    def do_run(children, run_opts)
-    end
-
-    def run_test(test, run_opts)
-    end
   end
 
   class Child
@@ -111,6 +102,17 @@ pp self
 
   class Test < Child
     def run(run_opts)
+    end
+    def assert(value, &block)
+      Probatio::Assertion.new(block)
+    end
+    protected
+  end
+
+  class Assertion
+    def initialize(value, block)
+      @value = value
+      @block = block
     end
   end
 end
