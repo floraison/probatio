@@ -30,11 +30,12 @@ module Probatio
     protected
 
     def read_helper_file(group, path)
+
+      Kernel.load(path)
     end
 
     def read_test_file(group, path)
 
-p [ :rtf, group, path ]
       group.instance_eval(File.read(path))
     end
   end
@@ -68,12 +69,9 @@ pp self
     end
 
     def group(name, opts={}, &block)
-
       @children << Group.new(name, opts, &block)
     end
-
     def test(name, opts={}, &block)
-
       @children << Test.new(name, opts, &block)
     end
   end
