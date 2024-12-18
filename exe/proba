@@ -2,7 +2,15 @@
 
 require 'probatio'
 
-p :hello
+#
+# gather opts
+
+opts = { dir: 'test' }
+
+#
+# run
+
+Probatio.run(opts)
 
 # vim: set filetype=ruby
 
