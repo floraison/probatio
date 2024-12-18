@@ -1,8 +1,10 @@
 
+before :all do
+end
+
 group 'this' do
   before :all do
   end
-  after :
   around :tag do
     yield
   end
