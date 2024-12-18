@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+
+require 'probatio'
+
+p :hello
+
+# vim: set filetype=ruby
+
