@@ -7,3 +7,10 @@ group 'bravo' do
   end
 end
 
+group 'alpha' do
+
+  test 'hello again' do
+
+    assert 2, 2
+  end
+end

@@ -2,6 +2,9 @@
 #
 # probatio.rb
 
+require 'stringio'
+
+
 module Probatio
 
   VERSION = '1.0.0'
@@ -42,6 +45,8 @@ module Probatio
 
   class Group
 
+    attr_reader :name
+
     def initialize(name, group_opts, &block)
 
       @name = name
@@ -49,13 +54,34 @@ module Probatio
 
       @children = []
 
+      add_block(block)
+    end
+
+    def add_block(block)
+
       instance_eval(&block) if block
+    end
+
+    def to_s(opts={})
+
+      out = opts[:out] || StringIO.new
+      ind = opts[:indent] || ''
+      gos = @group_opts = @group_opts.any? ? ' ' + @group_opts.inspect : ''
+
+      out <<
+        "#{ind}group #{@name.inspect}#{gos}\n"
+
+      @children.each do |c|
+        c.to_s(opts.merge(out: out, indent: ind + '  '))
+      end
+
+      opts[:out] ? nil : out.string
     end
 
     def run(run_opts)
 
 puts "-" * 80
-pp self
+puts self.to_s
     end
 
     def before(name, opts={}, &block)
@@ -69,8 +95,14 @@ pp self
     #end
 
     def group(name, opts={}, &block)
-      @children << Probatio::Group.new(name, opts, &block)
+
+      if g = @children.find { |e| e.is_a?(Probatio::Group) && e.name == name }
+        g.add_block(block)
+      else
+        @children << Probatio::Group.new(name, opts, &block)
+      end
     end
+
     def test(name, opts={}, &block)
       @children << Probatio::Test.new(name, opts, &block)
     end
@@ -84,6 +116,13 @@ pp self
       @name = name
       @opts = opts
       @block = block
+    end
+    def to_s(opts={})
+      t = self.class.name.split('::').last.downcase
+      os = @opts.any? ? ' ' + @opts.inspect : ''
+      f, l = block.source_location
+      (opts[:out] || $stdout) <<
+        "#{opts[:indent]}#{t} #{name.inspect}#{os} #{f}:#{l}\n"
     end
   end
 
