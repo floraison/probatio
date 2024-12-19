@@ -13,6 +13,8 @@ module Probatio
 
     def run(run_opts)
 
+      Probatio.despatch(:start, run_opts)
+
       root_group = Group.new(nil, '_', {}, __FILE__, nil)
 
       dir = run_opts[:dir]
@@ -28,6 +30,28 @@ module Probatio
       end
 
       root_group.run(run_opts)
+
+      Probatio.despatch(:over, run_opts)
+    end
+
+    def init
+
+      @plugins = []
+    end
+
+    def plug(x)
+
+      @plugins << x
+    end
+
+    def despatch(event_name, *details)
+
+p [ :despatch, event_name ]
+      m = "on_#{event_name}"
+
+      @plugins.each do |plugin|
+        plugin.send(m, details) if plugin.respond_to?(m)
+      end
     end
 
     protected
@@ -42,6 +66,8 @@ module Probatio
       group.add_file(path)
     end
   end
+
+  self.init
 
   class Group
 
@@ -84,15 +110,20 @@ module Probatio
 
       @children.each do |c|
         c.to_s(opts.merge(out: out, indent: ind + '  '))
-      end
+      end unless opts[:head]
 
       opts[:out] ? nil : out.string
     end
 
+    def head; to_s(head: true); end
+
     def run(run_opts)
 
-#puts "-" * 80; pp self
-puts "." * 80; puts self.to_s
+      # on_group_enter, on_group_leave
+      # on_test_leave
+      # on_setup, on_teardown
+      # on_before, on_after
+      Probatio.despatch(:group_enter, self)
 
       setups.each { |s| s.run(run_opts) }
 
@@ -105,15 +136,13 @@ puts "." * 80; puts self.to_s
         c.run(t, run_opts)
 
         afters.each { |a| c.run(a, run_opts) }
-
-        merge_results(run_opts, c.results)
       end
 
       groups.each { |g| g.run(run_opts) }
 
       teardowns.each { |s| s.run(run_opts) }
 
-      report(run_opts) if @parent == nil
+      Probatio.despatch(:group_leave, self)
     end
 
     def setup(opts={}, &block)
@@ -168,15 +197,6 @@ puts "." * 80; puts self.to_s
       h
     end
 
-    def report(run_opts)
-
-      # TODO
-
-      puts "-" * 80
-      pp run_opts[:results]
-      puts "-" * 80
-    end
-
     protected
 
     def setups; @children.select { |c| c.is_a?(Probatio::Setup) }; end
@@ -188,11 +208,6 @@ puts "." * 80; puts self.to_s
     end
     def tests; @children.select { |c| c.is_a?(Probatio::Test) }; end
     def groups; @children.select { |c| c.is_a?(Probatio::Group) }; end
-
-    def merge_results(run_opts, results)
-      r = (run_opts[:results] ||= {})
-      results.each { |k, v| r[k] = (r[k] || []).concat(v) }
-    end
   end
 
   class Child
@@ -208,20 +223,28 @@ puts "." * 80; puts self.to_s
       @block = block
     end
 
+    def type
+
+      self.class.name.split('::').last.downcase
+    end
+
     def to_s(opts={})
 
-      t = self.class.name.split('::').last.downcase
       n = @name ? ' ' + @name.inspect : ''
       os = @opts.any? ? ' ' + @opts.inspect : ''
       _, l = block.source_location
 
       (opts[:out] || $stdout) <<
-        "#{opts[:indent]}#{t}#{n}#{os} #{@path}:#{l}\n"
+        "#{opts[:indent]}#{type}#{n}#{os} #{@path}:#{l}\n"
     end
 
     def run(run_opts)
 
+      Probatio.despatch("#{type}_enter")
+
       @parent.instance_eval(&@block)
+
+      Probatio.despatch("#{type}_leave")
     end
   end
 
@@ -238,20 +261,20 @@ puts "." * 80; puts self.to_s
     def initialize(group)
 
       group.context.each { |k, v| instance_variable_set(k, v) }
-
-      @__results = { successes: [], failures: [] }
     end
 
     def run(child, run_opts)
+
+      Probatio.despatch("#{child.type}_enter", self, child, run_opts)
 
       @__child = child
 
       instance_eval(&child.block)
 
     rescue AssertionError => aerr
+    ensure
+      Probatio.despatch("#{child.type}_leave", self, child, run_opts)
     end
-
-    def results; @__results; end
 
     def assert(*as)
 
@@ -284,11 +307,11 @@ puts "." * 80; puts self.to_s
         rescue => err
           err
         end
-p [ :r, r ]
 
       if r.is_a?(StandardError) || r.is_a?(String)
 
-        @__results[:failures] << [ @__child, r ]
+        Probatio.despatch(:test_succeed, self, @__child)
+
         fail AssertionError.new(r)
 
       elsif r.is_a?(Exception)
@@ -296,7 +319,7 @@ p [ :r, r ]
         raise r
       end
 
-      @__results[:successes] << @__child
+      Probatio.despatch(:test_fail, self, @__child)
 
       true # end on a positive note...
     end
