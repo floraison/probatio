@@ -50,9 +50,10 @@ module Probatio
 
 #p [ :despatch, event_name ]
       m = "on_#{event_name}"
+      ev = Probatio::Event.new(event_name.to_sym, details)
 
       @plugins.each do |plugin|
-        plugin.send(m, details) if plugin.respond_to?(m)
+        plugin.send(m, ev) if plugin.respond_to?(m)
       end
     end
 
@@ -242,11 +243,11 @@ module Probatio
 
     def run(run_opts)
 
-      Probatio.despatch("#{type}_enter")
+      Probatio.despatch("#{type}_enter", self)
 
       @parent.instance_eval(&@block)
 
-      Probatio.despatch("#{type}_leave")
+      Probatio.despatch("#{type}_leave", self)
     end
   end
 
@@ -341,24 +342,49 @@ module Probatio
       end
     end
   end
+
+  class Event
+
+    attr_reader :name, :opts, :context, :group, :child
+
+    def initialize(name, details)
+
+      @name = name
+
+      details.each do |d|
+        case d
+        when Hash then @opts = d
+        when Probatio::Group then @group = d
+        when Probatio::Child then @child = d
+        when Probatio::Context then @context = d
+        else fail ArgumentError.new("cannot fathom #{d.class} #{d.inspect}")
+        end
+      end
+    end
+  end
 end
 
 module Probatio::DotReporter
 
   class << self
 
-    def on_start(*as)
+    def on_start(ev)
+
+      @successes = []
+      @failures = []
     end
 
-    def on_test_succeed(*as)
+    def on_test_succeed(ev)
       print '.'
+      @successes << ev
     end
 
-    def on_test_fail(*as)
+    def on_test_fail(ev)
       print 'x'
+      @failures << ev
     end
 
-    def on_over(*as)
+    def on_over(ev)
       puts
     end
   end
