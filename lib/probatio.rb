@@ -100,6 +100,25 @@ puts "." * 80; puts self.to_s
 #      tests.each { |t| t.run(run_opts) }
 #      groups.each { |g| g.run(run_opts) }
 #      teardowns.each { |d| d.run(run_opts) }
+
+      run_opts[:results] ||= []
+
+      setups.each { |s| s.run(run_opts) }
+
+      tests.each do |t|
+
+        befores.each { |b| b.run(run_opts) }
+
+        t.run(run_opts)
+
+        afters.each { |a| a.run(run_opts) }
+      end
+
+      groups.each { |g| g.run(run_opts) }
+
+      teardowns.each { |s| s.run(run_opts) }
+
+      p [ :results, run_opts[:results] ]
     end
 
     def setup(opts={}, &block)
@@ -191,14 +210,18 @@ puts "." * 80; puts self.to_s
   class After < Child; end
 
   class Test < Child
+
     def assert(value, &block)
-      Probatio::Assertion.new(block)
+
+      Probatio::Assertion.new(self, value, block)
     end
-    protected
   end
 
   class Assertion
-    def initialize(value, block)
+
+    def initialize(test, value, block)
+
+      @test = test
       @value = value
       @block = block
     end
