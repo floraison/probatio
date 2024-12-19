@@ -13,7 +13,7 @@ module Probatio
 
     def run(run_opts)
 
-      root_group = Group.new('_', {}, __FILE__, nil)
+      root_group = Group.new(nil, '_', {}, __FILE__, nil)
 
       dir = run_opts[:dir]
 
@@ -48,7 +48,9 @@ module Probatio
     attr_reader :name
     attr_accessor :path
 
-    def initialize(name, group_opts, path, block)
+    def initialize(parent_group, name, group_opts, path, block)
+
+      @parent = parent_group
 
       @name = name
       @group_opts = group_opts
@@ -89,10 +91,8 @@ module Probatio
 
     def run(run_opts)
 
-puts "-" * 80
-pp self
-puts "." * 80
-puts self.to_s
+#puts "-" * 80; pp self
+puts "." * 80; puts self.to_s
     end
 
     def setup(opts={}, &block)
@@ -114,7 +114,7 @@ puts self.to_s
         g.path = @path
         g.add_block(block)
       else
-        @children << Probatio::Group.new(name, opts, @path, block)
+        @children << Probatio::Group.new(self, name, opts, @path, block)
       end
     end
 
@@ -122,22 +122,40 @@ puts self.to_s
       @children << Probatio::Test.new(name, opts, @path, block)
     end
 
+    def befores
+
+      (@parent ? @parent.befores : []) +
+      @children.select { |c| c.is_a?(Probatio::Before) }
+    end
+
+    def afters
+
+      (@parent ? @parent.afters : []) +
+      @children.select { |c| c.is_a?(Probatio::After) }
+    end
+
     protected
   end
 
   class Child
+
     attr_reader :name, :opts, :block
+
     def initialize(name, opts, path, block)
+
       @name = name
       @opts = opts
       @path = path
       @block = block
     end
+
     def to_s(opts={})
+
       t = self.class.name.split('::').last.downcase
       n = @name ? ' ' + @name.inspect : ''
       os = @opts.any? ? ' ' + @opts.inspect : ''
       _, l = block.source_location
+
       (opts[:out] || $stdout) <<
         "#{opts[:indent]}#{t}#{n}#{os} #{@path}:#{l}\n"
     end
