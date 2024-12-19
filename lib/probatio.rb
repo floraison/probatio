@@ -108,24 +108,19 @@ module Probatio
       ind = opts[:indent] || ''
       gos = @group_opts.any? ? ' ' + @group_opts.inspect : ''
 
-      out <<
-        "#{ind}group #{@name.inspect}#{gos}\n"
+      out << "#{ind}group #{@name.inspect}#{gos}\n"
 
       @children.each do |c|
         c.to_s(opts.merge(out: out, indent: ind + '  '))
       end unless opts[:head]
 
-      opts[:out] ? nil : out.string
+      opts[:out] ? nil : out.string.strip
     end
 
-    def head; to_s(head: true); end
+    def head(opts={}); to_s(opts.merge(head: true)).strip; end
 
     def run(run_opts)
 
-      # on_group_enter, on_group_leave
-      # on_test_leave
-      # on_setup, on_teardown
-      # on_before, on_after
       Probatio.despatch(:group_enter, self)
 
       setups.each { |s| s.run(run_opts) }
@@ -215,7 +210,7 @@ module Probatio
 
   class Child
 
-    attr_reader :name, :opts, :block
+    attr_reader :parent, :name, :opts, :block
 
     def initialize(parent, name, opts, path, block)
 
@@ -233,13 +228,18 @@ module Probatio
 
     def to_s(opts={})
 
+      out = opts[:out] || StringIO.new
+
       n = @name ? ' ' + @name.inspect : ''
       os = @opts.any? ? ' ' + @opts.inspect : ''
       _, l = block.source_location
 
-      (opts[:out] || $stdout) <<
-        "#{opts[:indent]}#{type}#{n}#{os} #{@path}:#{l}\n"
+      out << "#{opts[:indent]}#{type}#{n}#{os} #{@path}:#{l}\n"
+
+      opts[:out] ? nil : out.string
     end
+
+    def head(opts={}); to_s(opts.merge(head: true)).strip; end
 
     def run(run_opts)
 
@@ -313,7 +313,7 @@ module Probatio
 
       if r.is_a?(StandardError) || r.is_a?(String)
 
-        Probatio.despatch(:test_succeed, self, @__child)
+        Probatio.despatch(:test_fail, self, @__child, r)
 
         fail AssertionError.new(r)
 
@@ -322,7 +322,7 @@ module Probatio
         raise r
       end
 
-      Probatio.despatch(:test_fail, self, @__child)
+      Probatio.despatch(:test_succeed, self, @__child)
 
       true # end on a positive note...
     end
@@ -345,7 +345,7 @@ module Probatio
 
   class Event
 
-    attr_reader :name, :opts, :context, :group, :child
+    attr_reader :name, :opts, :context, :group, :child, :error
 
     def initialize(name, details)
 
@@ -354,6 +354,7 @@ module Probatio
       details.each do |d|
         case d
         when Hash then @opts = d
+        when String, Exception then @error = d
         when Probatio::Group then @group = d
         when Probatio::Child then @child = d
         when Probatio::Context then @context = d
@@ -386,6 +387,10 @@ module Probatio::DotReporter
 
     def on_over(ev)
       puts
+      @failures.each do |ev|
+        puts ev.child.parent.to_s
+        puts ev.child.head
+      end
     end
   end
 end
