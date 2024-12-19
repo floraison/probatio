@@ -39,6 +39,8 @@ module Probatio
       @plugins = []
     end
 
+    def plugins; @plugins; end
+
     def plug(x)
 
       @plugins << x
@@ -46,7 +48,7 @@ module Probatio
 
     def despatch(event_name, *details)
 
-p [ :despatch, event_name ]
+#p [ :despatch, event_name ]
       m = "on_#{event_name}"
 
       @plugins.each do |plugin|
@@ -265,9 +267,9 @@ p [ :despatch, event_name ]
 
     def run(child, run_opts)
 
-      Probatio.despatch("#{child.type}_enter", self, child, run_opts)
-
       @__child = child
+
+      Probatio.despatch("#{child.type}_enter", self, child, run_opts)
 
       instance_eval(&child.block)
 
@@ -340,4 +342,27 @@ p [ :despatch, event_name ]
     end
   end
 end
+
+module Probatio::DotReporter
+
+  class << self
+
+    def on_start(*as)
+    end
+
+    def on_test_succeed(*as)
+      print '.'
+    end
+
+    def on_test_fail(*as)
+      print 'x'
+    end
+
+    def on_over(*as)
+      puts
+    end
+  end
+end
+
+Probatio.plug(Probatio::DotReporter)
 
