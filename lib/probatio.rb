@@ -13,7 +13,7 @@ module Probatio
 
     def run(run_opts)
 
-      root_group = Group.new('_', {})
+      root_group = Group.new('_', {}, __FILE__, nil)
 
       dir = run_opts[:dir]
 
@@ -39,18 +39,20 @@ module Probatio
 
     def read_test_file(group, path)
 
-      group.instance_eval(File.read(path))
+      group.add_file(path)
     end
   end
 
   class Group
 
     attr_reader :name
+    attr_accessor :path
 
-    def initialize(name, group_opts, &block)
+    def initialize(name, group_opts, path, block)
 
       @name = name
       @group_opts = group_opts
+      @path = path
 
       @children = []
 
@@ -60,6 +62,13 @@ module Probatio
     def add_block(block)
 
       instance_eval(&block) if block
+    end
+
+    def add_file(path)
+
+      @path = path
+
+      instance_eval(File.read(path))
     end
 
     def to_s(opts={})
@@ -81,30 +90,30 @@ module Probatio
     def run(run_opts)
 
 puts "-" * 80
+pp self
+puts "." * 80
 puts self.to_s
     end
 
     def before(name, opts={}, &block)
-      @children << Probatio::Before.new(name, opts, &block)
+      @children << Probatio::Before.new(name, opts, @path, block)
     end
     def after(name, opts={}, &block)
-      @children << Probatio::After.new(name, opts, &block)
+      @children << Probatio::After.new(name, opts, @path, block)
     end
-    #def around(name, opts={}, &block)
-    #  @children << Around.new(name, opts, &block)
-    #end
 
     def group(name, opts={}, &block)
 
       if g = @children.find { |e| e.is_a?(Probatio::Group) && e.name == name }
+        g.path = @path
         g.add_block(block)
       else
-        @children << Probatio::Group.new(name, opts, &block)
+        @children << Probatio::Group.new(name, opts, @path, block)
       end
     end
 
     def test(name, opts={}, &block)
-      @children << Probatio::Test.new(name, opts, &block)
+      @children << Probatio::Test.new(name, opts, @path, block)
     end
 
     protected
@@ -112,17 +121,18 @@ puts self.to_s
 
   class Child
     attr_reader :name, :opts, :block
-    def initialize(name, opts, &block)
+    def initialize(name, opts, path, block)
       @name = name
       @opts = opts
+      @path = path
       @block = block
     end
     def to_s(opts={})
       t = self.class.name.split('::').last.downcase
       os = @opts.any? ? ' ' + @opts.inspect : ''
-      f, l = block.source_location
+      _, l = block.source_location
       (opts[:out] || $stdout) <<
-        "#{opts[:indent]}#{t} #{name.inspect}#{os} #{f}:#{l}\n"
+        "#{opts[:indent]}#{t} #{name.inspect}#{os} #{@path}:#{l}\n"
     end
   end
 
