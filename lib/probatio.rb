@@ -93,32 +93,27 @@ module Probatio
 
 #puts "-" * 80; pp self
 puts "." * 80; puts self.to_s
-#p [
-#  :setups, setups.count, :tests, tests.count, :groups, groups.count,
-#  :teardowns, teardowns.count ]
-#      setups.each { |s| s.run(run_opts) }
-#      tests.each { |t| t.run(run_opts) }
-#      groups.each { |g| g.run(run_opts) }
-#      teardowns.each { |d| d.run(run_opts) }
-
-      run_opts[:results] ||= []
 
       setups.each { |s| s.run(run_opts) }
 
       tests.each do |t|
 
-        befores.each { |b| b.run(run_opts) }
+        c = Probatio::Context.new(self)
 
-        t.run(run_opts)
+        befores.each { |b| c.run(b, run_opts) }
 
-        afters.each { |a| a.run(run_opts) }
+        c.run(t, run_opts)
+
+        afters.each { |a| c.run(a, run_opts) }
+
+        merge_results(run_opts, c.results)
       end
 
       groups.each { |g| g.run(run_opts) }
 
       teardowns.each { |s| s.run(run_opts) }
 
-      p [ :results, run_opts[:results] ]
+      report(run_opts) if @parent == nil
     end
 
     def setup(opts={}, &block)
@@ -134,10 +129,6 @@ puts "." * 80; puts self.to_s
       @children << Probatio::After.new(self, nil, opts, @path, block)
     end
 
-    def assert(value, value1=nil, &block)
-      Probatio::Assertion.run(value, value1, block)
-    end
-
     def group(name, opts={}, &block)
 
       if g = @children.find { |e| e.is_a?(Probatio::Group) && e.name == name }
@@ -149,6 +140,7 @@ puts "." * 80; puts self.to_s
     end
 
     def test(name, opts={}, &block)
+
       @children << Probatio::Test.new(self, name, opts, @path, block)
     end
 
@@ -164,6 +156,27 @@ puts "." * 80; puts self.to_s
       @children.select { |c| c.is_a?(Probatio::After) }
     end
 
+    ATTRS = %i[ @parent @name @group_opts @path @children ].freeze
+
+    def context(h={})
+
+      instance_variables
+        .each { |k|
+          h[k] = instance_variable_get(k) unless ATTRS.include?(k) }
+      @parent.context(h) if @parent
+
+      h
+    end
+
+    def report(run_opts)
+
+      # TODO
+
+      puts "-" * 80
+      pp run_opts[:results]
+      puts "-" * 80
+    end
+
     protected
 
     def setups; @children.select { |c| c.is_a?(Probatio::Setup) }; end
@@ -175,6 +188,11 @@ puts "." * 80; puts self.to_s
     end
     def tests; @children.select { |c| c.is_a?(Probatio::Test) }; end
     def groups; @children.select { |c| c.is_a?(Probatio::Group) }; end
+
+    def merge_results(run_opts, results)
+      r = (run_opts[:results] ||= {})
+      results.each { |k, v| r[k] = (r[k] || []).concat(v) }
+    end
   end
 
   class Child
@@ -215,22 +233,87 @@ puts "." * 80; puts self.to_s
 
   class Test < Child; end
 
-  class Assertion
+  class Context
 
-    def initialize(test, value, block)
+    def initialize(group)
 
-      @test = test
-      @value = value
-      @block = block
+      group.context.each { |k, v| instance_variable_set(k, v) }
+
+      @__results = { successes: [], failures: [] }
     end
 
-    def self.run(value, value1, block)
+    def run(child, run_opts)
+
+      @__child = child
+
+      instance_eval(&child.block)
+
+    rescue AssertionError => aerr
+    end
+
+    def results; @__results; end
+
+    def assert(*as)
+
+      do_assert do
+
+        as.all? { |a| a == as[0] } ||
+        "no equal"
+      end
+    end
+
+    def assert_match(*as)
+
+      do_assert do
+
+        strings, others = as.partition { |a| a.is_a?(String) }
+        rex = others.find { |o| o.is_a?(Regexp) } || strings.pop
+
+        strings.all? { |s| s.match?(rex) } ||
+        "no match"
+      end
+    end
+
+    protected
+
+    def do_assert(&block)
+
+      r =
+        begin
+          block.call
+        rescue => err
+          err
+        end
+p [ :r, r ]
+
+      if r.is_a?(StandardError) || r.is_a?(String)
+
+        @__results[:failures] << [ @__child, r ]
+        fail AssertionError.new(r)
+
+      elsif r.is_a?(Exception)
+
+        raise r
+      end
+
+      @__results[:successes] << @__child
+
+      true # end on a positive note...
     end
   end
 
   class AssertionError < StandardError
-    def initialize(message)
-      super(message)
+
+    attr_accessor :nested_error
+
+    def initialize(error_or_message)
+
+      if error_or_message.is_a?(String)
+        super(message)
+      else
+        super("error while asserting: " + error_or_message.message)
+        @nested_error = error_or_message
+      end
     end
   end
 end

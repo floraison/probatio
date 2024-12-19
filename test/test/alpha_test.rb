@@ -1,4 +1,8 @@
 
+setup do
+  @ur = 'ur'
+end
+
 group 'alpha' do
 
   setup do
@@ -17,16 +21,12 @@ group 'alpha' do
 
   test 'one' do
 
-    p :one
-    p @string
-    #assert 'Lionheart', matches(/heart/i)
+    assert_match 'Lionhearz', /heart/i
   end
 
   test 'two' do
 
-    p :two
-    #assert @string, matches(/heart/i)
-    #assert @string { matches(/heart/i) }
+    assert_match @string, /heart/i
   end
 end
 

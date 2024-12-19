@@ -11,6 +11,6 @@ group 'alpha' do
 
   test 'hello again' do
 
-    assert 2, 2
+    assert 2, 3
   end
 end
