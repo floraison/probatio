@@ -18,8 +18,6 @@ end
 #  end
 #  def do_after(run_opts)
 #  end
-#  def do_around(run_opts, block)
-#  end
 #end
   #
   # not for now...

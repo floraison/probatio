@@ -134,10 +134,6 @@ puts self.to_s
     def run(run_opts)
     end
   end
-  class Around < Child
-    def run(run_opts)
-    end
-  end
 
   class Test < Child
     def run(run_opts)
