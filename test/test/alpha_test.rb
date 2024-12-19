@@ -2,6 +2,7 @@
 group 'alpha' do
 
   setup do
+    @string = 'Nada'
   end
   teardown do
   end
@@ -16,12 +17,15 @@ group 'alpha' do
 
   test 'one' do
 
-    assert 'Lionheart', matches(/heart/i)
+    p :one
+    p @string
+    #assert 'Lionheart', matches(/heart/i)
   end
 
   test 'two' do
 
-    assert @string, matches(/heart/i)
+    p :two
+    #assert @string, matches(/heart/i)
     #assert @string { matches(/heart/i) }
   end
 end

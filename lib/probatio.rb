@@ -77,7 +77,7 @@ module Probatio
 
       out = opts[:out] || StringIO.new
       ind = opts[:indent] || ''
-      gos = @group_opts = @group_opts.any? ? ' ' + @group_opts.inspect : ''
+      gos = @group_opts.any? ? ' ' + @group_opts.inspect : ''
 
       out <<
         "#{ind}group #{@name.inspect}#{gos}\n"
@@ -93,19 +93,26 @@ module Probatio
 
 #puts "-" * 80; pp self
 puts "." * 80; puts self.to_s
+#p [
+#  :setups, setups.count, :tests, tests.count, :groups, groups.count,
+#  :teardowns, teardowns.count ]
+#      setups.each { |s| s.run(run_opts) }
+#      tests.each { |t| t.run(run_opts) }
+#      groups.each { |g| g.run(run_opts) }
+#      teardowns.each { |d| d.run(run_opts) }
     end
 
     def setup(opts={}, &block)
-      @children << Probatio::Setup.new(nil, opts, @path, block)
+      @children << Probatio::Setup.new(self, nil, opts, @path, block)
     end
     def teardown(opts={}, &block)
-      @children << Probatio::Teardown.new(nil, opts, @path, block)
+      @children << Probatio::Teardown.new(self, nil, opts, @path, block)
     end
     def before(opts={}, &block)
-      @children << Probatio::Before.new(nil, opts, @path, block)
+      @children << Probatio::Before.new(self, nil, opts, @path, block)
     end
     def after(opts={}, &block)
-      @children << Probatio::After.new(nil, opts, @path, block)
+      @children << Probatio::After.new(self, nil, opts, @path, block)
     end
 
     def group(name, opts={}, &block)
@@ -119,7 +126,7 @@ puts "." * 80; puts self.to_s
     end
 
     def test(name, opts={}, &block)
-      @children << Probatio::Test.new(name, opts, @path, block)
+      @children << Probatio::Test.new(self, name, opts, @path, block)
     end
 
     def befores
@@ -135,14 +142,25 @@ puts "." * 80; puts self.to_s
     end
 
     protected
+
+    def setups; @children.select { |c| c.is_a?(Probatio::Setup) }; end
+    def teardowns; @children.select { |c| c.is_a?(Probatio::Teardown) }; end
+
+    def test_and_groups
+      @children.select { |c|
+        c.is_a?(Probatio::Test) || c.is_a?(Probatio::Group) }
+    end
+    def tests; @children.select { |c| c.is_a?(Probatio::Test) }; end
+    def groups; @children.select { |c| c.is_a?(Probatio::Group) }; end
   end
 
   class Child
 
     attr_reader :name, :opts, :block
 
-    def initialize(name, opts, path, block)
+    def initialize(parent, name, opts, path, block)
 
+      @parent = parent
       @name = name
       @opts = opts
       @path = path
@@ -159,29 +177,20 @@ puts "." * 80; puts self.to_s
       (opts[:out] || $stdout) <<
         "#{opts[:indent]}#{t}#{n}#{os} #{@path}:#{l}\n"
     end
-  end
 
-  class Setup < Child
     def run(run_opts)
-    end
-  end
-  class Teardown < Child
-    def run(run_opts)
+
+      @parent.instance_eval(&@block)
     end
   end
 
-  class Before < Child
-    def run(run_opts)
-    end
-  end
-  class After < Child
-    def run(run_opts)
-    end
-  end
+  class Setup < Child; end
+  class Teardown < Child; end
+
+  class Before < Child; end
+  class After < Child; end
 
   class Test < Child
-    def run(run_opts)
-    end
     def assert(value, &block)
       Probatio::Assertion.new(block)
     end
