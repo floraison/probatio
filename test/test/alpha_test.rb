@@ -1,9 +1,17 @@
 
 group 'alpha' do
 
-  before :each do
+  setup do
+  end
+  teardown do
+  end
+
+  before do
 
     @string = 'Heartbreak'
+  end
+
+  after do
   end
 
   test 'one' do

@@ -95,11 +95,17 @@ puts "." * 80
 puts self.to_s
     end
 
-    def before(name, opts={}, &block)
-      @children << Probatio::Before.new(name, opts, @path, block)
+    def setup(opts={}, &block)
+      @children << Probatio::Setup.new(nil, opts, @path, block)
     end
-    def after(name, opts={}, &block)
-      @children << Probatio::After.new(name, opts, @path, block)
+    def teardown(opts={}, &block)
+      @children << Probatio::Teardown.new(nil, opts, @path, block)
+    end
+    def before(opts={}, &block)
+      @children << Probatio::Before.new(nil, opts, @path, block)
+    end
+    def after(opts={}, &block)
+      @children << Probatio::After.new(nil, opts, @path, block)
     end
 
     def group(name, opts={}, &block)
@@ -129,10 +135,20 @@ puts self.to_s
     end
     def to_s(opts={})
       t = self.class.name.split('::').last.downcase
+      n = @name ? ' ' + @name.inspect : ''
       os = @opts.any? ? ' ' + @opts.inspect : ''
       _, l = block.source_location
       (opts[:out] || $stdout) <<
-        "#{opts[:indent]}#{t} #{name.inspect}#{os} #{@path}:#{l}\n"
+        "#{opts[:indent]}#{t}#{n}#{os} #{@path}:#{l}\n"
+    end
+  end
+
+  class Setup < Child
+    def run(run_opts)
+    end
+  end
+  class Teardown < Child
+    def run(run_opts)
     end
   end
 
