@@ -134,6 +134,10 @@ puts "." * 80; puts self.to_s
       @children << Probatio::After.new(self, nil, opts, @path, block)
     end
 
+    def assert(value, value1=nil, &block)
+      Probatio::Assertion.run(value, value1, block)
+    end
+
     def group(name, opts={}, &block)
 
       if g = @children.find { |e| e.is_a?(Probatio::Group) && e.name == name }
@@ -209,13 +213,7 @@ puts "." * 80; puts self.to_s
   class Before < Child; end
   class After < Child; end
 
-  class Test < Child
-
-    def assert(value, &block)
-
-      Probatio::Assertion.new(self, value, block)
-    end
-  end
+  class Test < Child; end
 
   class Assertion
 
@@ -224,6 +222,15 @@ puts "." * 80; puts self.to_s
       @test = test
       @value = value
       @block = block
+    end
+
+    def self.run(value, value1, block)
+    end
+  end
+
+  class AssertionError < StandardError
+    def initialize(message)
+      super(message)
     end
   end
 end
