@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.platform = Gem::Platform::RUBY
   s.authors = [ 'John Mettraux' ]
   s.email = [ 'jmettraux+flor@gmail.com' ]
-  s.homepage = 'https://github.com/floraison/fugit'
+  s.homepage = "https://github.com/floraison/#{s.name}"
   s.license = 'MIT'
   s.summary = 'test tools for floraison and flor'
 
