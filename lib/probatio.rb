@@ -390,42 +390,47 @@ end
 #
 # reporters
 
-module Probatio::DotReporter
+class Probatio::Reporter
 
-  class << self
+  def on_start(ev)
 
-    def on_start(ev)
+    @successes = []
+    @failures = []
+  end
+end
 
-      @successes = []
-      @failures = []
-    end
+class Probatio::DotReporter < Probatio::Reporter
 
-    def on_test_succeed(ev)
+  def on_start(ev)
 
-      print '.'
-      @successes << ev
-    end
+    super(ev)
+  end
 
-    def on_test_fail(ev)
+  def on_test_succeed(ev)
 
-      print 'x'
-      @failures << ev
-    end
+    print '.'
+    @successes << ev
+  end
 
-    def on_over(ev)
+  def on_test_fail(ev)
 
-      puts
-      @failures.each do |ev|
-        puts "---"
-        #puts ev.leaf.parent.to_s
-        #puts ev.leaf.head
-        puts ev.leaf.trail
-        puts ev.depth
-        puts ev.error.inspect
-      end
+    print 'x'
+    @failures << ev
+  end
+
+  def on_over(ev)
+
+    puts
+    @failures.each do |ev|
+      puts "---"
+      #puts ev.leaf.parent.to_s
+      #puts ev.leaf.head
+      puts ev.leaf.trail
+      puts ev.depth
+      puts ev.error.inspect
     end
   end
 end
 
-Probatio.plug(Probatio::DotReporter)
+Probatio.plug(Probatio::DotReporter.new)
 
