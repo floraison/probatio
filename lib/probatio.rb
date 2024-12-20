@@ -57,6 +57,8 @@ module Probatio
       end
     end
 
+    def monow; Process.clock_gettime(Process::CLOCK_MONOTONIC); end
+
     protected
 
     def read_helper_file(group, path)
@@ -327,9 +329,12 @@ module Probatio
 
   class Event
 
+    attr_reader :tstamp
     attr_reader :name, :opts, :context, :group, :leaf, :error
 
     def initialize(name, details)
+
+      @tstamp = Probatio.monow
 
       @name = name
 
@@ -358,18 +363,22 @@ module Probatio::DotReporter
     end
 
     def on_test_succeed(ev)
+
       print '.'
       @successes << ev
     end
 
     def on_test_fail(ev)
+
       print 'x'
       @failures << ev
     end
 
     def on_over(ev)
+
       puts
       @failures.each do |ev|
+        puts "---"
         puts ev.leaf.parent.to_s
         puts ev.leaf.head
       end
