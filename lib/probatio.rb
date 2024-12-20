@@ -15,7 +15,7 @@ module Probatio
 
       Probatio.despatch(:start, run_opts)
 
-      root_group = Group.new(nil, '_', {}, __FILE__, nil)
+      root_group = Group.new(nil, __FILE__, '_', {}, nil)
 
       dir = run_opts[:dir]
 
@@ -72,20 +72,50 @@ module Probatio
 
   self.init
 
-  class Group
+  class Node
 
-    attr_reader :name
-    attr_accessor :path
+    attr_reader :parent, :path, :name, :opts, :block, :children
 
-    def initialize(parent_group, name, group_opts, path, block)
+    def initialize(parent, path, name, opts, block)
 
-      @parent = parent_group
-
-      @name = name
-      @group_opts = group_opts
+      @parent = parent
       @path = path
+      @name = name
+      @opts = opts
+      @block = block
 
       @children = []
+    end
+
+    def type; self.class.name.split('::').last.downcase; end
+
+    def to_s(opts={})
+
+      out = opts[:out] || StringIO.new
+      ind = opts[:indent] || ''
+      nam = @name ? ' ' + @name.inspect : ''
+      nos = @opts.any? ? ' ' + @opts.inspect : ''
+      _, lin = @block.source_location
+      out << "#{ind}#{type}#{nam}#{nos} #{@path}:#{lin}\n"
+
+      @children.each do |c|
+        c.to_s(opts.merge(out: out, indent: ind + '  '))
+      end unless opts[:head]
+
+      opts[:out] ? nil : out.string.strip
+    end
+
+    def head(opts={}); to_s(opts.merge(head: true)).strip; end
+  end
+
+  class Group < Node
+
+    attr_accessor :path
+      # so it can be set when groups are "re-opened"...
+
+    def initialize(parent_group, path, name, opts, block)
+
+      super(parent_group, path, name, opts, block)
 
       add_block(block)
     end
@@ -101,23 +131,6 @@ module Probatio
 
       instance_eval(File.read(path))
     end
-
-    def to_s(opts={})
-
-      out = opts[:out] || StringIO.new
-      ind = opts[:indent] || ''
-      gos = @group_opts.any? ? ' ' + @group_opts.inspect : ''
-
-      out << "#{ind}group #{@name.inspect}#{gos}\n"
-
-      @children.each do |c|
-        c.to_s(opts.merge(out: out, indent: ind + '  '))
-      end unless opts[:head]
-
-      opts[:out] ? nil : out.string.strip
-    end
-
-    def head(opts={}); to_s(opts.merge(head: true)).strip; end
 
     def run(run_opts)
 
@@ -144,16 +157,16 @@ module Probatio
     end
 
     def setup(opts={}, &block)
-      @children << Probatio::Setup.new(self, nil, opts, @path, block)
+      @children << Probatio::Setup.new(self, @path, nil, opts, block)
     end
     def teardown(opts={}, &block)
-      @children << Probatio::Teardown.new(self, nil, opts, @path, block)
+      @children << Probatio::Teardown.new(self, @path, nil, opts, block)
     end
     def before(opts={}, &block)
-      @children << Probatio::Before.new(self, nil, opts, @path, block)
+      @children << Probatio::Before.new(self, @path, nil, opts, block)
     end
     def after(opts={}, &block)
-      @children << Probatio::After.new(self, nil, opts, @path, block)
+      @children << Probatio::After.new(self, @path, nil, opts, block)
     end
 
     def group(name, opts={}, &block)
@@ -162,13 +175,13 @@ module Probatio
         g.path = @path
         g.add_block(block)
       else
-        @children << Probatio::Group.new(self, name, opts, @path, block)
+        @children << Probatio::Group.new(self, @path, name, opts, block)
       end
     end
 
     def test(name, opts={}, &block)
 
-      @children << Probatio::Test.new(self, name, opts, @path, block)
+      @children << Probatio::Test.new(self, @path, name, opts, block)
     end
 
     def befores
@@ -208,38 +221,7 @@ module Probatio
     def groups; @children.select { |c| c.is_a?(Probatio::Group) }; end
   end
 
-  class Child
-
-    attr_reader :parent, :name, :opts, :block
-
-    def initialize(parent, name, opts, path, block)
-
-      @parent = parent
-      @name = name
-      @opts = opts
-      @path = path
-      @block = block
-    end
-
-    def type
-
-      self.class.name.split('::').last.downcase
-    end
-
-    def to_s(opts={})
-
-      out = opts[:out] || StringIO.new
-
-      n = @name ? ' ' + @name.inspect : ''
-      os = @opts.any? ? ' ' + @opts.inspect : ''
-      _, l = block.source_location
-
-      out << "#{opts[:indent]}#{type}#{n}#{os} #{@path}:#{l}\n"
-
-      opts[:out] ? nil : out.string
-    end
-
-    def head(opts={}); to_s(opts.merge(head: true)).strip; end
+  class Leaf < Node
 
     def run(run_opts)
 
@@ -251,13 +233,13 @@ module Probatio
     end
   end
 
-  class Setup < Child; end
-  class Teardown < Child; end
+  class Setup < Leaf; end
+  class Teardown < Leaf; end
 
-  class Before < Child; end
-  class After < Child; end
+  class Before < Leaf; end
+  class After < Leaf; end
 
-  class Test < Child; end
+  class Test < Leaf; end
 
   class Context
 
@@ -345,7 +327,7 @@ module Probatio
 
   class Event
 
-    attr_reader :name, :opts, :context, :group, :child, :error
+    attr_reader :name, :opts, :context, :group, :leaf, :error
 
     def initialize(name, details)
 
@@ -355,8 +337,8 @@ module Probatio
         case d
         when Hash then @opts = d
         when String, Exception then @error = d
+        when Probatio::Leaf then @leaf = d
         when Probatio::Group then @group = d
-        when Probatio::Child then @child = d
         when Probatio::Context then @context = d
         else fail ArgumentError.new("cannot fathom #{d.class} #{d.inspect}")
         end
@@ -388,8 +370,8 @@ module Probatio::DotReporter
     def on_over(ev)
       puts
       @failures.each do |ev|
-        puts ev.child.parent.to_s
-        puts ev.child.head
+        puts ev.leaf.parent.to_s
+        puts ev.leaf.head
       end
     end
   end
