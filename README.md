@@ -16,6 +16,10 @@ Test tools for floraison and flor. Somewhere between Minitest and Rspec, but not
 * `bundle exec proba test/there/that.rb:123-210`
 * `bundle exec proba test/there/ -n /_for_rm\$/`
 * `bundle exec proba test/there/ -n "that test"`
+* `bundle exec proba first`
+* `bundle exec proba last -2`
+* `bundle exec proba 0 1`
+* `bundle exec proba -1 -2`
 * dots
 * colors
 * times monow
