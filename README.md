@@ -9,11 +9,13 @@ Test tools for floraison and flor. Somewhere between Minitest and Rspec, but not
 
 ## Goals
 
-* `bx proba test/there/`
-* `bx proba test/there/that.rb`
-* `bx proba test/there/that.rb:123`
-* `bx proba test/there/that.rb:123:210`
-* `bx proba test/there/that.rb:123-210`
+* `bundle exec proba test/there/`
+* `bundle exec proba test/there/that.rb`
+* `bundle exec proba test/there/that.rb:123`
+* `bundle exec proba test/there/that.rb:123:210`
+* `bundle exec proba test/there/that.rb:123-210`
+* `bundle exec proba test/there/ -n /_for_rm\$/`
+* `bundle exec proba test/there/ -n "that test"`
 * dots
 * colors
 * times monow
