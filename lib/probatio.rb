@@ -57,7 +57,8 @@ module Probatio
       end
     end
 
-    def monow; Process.clock_gettime(Process::CLOCK_MONOTONIC); end
+    def monow; @ts = Process.clock_gettime(Process::CLOCK_MONOTONIC); end
+    def monow_and_delta; ts0, ts1 = @ts, monow; [ ts1, ts1 - ts0 ]; end
 
     protected
 
@@ -329,12 +330,12 @@ module Probatio
 
   class Event
 
-    attr_reader :tstamp
+    attr_reader :tstamp, :delta
     attr_reader :name, :opts, :context, :group, :leaf, :error
 
     def initialize(name, details)
 
-      @tstamp = Probatio.monow
+      @tstamp, @delta = Probatio.monow_and_delta
 
       @name = name
 
