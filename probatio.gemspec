@@ -42,6 +42,7 @@ Test tools for floraison and flor. Somewhere between Minitest and Rspec, but not
     # this dependency appears in 'et-orbi'
 
   s.add_runtime_dependency 'colorato', '~> 1.0'
+  #s.add_runtime_dependency 'diff-lcs', '~> 1.5'
 
   #s.add_development_dependency 'rspec', '~> 3.8'
     # ;-)
