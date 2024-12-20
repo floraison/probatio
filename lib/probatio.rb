@@ -51,6 +51,7 @@ module Probatio
 #p [ :despatch, event_name ]
       m = "on_#{event_name}"
       ev = Probatio::Event.new(event_name.to_sym, details)
+#p [ :despatch, event_name, ev.delta ]
 
       @plugins.each do |plugin|
         plugin.send(m, ev) if plugin.respond_to?(m)
@@ -58,7 +59,7 @@ module Probatio
     end
 
     def monow; @ts = Process.clock_gettime(Process::CLOCK_MONOTONIC); end
-    def monow_and_delta; ts0, ts1 = @ts, monow; [ ts1, ts1 - ts0 ]; end
+    def monow_and_delta; ts0, ts1 = @ts, monow; [ ts1, ts1 - (ts0 || ts1) ]; end
 
     protected
 
@@ -92,28 +93,47 @@ module Probatio
 
     def type; self.class.name.split('::').last.downcase; end
 
+    def depth; parent ? parent.depth + 1 : 0; end
+
     def to_s(opts={})
 
       out = opts[:out] || StringIO.new
-      ind = opts[:indent] || ''
+      opts1 = opts.merge(out: out)
+
+      ind = '  ' * depth
       nam = @name ? ' ' + @name.inspect : ''
       nos = @opts.any? ? ' ' + @opts.inspect : ''
-      _, lin = @block.source_location
-      out << "#{ind}#{type}#{nam}#{nos} #{@path}:#{lin}\n"
+      _, li = @block.source_location rescue nil
+      pali = @path ? " #{@path}:#{li}" : ''
 
-      @children.each do |c|
-        c.to_s(opts.merge(out: out, indent: ind + '  '))
-      end unless opts[:head]
+      out << "#{ind}#{type}#{nam}#{nos}#{pali}\n"
+
+      @children.each { |c| c.to_s(opts1) } unless opts[:head]
 
       opts[:out] ? nil : out.string.strip
     end
 
     def head(opts={}); to_s(opts.merge(head: true)).strip; end
+
+    def trail(opts={})
+
+      out = opts[:out] || StringIO.new
+      opts1 = opts.merge(out: out, head: true)
+
+      parent.trail(opts1) if parent
+      to_s(opts1)
+
+      opts[:out] ? nil : out.string.strip
+    end
   end
 
   class Group < Node
 
-    attr_accessor :path
+    def path=(pat)
+
+      @path0 ||= @path
+      @path = pat
+    end
       # so it can be set when groups are "re-opened"...
 
     def initialize(parent_group, path, name, opts, block)
@@ -350,6 +370,8 @@ module Probatio
         end
       end
     end
+
+    def depth; (@leaf || @group).depth rescue 0; end
   end
 end
 
@@ -380,8 +402,11 @@ module Probatio::DotReporter
       puts
       @failures.each do |ev|
         puts "---"
-        puts ev.leaf.parent.to_s
-        puts ev.leaf.head
+        #puts ev.leaf.parent.to_s
+        #puts ev.leaf.head
+        puts ev.leaf.trail
+        puts ev.depth
+        puts ev.error.inspect
       end
     end
   end
