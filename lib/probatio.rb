@@ -288,7 +288,9 @@ module Probatio
       Probatio.despatch("#{child.type}_leave", self, child, run_opts)
     end
 
-    # assert_* methods belong to Probatio::Context but are defined below
+    require 'probatio/assertions'
+      #
+      # where assert_* methods are defined...
   end
 
   class AssertionError < StandardError
@@ -333,104 +335,7 @@ module Probatio
   end
 end
 
-#
-# assertions
-
-class Probatio::Context
-
-  def assert(*as)
-
-    do_assert do
-
-      as.all? { |a| a == as[0] } ||
-      "no equal"
-    end
-  end
-
-  def assert_match(*as)
-
-    do_assert do
-
-      strings, others = as.partition { |a| a.is_a?(String) }
-      rex = others.find { |o| o.is_a?(Regexp) } || strings.pop
-
-      strings.all? { |s| s.match?(rex) } ||
-      "no match"
-    end
-  end
-
-  protected
-
-  def do_assert(&block)
-
-    r =
-      begin
-        block.call
-      rescue => err
-        err
-      end
-
-    if r.is_a?(StandardError) || r.is_a?(String)
-
-      Probatio.despatch(:test_fail, self, @__child, r)
-
-      fail Probatio::AssertionError.new(r)
-
-    elsif r.is_a?(Exception)
-
-      raise r
-    end
-
-    Probatio.despatch(:test_succeed, self, @__child)
-
-    true # end on a positive note...
-  end
-end
-
-#
-# reporters
-
-class Probatio::Reporter
-
-  def on_start(ev)
-
-    @successes = []
-    @failures = []
-  end
-end
-
-class Probatio::DotReporter < Probatio::Reporter
-
-  def on_start(ev)
-
-    super(ev)
-  end
-
-  def on_test_succeed(ev)
-
-    print '.'
-    @successes << ev
-  end
-
-  def on_test_fail(ev)
-
-    print 'x'
-    @failures << ev
-  end
-
-  def on_over(ev)
-
-    puts
-    @failures.each do |ev|
-      puts "---"
-      #puts ev.leaf.parent.to_s
-      #puts ev.leaf.head
-      puts ev.leaf.trail
-      puts ev.depth
-      puts ev.error.inspect
-    end
-  end
-end
-
-Probatio.plug(Probatio::DotReporter.new)
+require 'probatio/reporters'
+  #
+  # reporters are plugins that listen to dispatches and report
 
