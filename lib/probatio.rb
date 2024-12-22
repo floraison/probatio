@@ -54,6 +54,7 @@ module Probatio
       m = "on_#{event_name}"
       ev = Probatio::Event.new(event_name.to_sym, details)
 #p [ :despatch, event_name, ev.delta ]
+p [ :despatch, event_name, (ev.node.full_name rescue nil) ]
 
       @plugouts ||= @plugins.reverse
 
@@ -100,6 +101,10 @@ module Probatio
     def type; self.class.name.split('::').last.downcase; end
 
     def depth; parent ? parent.depth + 1 : 0; end
+
+    def name; @name || type; end
+    def array_name; parent ? parent.array_name + [ name ] : [ name ]; end
+    def full_name; array_name.join(' '); end
 
     def to_s(opts={})
 
@@ -338,7 +343,8 @@ module Probatio
     end
 
     def direction; name.to_s.end_with?('_leave') ? :leave : :enter; end
-    def depth; (@leaf || @group).depth rescue 0; end
+    def node; @leaf || @group; end
+    def depth; node.depth rescue 0; end
   end
 end
 
