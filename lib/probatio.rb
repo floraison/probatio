@@ -37,6 +37,7 @@ module Probatio
     def init
 
       @plugins = []
+      @plugouts = nil
     end
 
     def plugins; @plugins; end
@@ -44,6 +45,7 @@ module Probatio
     def plug(x)
 
       @plugins << x
+      @plugouts = nil
     end
 
     def despatch(event_name, *details)
@@ -53,7 +55,11 @@ module Probatio
       ev = Probatio::Event.new(event_name.to_sym, details)
 #p [ :despatch, event_name, ev.delta ]
 
-      @plugins.each do |plugin|
+      @plugouts ||= @plugins.reverse
+
+      (ev.direction == :leave ? @plugins : @plugouts).each do |plugin|
+
+        plugin.record(ev) if plugin.respond_to?(:record)
         plugin.send(m, ev) if plugin.respond_to?(m)
       end
     end
@@ -331,6 +337,7 @@ module Probatio
       end
     end
 
+    def direction; name.to_s.end_with?('_leave') ? :leave : :enter; end
     def depth; (@leaf || @group).depth rescue 0; end
   end
 end
