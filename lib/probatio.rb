@@ -17,16 +17,22 @@ module Probatio
 
       root_group = Group.new(nil, __FILE__, '_', {}, nil)
 
-      dir = run_opts[:dir]
+      (run_opts[:dirs] || []).each do |dir|
 
-      Dir[File.join(dir, '**', '*_helper.rb')].each do |path|
+        Dir[File.join(dir, '**', '*_helper.rb')].each do |path|
 
-        read_helper_file(root_group, path)
+          read_helper_file(root_group, path)
+        end
+
+        Dir[File.join(dir, '**', '*_test.rb')].each do |path|
+
+          read_test_file(root_group, path)
+        end
       end
 
-      Dir[File.join(dir, '**', '*_test.rb')].each do |path|
+      (run_opts[:files] || []).each do |file|
 
-        read_test_file(root_group, path)
+        # TODO
       end
 
       root_group.run(run_opts)

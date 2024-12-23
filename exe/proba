@@ -17,7 +17,7 @@ while a = args.shift
     switches[a] = SWITCHES_WITH_ARG.include?(a) ? args.shift : true
   elsif File.directory?(a)
     dirs << a
-  elsif File.file?(a)
+  elsif File.file?(a.split(':').first)
     files << a
   else
     strings << a
@@ -25,7 +25,8 @@ while a = args.shift
 end
 
 if switches['-h'] || switches['--help']
-  puts %{
+
+    puts %{
   Usage: bundle exec proba [OPTIONS] [FILES] [DIRS]
 
   A test runner for Ruby.
@@ -34,6 +35,7 @@ if switches['-h'] || switches['--help']
       -h, --help         Show this help message and quit
       --version          Show proba's version and exit
       -C, --no-colors    Disable colour output
+      -d, --dry          Don't run the test, flag them as successes
 
   Files:
       TODO
@@ -47,20 +49,30 @@ if switches['-h'] || switches['--help']
 
     # Run all the tests in a file
     bundle exec proba test/this_test.rb
-    }
+      }.rstrip + "\n\n"
   exit 0
 end
 
-p switches
-p dirs
-p files
-p strings
+if switches['--version']
 
-opts = { dir: 'test' }
+  puts "proba -- probatio test tool -- #{Probatio::VERSION}"
+  exit 0
+end
 
+p [ :switches, switches ]
+p [ :dirs, dirs ]
+p [ :files, files ]
+p [ :strings, strings ]
+
+opts = {}
+  #
+opts[:dry] if switches['-d'] || switches['--dry']
+opts[:files] = files if files.any?
+opts[:dirs] = [ 'test' ] unless opts[:dirs] || opts[:files]
+
+puts "---"
 p opts
-
-#exit 0
+puts "---"
 
 #
 # run
