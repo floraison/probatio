@@ -44,15 +44,7 @@ module Probatio
 
     def plug(x, position=:last)
 
-      pos =
-        case position
-        when Integer then position
-        when :first then 0
-        #when :last then @plugins.length
-        else @plugins.length
-        end
-
-      @plugins.insert(pos, x)
+      @plugins.insert(determine_plugin_pos(position), x)
 
       @plugouts = nil
     end
@@ -87,6 +79,26 @@ p [ :despatch, event_name, (ev.node.full_name rescue nil) ]
     def read_test_file(group, path)
 
       group.add_file(path)
+    end
+
+    def determine_plugin_pos(pos)
+
+      return pos when pos.is_a?(Integer)
+
+      return 0 when pos == :first
+      #return @plugins.length when pos == :last
+
+      h = pos.is_a?(Hash) ? pos : {}
+
+      l = @plugins.length
+
+      if af = h[:after]
+        (@plugins.index { |pl| pl == af || (pl.is_a?(af) rescue nil) } || l) + 1
+      elsif bf = h[:before]
+        (@plugins.index { |pl| pl == bf || (pl.is_a?(bf) rescue nil) } || l)
+      else
+        l # last resort, put at the end...
+      end
     end
   end
 
