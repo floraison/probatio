@@ -392,7 +392,13 @@ module Probatio
 
         instance_eval(&child.block)
 
+        Probatio.despatch(:test_succeed, self, child) \
+          if child.type == 'test'
+
       rescue AssertionError
+
+        #Probatio.despatch(:test_fail, self, child)
+          # done in the assertion implementation...
 
         # keeping calm and carrying on...
 

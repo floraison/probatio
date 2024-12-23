@@ -29,6 +29,8 @@ class Probatio::Context
 
   def do_assert(&block)
 
+    Probatio.despatch(:assertion_enter, self, @__child)
+
     r =
       begin
         block.call
@@ -44,12 +46,17 @@ class Probatio::Context
 
     elsif r.is_a?(Exception)
 
+      Probatio.despatch(:test_exception, self, @__child, r)
+
       raise r
     end
 
-    Probatio.despatch(:test_succeed, self, @__child)
-
     true # end on a positive note...
+
+  ensure
+
+    #Probatio.despatch(:test_succeed, self, @__child)
+    Probatio.despatch(:assertion_leave, self, @__child)
   end
 end
 
