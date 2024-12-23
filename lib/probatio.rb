@@ -99,7 +99,7 @@ module Probatio
       ev = Probatio::Event.new(en, details)
 #p [ :despatch, event_name, ev.delta ]
 
-      puts '  ' + [ :despatch, en, (ev.node.full_name rescue nil) ].inspect \
+      puts '  ' + [ :despatch, en, ev.node && ev.node.full_name ].inspect \
         if $DEBUG
 
       @plugouts ||= @plugins.reverse
