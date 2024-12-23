@@ -34,7 +34,7 @@ if switches['-h'] || switches['--help']
   Options:
     -h, --help             Show this help message and quit
     --version              Show proba's version and exit
-    -C, --no-colors        Disable colour output
+    -m, --monochrome       Disable colour output
     -d, --dry              Don't run the test, flag them as successes
     -n, --name PATTERN     include tests matching /regexp/ or string in run
     -e, --exclude PATTERN  Exclude /regexp/ or string from run
@@ -63,7 +63,8 @@ end
 
 opts = {}
 
-opts[:dry] if switches['-d'] || switches['--dry']
+opts[:dry] = true if switches['-d'] || switches['--dry']
+opts[:mono] = true if switches['-m'] || switches['--monochrome']
 
 opts[:dirs] = dirs if dirs.any?
 opts[:files] = files if files.any?

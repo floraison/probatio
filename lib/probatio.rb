@@ -11,7 +11,13 @@ module Probatio
 
   class << self
 
+    def dry?; !! @dry; end
+    def mono?; !! @mono; end
+
     def run(run_opts)
+
+      @dry = run_opts[:dry]
+      @mono = run_opts[:mono]
 
       Probatio.despatch(:pre, run_opts)
 
