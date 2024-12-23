@@ -7,14 +7,26 @@ require 'probatio'
 
 args = ARGV.dup
 
-SWITCHES_WITH_ARG = %w[]
+def rework_switch(a)
+
+  case a
+  when '-n', '--name' then '--name'
+  when '-e', '--exclude' then '--exclude'
+  else nil
+  end
+end
 
 switches = {}
 dirs, files, strings = [], [], []
 
 while a = args.shift
-  if a.match?(/^(-[a-z0-9]|--[a-z0-9]+)$/i)
-    switches[a] = SWITCHES_WITH_ARG.include?(a) ? args.shift : true
+
+  if a.match?(/^(-[a-z0-9]|--[a-z0-9][-a-z0-9]+)$/i)
+    if k = rework_switch(a)
+      (switches[k] ||= []) << args.shift
+    else
+      switches[a] = true
+    end
   elsif File.directory?(a)
     dirs << a
   elsif File.file?(a.split(':').first)
@@ -23,6 +35,10 @@ while a = args.shift
     strings << a
   end
 end
+
+$DEBUG = true if switches['-d']
+
+puts " * switches: " + switches.inspect if $DEBUG
 
 if switches['-h'] || switches['--help']
 
@@ -35,9 +51,10 @@ if switches['-h'] || switches['--help']
     -h, --help             Show this help message and quit
     --version              Show proba's version and exit
     -m, --monochrome       Disable colour output
-    -d, --dry              Don't run the test, flag them as successes
+    -y, --dry              Don't run the test, flag them as successes
     -n, --name PATTERN     include tests matching /regexp/ or string in run
     -e, --exclude PATTERN  Exclude /regexp/ or string from run
+    -d, --debug            Sets $DEBUG to true
 
   Files:
     TODO
@@ -63,12 +80,17 @@ end
 
 opts = {}
 
-opts[:dry] = true if switches['-d'] || switches['--dry']
+opts[:dry] = true if switches['-y'] || switches['--dry']
 opts[:mono] = true if switches['-m'] || switches['--monochrome']
 
 opts[:dirs] = dirs if dirs.any?
 opts[:files] = files if files.any?
 opts[:dirs] = [ 'test' ] unless opts[:dirs] || opts[:files]
+
+opts[:includes] = switches['--name']
+opts[:excludes] = switches['--exclude']
+
+puts " * opts: " + opts.inspect if $DEBUG
 
 #
 # run

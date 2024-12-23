@@ -173,8 +173,8 @@ module Probatio
       ind = '  ' * depth
       nam = @name ? ' ' + @name.inspect : ''
       nos = @opts.any? ? ' ' + @opts.inspect : ''
-      _, li = @block.source_location rescue nil
-      pali = @path ? " #{@path}:#{li}" : ''
+      _, l = @block.respond_to?(:source_location) ? @block.source_location : nil
+      pali = @path ? " #{@path}:#{l}" : ''
 
       out << "#{ind}#{type}#{nam}#{nos}#{pali}\n"
 
