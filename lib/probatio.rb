@@ -459,7 +459,7 @@ end
 
 Probatio.init
 
-require 'probatio/reporters'
+require 'probatio/plugins'
   #
-  # reporters are plugins that listen to dispatches and report
+  # plugins that listen to dispatches, report, and summarize.
 

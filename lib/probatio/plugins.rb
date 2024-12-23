@@ -1,6 +1,6 @@
 
 #
-# probatio/reporters
+# probatio/plugins.rb
 
 class Probatio::Recorder
 
