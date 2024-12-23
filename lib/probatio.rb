@@ -60,10 +60,13 @@ module Probatio
 
         read_test_file(root_group, fpath)
       end
-#p run_opts
+
+      puts " r " + run_opts.inspect if $DEBUG
 
       #
       # run
+
+      puts "---\n" + root_group.to_s + "\n---\n" if $DEBUG
 
       Probatio.despatch(:start, run_opts)
 
@@ -74,6 +77,7 @@ module Probatio
 
     def init
 
+      @read = Set.new
       @plugins = []
       @plugouts = nil
     end
@@ -111,10 +115,14 @@ module Probatio
 
     def read_helper_file(group, path)
 
+      return if @read.include?(path); @read.add(path)
+
       Kernel.load(path)
     end
 
     def read_test_file(group, path)
+
+      return if @read.include?(path); @read.add(path)
 
       group.add_file(path)
     end
