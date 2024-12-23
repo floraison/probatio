@@ -241,29 +241,11 @@ module Probatio
 
       Probatio.despatch(:group_enter, self)
 
-      setups.each { |s| s.run(run_opts) }
-
-      tests.each { |t| run_test(t, run_opts) }
-
-      groups.each { |g| g.run(run_opts) }
-
-      teardowns.each { |s| s.run(run_opts) }
+      (
+        setups + tests + groups + teardowns
+      ).each { |c| c.run(run_opts) }
 
       Probatio.despatch(:group_leave, self)
-    end
-
-    def run_test(t, run_opts)
-
-      return Probatio.despatch(:test_pending, t) \
-        if t.opts[:pending]
-
-      c = Probatio::Context.new(self)
-
-      befores.each { |b| c.run(b, run_opts) }
-
-      c.run(t, run_opts)
-
-      afters.each { |a| c.run(a, run_opts) }
     end
 
     def setup(opts={}, &block)
@@ -371,7 +353,24 @@ module Probatio
   class Before < Leaf; end
   class After < Leaf; end
 
-  class Test < Leaf; end
+  class Test < Leaf
+
+    alias group parent
+
+    def run(run_opts)
+
+      return Probatio.despatch(:test_pending, self) \
+        if opts[:pending]
+
+      c = Probatio::Context.new(group)
+
+      group.befores.each { |b| c.run(b, run_opts) }
+
+      c.run(self, run_opts)
+
+      group.afters.each { |a| c.run(a, run_opts) }
+    end
+  end
 
   class Context
 
