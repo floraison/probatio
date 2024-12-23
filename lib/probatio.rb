@@ -153,7 +153,7 @@ module Probatio
 
   class Node
 
-    attr_reader :parent, :path, :name, :opts, :block, :children
+    attr_reader :parent, :path, :opts, :block, :children
 
     def initialize(parent, path, name, opts, block)
 
@@ -392,7 +392,7 @@ module Probatio
 
         instance_eval(&child.block)
 
-      rescue AssertionError => aerr
+      rescue AssertionError
 
         # keeping calm and carrying on...
 

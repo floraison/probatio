@@ -59,6 +59,12 @@ Test tools for floraison and flor. Somewhere between Minitest and Rspec, but not
 
 TODO
 
+## Warnings
+
+```
+$ RUBYOPT="-w $RUBYOPT" bundle exec proba
+```
+
 ## Plugins
 
 TODO
