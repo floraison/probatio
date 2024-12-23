@@ -148,8 +148,6 @@ module Probatio
     end
   end
 
-  self.init
-
   class Node
 
     attr_reader :parent, :path, :name, :opts, :block, :children
@@ -414,6 +412,8 @@ module Probatio
     def depth; node.depth rescue 0; end
   end
 end
+
+Probatio.init
 
 require 'probatio/reporters'
   #
