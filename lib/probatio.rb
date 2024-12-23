@@ -13,7 +13,7 @@ module Probatio
 
     def run(run_opts)
 
-      Probatio.despatch(:start, run_opts)
+      Probatio.despatch(:pre, run_opts)
 
       root_group = Group.new(nil, __FILE__, '_', {}, nil)
 
@@ -30,10 +30,12 @@ module Probatio
         end
       end
 
-      (run_opts[:files] || []).each do |file|
+      (run_opts[:files] || []).each do |path|
 
-        # TODO
+        read_test_file(root_group, path.split(':').first)
       end
+
+      Probatio.despatch(:start, run_opts)
 
       root_group.run(run_opts)
 
