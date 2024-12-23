@@ -5,12 +5,68 @@ require 'probatio'
 #
 # gather opts
 
+args = ARGV.dup
+
+SWITCHES_WITH_ARG = %w[]
+
+switches = {}
+dirs, files, strings = [], [], []
+
+while a = args.shift
+  if a.match?(/^(-[a-z0-9]|--[a-z0-9]+)$/i)
+    switches[a] = SWITCHES_WITH_ARG.include?(a) ? args.shift : true
+  elsif File.directory?(a)
+    dirs << a
+  elsif File.file?(a)
+    files << a
+  else
+    strings << a
+  end
+end
+
+if switches['-h'] || switches['--help']
+  puts %{
+  Usage: bundle exec proba [OPTIONS] [FILES] [DIRS]
+
+  A test runner for Ruby.
+
+  Options:
+      -h, --help         Show this help message and quit
+      --version          Show proba's version and exit
+      -C, --no-colors    Disable colour output
+
+  Files:
+      TODO
+
+  Dirs:
+      TODO
+
+  Examples:
+    # Run all tests in a dir
+    bundle exec proba test/
+
+    # Run all the tests in a file
+    bundle exec proba test/this_test.rb
+    }
+  exit 0
+end
+
+p switches
+p dirs
+p files
+p strings
+
 opts = { dir: 'test' }
+
+p opts
+
+#exit 0
 
 #
 # run
 
 Probatio.run(opts)
+
 
 # vim: set filetype=ruby
 

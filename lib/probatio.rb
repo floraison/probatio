@@ -55,7 +55,7 @@ module Probatio
       m = "on_#{event_name}"
       ev = Probatio::Event.new(event_name.to_sym, details)
 #p [ :despatch, event_name, ev.delta ]
-p [ :despatch, event_name, (ev.node.full_name rescue nil) ]
+#p [ :despatch, event_name, (ev.node.full_name rescue nil) ]
 
       @plugouts ||= @plugins.reverse
 
