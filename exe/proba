@@ -61,20 +61,13 @@ if switches['--version']
   exit 0
 end
 
-p [ :switches, switches ]
-p [ :dirs, dirs ]
-p [ :files, files ]
-p [ :strings, strings ]
-
 opts = {}
-  #
+
 opts[:dry] if switches['-d'] || switches['--dry']
+
+opts[:dirs] = dirs if dirs.any?
 opts[:files] = files if files.any?
 opts[:dirs] = [ 'test' ] unless opts[:dirs] || opts[:files]
-
-puts "---"
-p opts
-puts "---"
 
 #
 # run

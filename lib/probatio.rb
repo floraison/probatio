@@ -15,7 +15,13 @@ module Probatio
 
       Probatio.despatch(:pre, run_opts)
 
+      #
+      # construct tree
+
       root_group = Group.new(nil, __FILE__, '_', {}, nil)
+
+      run_opts[:filez] = []
+      run_opts[:filen] = []
 
       (run_opts[:dirs] || []).each do |dir|
 
@@ -26,14 +32,32 @@ module Probatio
 
         Dir[File.join(dir, '**', '*_test.rb')].each do |path|
 
+          run_opts[:filez] << path
+
           read_test_file(root_group, path)
         end
       end
 
       (run_opts[:files] || []).each do |path|
 
-        read_test_file(root_group, path.split(':').first)
+        colons = path.split(':')
+        fpath = colons.shift
+
+        if colons.empty?
+          run_opts[:filez] << path
+        else
+          colons.each do |lnum|
+            lnum = lnum.match?(/^\d+$/) ? lnum.to_i : false
+            run_opts[:filen] << [ fpath, lnum ] if lnum
+          end
+        end
+
+        read_test_file(root_group, fpath)
       end
+#p run_opts
+
+      #
+      # run
 
       Probatio.despatch(:start, run_opts)
 
