@@ -83,10 +83,10 @@ p [ :despatch, event_name, (ev.node.full_name rescue nil) ]
 
     def determine_plugin_pos(pos)
 
-      return pos when pos.is_a?(Integer)
+      return pos if pos.is_a?(Integer)
 
-      return 0 when pos == :first
-      #return @plugins.length when pos == :last
+      return 0 if pos == :first
+      #return @plugins.length if pos == :last
 
       h = pos.is_a?(Hash) ? pos : {}
 
