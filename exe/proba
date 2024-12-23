@@ -51,7 +51,7 @@ if switches['-h'] || switches['--help']
     -h, --help             Show this help message and quit
     --version              Show proba's version and exit
     -m, --monochrome       Disable colour output
-    -y, --dry              Don't run the test, flag them as successes
+    -y, --dry              Don't run the test, just flag them as successes
     -n, --name PATTERN     include tests matching /regexp/ or string in run
     -e, --exclude PATTERN  Exclude /regexp/ or string from run
     -d, --debug            Sets $DEBUG to true

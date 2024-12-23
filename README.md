@@ -25,6 +25,37 @@ Test tools for floraison and flor. Somewhere between Minitest and Rspec, but not
 * times monow
 
 
+## Usage
+
+```
+  Usage: bundle exec proba [OPTIONS] [FILES] [DIRS]
+
+  A test runner for Ruby.
+
+  Options:
+    -h, --help             Show this help message and quit
+    --version              Show proba's version and exit
+    -m, --monochrome       Disable colour output
+    -y, --dry              Don't run the test, just flag them as successes
+    -n, --name PATTERN     include tests matching /regexp/ or string in run
+    -e, --exclude PATTERN  Exclude /regexp/ or string from run
+    -d, --debug            Sets $DEBUG to true
+
+  Files:
+    TODO
+
+  Dirs:
+    TODO
+
+  Examples:
+    # Run all tests in a dir
+    bundle exec proba test/
+
+    # Run all the tests in a file
+    bundle exec proba test/this_test.rb
+```
+
+
 ## Plugins
 
 TODO
