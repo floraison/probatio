@@ -2,39 +2,47 @@
 #
 # probatio/reporters
 
+class Probatio::Recorder
 
-class Probatio::Reporter
+  def record(ev)
 
-  def on_start(ev)
+    (@events ||= []) << ev
+  end
 
-    @successes = []
-    @failures = []
+  def failures
+
+    @events.select { |ev| ev.name == 'test_fail' }
+  end
+
+  def successes
+
+    @events.select { |ev| ev.name == 'test_succeed' }
   end
 end
 
-class Probatio::DotReporter < Probatio::Reporter
-
-  def on_start(ev)
-
-    super(ev)
-  end
+class Probatio::DotReporter
 
   def on_test_succeed(ev)
 
     print '.'
-    @successes << ev
   end
 
   def on_test_fail(ev)
 
     print 'x'
-    @failures << ev
   end
+
+end
+
+class Probatio::VanillaSummarizer
 
   def on_over(ev)
 
+    recorder = Probatio.plugins.find { |pl| pl.respond_to?(:failures) }
+    return unless recorder
+
     puts
-    @failures.each do |ev|
+    recorder.failures.each do |ev|
       puts "---"
       #puts ev.leaf.parent.to_s
       #puts ev.leaf.head
@@ -45,5 +53,7 @@ class Probatio::DotReporter < Probatio::Reporter
   end
 end
 
+Probatio.plug(Probatio::Recorder.new)
 Probatio.plug(Probatio::DotReporter.new)
+Probatio.plug(Probatio::VanillaSummarizer.new)
 

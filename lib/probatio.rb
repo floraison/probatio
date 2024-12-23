@@ -328,7 +328,7 @@ p [ :despatch, event_name, (ev.node.full_name rescue nil) ]
 
       @tstamp, @delta = Probatio.monow_and_delta
 
-      @name = name
+      @name = name.to_s
 
       details.each do |d|
         case d
