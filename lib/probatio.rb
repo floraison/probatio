@@ -42,9 +42,18 @@ module Probatio
 
     def plugins; @plugins; end
 
-    def plug(x)
+    def plug(x, position=:last)
 
-      @plugins << x
+      pos =
+        case position
+        when Integer then position
+        when :first then 0
+        #when :last then @plugins.length
+        else @plugins.length
+        end
+
+      @plugins.insert(pos, x)
+
       @plugouts = nil
     end
 
