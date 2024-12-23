@@ -94,17 +94,20 @@ module Probatio
     def despatch(event_name, *details)
 
 #p [ :despatch, event_name ]
-      m = "on_#{event_name}"
-      ev = Probatio::Event.new(event_name.to_sym, details)
+      en = event_name.to_sym
+      me = "on_#{event_name}"
+      ev = Probatio::Event.new(en, details)
 #p [ :despatch, event_name, ev.delta ]
-#p [ :despatch, event_name, (ev.node.full_name rescue nil) ]
+
+      puts '  ' + [ :despatch, en, (ev.node.full_name rescue nil) ].inspect \
+        if $DEBUG
 
       @plugouts ||= @plugins.reverse
 
       (ev.direction == :leave ? @plugins : @plugouts).each do |plugin|
 
         plugin.record(ev) if plugin.respond_to?(:record)
-        plugin.send(m, ev) if plugin.respond_to?(m)
+        plugin.send(me, ev) if plugin.respond_to?(me)
       end
     end
 
@@ -233,11 +236,18 @@ module Probatio
 
     def run(run_opts)
 
+      return Probatio.despatch(:group_pending, self) \
+        if opts[:pending]
+
       Probatio.despatch(:group_enter, self)
 
       setups.each { |s| s.run(run_opts) }
 
       tests.each do |t|
+
+# TODO move that to test.run
+        next Probatio.despatch(:test_pending, t) \
+          if t.opts[:pending]
 
         c = Probatio::Context.new(self)
 
@@ -307,12 +317,31 @@ module Probatio
       h
     end
 
+    METHS = %i[ _group _setup _teardown _before _after _test ].freeze
+
+    def method_missing(name, *args, &block)
+
+      if METHS.include?(name)
+
+        opts = args.find { |a| a.is_a?(Hash) }
+        args << {} unless opts; opts = args.last
+        opts[:pending] = true
+
+        send(name.to_s[1..-1], *args, &block)
+
+      else
+
+        super
+      end
+    end
+
     protected
 
     def setups; @children.select { |c| c.is_a?(Probatio::Setup) }; end
     def teardowns; @children.select { |c| c.is_a?(Probatio::Teardown) }; end
 
     def test_and_groups
+
       @children.select { |c|
         c.is_a?(Probatio::Test) || c.is_a?(Probatio::Group) }
     end
@@ -323,6 +352,9 @@ module Probatio
   class Leaf < Node
 
     def run(run_opts)
+
+      return Probatio.despatch("#{type}_pending", self) \
+        if @opts[:pending]
 
       Probatio.despatch("#{type}_enter", self)
 
@@ -349,19 +381,25 @@ module Probatio
 
     def run(child, run_opts)
 
-      @__child = child
+      return Probatio.despatch("#{child.type}_pending", self, child, run_opts) \
+        if child.opts[:pending]
 
-      Probatio.despatch("#{child.type}_enter", self, child, run_opts)
+      begin
 
-      instance_eval(&child.block)
+        @__child = child
 
-    rescue AssertionError => aerr
+        Probatio.despatch("#{child.type}_enter", self, child, run_opts)
 
-      # keeping calm and carrying on...
+        instance_eval(&child.block)
 
-    ensure
+      rescue AssertionError => aerr
 
-      Probatio.despatch("#{child.type}_leave", self, child, run_opts)
+        # keeping calm and carrying on...
+
+      ensure
+
+        Probatio.despatch("#{child.type}_leave", self, child, run_opts)
+      end
     end
 
     require 'probatio/assertions'

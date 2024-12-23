@@ -1,5 +1,6 @@
 
 setup do
+
   @ur = 'ur'
 end
 
@@ -11,15 +12,14 @@ group 'alpha' do
   teardown do
   end
 
-  before do
-
+  _before do
     @string = 'Heartbreak'
   end
 
   after do
   end
 
-  test 'one' do
+  _test 'one' do
 
     assert_match 'Lionhearz', /heart/i
   end
