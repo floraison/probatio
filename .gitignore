@@ -6,6 +6,8 @@
 .vimspec
 .vimmarks
 
+.test-point
+
 pkg/
 
 .ruby-version

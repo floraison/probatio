@@ -55,6 +55,9 @@ Test tools for floraison and flor. Somewhere between Minitest and Rspec, but not
     bundle exec proba test/this_test.rb
 ```
 
+## .test-point
+
+TODO
 
 ## Plugins
 

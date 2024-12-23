@@ -27,7 +27,7 @@ while a = args.shift
     else
       switches[a] = true
     end
-  elsif File.directory?(a)
+  elsif File.directory?(a) && a != '.'
     dirs << a
   elsif File.file?(a.split(':').first)
     files << a
@@ -85,6 +85,11 @@ opts[:mono] = true if switches['-m'] || switches['--monochrome']
 
 opts[:dirs] = dirs if dirs.any?
 opts[:files] = files if files.any?
+
+if strings.include?('.') && File.exist?('.test-point')
+  (opts[:files] ||= []) << File.read('.test-point').strip
+end
+
 opts[:dirs] = [ 'test' ] unless opts[:dirs] || opts[:files]
 
 opts[:includes] = switches['--name']
