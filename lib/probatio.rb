@@ -243,26 +243,27 @@ module Probatio
 
       setups.each { |s| s.run(run_opts) }
 
-      tests.each do |t|
-
-# TODO move that to test.run
-        next Probatio.despatch(:test_pending, t) \
-          if t.opts[:pending]
-
-        c = Probatio::Context.new(self)
-
-        befores.each { |b| c.run(b, run_opts) }
-
-        c.run(t, run_opts)
-
-        afters.each { |a| c.run(a, run_opts) }
-      end
+      tests.each { |t| run_test(t, run_opts) }
 
       groups.each { |g| g.run(run_opts) }
 
       teardowns.each { |s| s.run(run_opts) }
 
       Probatio.despatch(:group_leave, self)
+    end
+
+    def run_test(t, run_opts)
+
+      return Probatio.despatch(:test_pending, t) \
+        if t.opts[:pending]
+
+      c = Probatio::Context.new(self)
+
+      befores.each { |b| c.run(b, run_opts) }
+
+      c.run(t, run_opts)
+
+      afters.each { |a| c.run(a, run_opts) }
     end
 
     def setup(opts={}, &block)
