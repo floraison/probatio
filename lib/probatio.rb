@@ -3,6 +3,7 @@
 # probatio.rb
 
 require 'stringio'
+require 'colorato'
 
 
 module Probatio
@@ -11,13 +12,20 @@ module Probatio
 
   class << self
 
+    attr_reader :c # colours or not
+
     def dry?; !! @dry; end
     def mono?; !! @mono; end
 
     def run(run_opts)
 
       @dry = run_opts[:dry]
-      @mono = run_opts[:mono]
+
+      @c =
+        run_opts[:mono] ? Colorato.no_colours :
+        run_opts[:colour] ? Colorato.colours :
+        ( ! $stdout.tty?) ? Colorato.no_colours :
+        Colorato.colours
 
       Probatio.despatch(:pre, run_opts)
 

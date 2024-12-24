@@ -2,6 +2,13 @@
 #
 # probatio/plugins.rb
 
+module Probatio::Colours
+
+  protected
+
+  def c; Probatio.c; end # colours or not...
+end
+
 class Probatio::Recorder
 
   attr_reader :events
@@ -71,20 +78,34 @@ end
 
 class Probatio::DotReporter
 
+  include Probatio::Colours
+
+  def on_start(ev)
+
+    puts
+  end
+
   def on_test_succeed(ev)
 
-    print '.'
+    print c.dark_grey + '.' + c.reset
   end
 
   def on_test_fail(ev)
 
-    print 'x'
+    print c.red + 'x' + c.reset
+  end
+
+  def on_over(ev)
+
+    puts
   end
 end
 
 class Probatio::VanillaSummarizer
 
   def on_over(ev)
+
+    c = Probatio.c # colours or not
 
     recorder = Probatio.plugins.find { |pl| pl.respond_to?(:failures) }
     return unless recorder
