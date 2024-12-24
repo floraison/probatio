@@ -31,7 +31,6 @@ class Probatio::DotReporter
 
     print 'x'
   end
-
 end
 
 class Probatio::VanillaSummarizer

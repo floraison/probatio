@@ -68,11 +68,16 @@ module Probatio
 
       puts "---\n" + root_group.to_s + "\n---\n" if $DEBUG
 
-      Probatio.despatch(:start, run_opts)
+      if run_opts[:print]
+        puts root_group.to_s
+        exit 0
+      end
+
+      Probatio.despatch(:start, root_group, run_opts)
 
       root_group.run(run_opts)
 
-      Probatio.despatch(:over, run_opts)
+      Probatio.despatch(:over, root_group, run_opts)
     end
 
     def init
