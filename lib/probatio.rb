@@ -13,6 +13,7 @@ module Probatio
   class << self
 
     attr_reader :c # colours or not
+    attr_reader :seed, :rng
 
     def dry?; !! @dry; end
     def mono?; !! @mono; end
@@ -26,6 +27,9 @@ module Probatio
         run_opts[:colour] ? Colorato.colours :
         ( ! $stdout.tty?) ? Colorato.no_colours :
         Colorato.colours
+
+      @seed = run_opts[:seed]
+      @rng = Random.new(@seed)
 
       Probatio.despatch(:pre, run_opts)
 
@@ -278,7 +282,10 @@ module Probatio
       Probatio.despatch(:group_enter, self)
 
       (
-        setups + tests + groups + teardowns
+        setups +
+        shuffle(tests) +
+        shuffle(groups) +
+        teardowns
       ).each { |c| c.run(run_opts) }
 
       Probatio.despatch(:group_leave, self)
@@ -366,6 +373,15 @@ module Probatio
     end
     def tests; @children.select { |c| c.is_a?(Probatio::Test) }; end
     def groups; @children.select { |c| c.is_a?(Probatio::Group) }; end
+
+    def shuffle(a)
+
+      case Probatio.seed
+      when 0 then a
+      when -1 then a.reverse
+      else a.shuffle(random: Probatio.rng)
+      end
+    end
   end
 
   class Leaf < Node

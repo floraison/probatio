@@ -13,6 +13,7 @@ def rework_switch(a)
   case a
   when '-n', '--name' then '--name'
   when '-e', '--exclude' then '--exclude'
+  when '-s', '--seed' then '--seed'
   else nil
   end
 end
@@ -57,6 +58,7 @@ if switches['-h'] || switches['--help']
     -n, --name PATTERN     include tests matching /regexp/ or string in run
     -e, --exclude PATTERN  Exclude /regexp/ or string from run
     -p, --print            Dumps the test tree
+    -s, --seed             Sets random seed
     -d, --debug            Sets $DEBUG to true
 
   Files:
@@ -103,6 +105,11 @@ opts[:dirs] = [ 'test' ] unless opts[:dirs] || opts[:files]
 
 opts[:includes] = switches['--name']
 opts[:excludes] = switches['--exclude']
+
+opts[:seed] =
+  (switches['--seed'] || [ (Time.now.to_f * 1000) % 99_999 ])
+    .first
+    .to_i
 
 puts " * opts: " + opts.inspect if $DEBUG
 

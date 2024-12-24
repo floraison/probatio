@@ -76,14 +76,20 @@ class Probatio::Chronometer
   end
 end
 
-class Probatio::DotReporter
-
-  include Probatio::Colours
+module Probatio::SeedReporter
 
   def on_start(ev)
 
     puts
+    puts "Run options: --seed #{Probatio.seed}"
+    puts
   end
+end
+
+class Probatio::DotReporter
+
+  include Probatio::Colours
+  include Probatio::SeedReporter
 
   def on_test_succeed(ev)
 
@@ -141,6 +147,7 @@ class Probatio::VanillaSummarizer
     puts
     print "#{tc} test#{s(tc)}, #{ac} assertion#{s(ac)}, "
     print "#{fc} failure#{s(fc)}, #{pc} pending."
+    puts
     puts
   end
 
