@@ -286,8 +286,8 @@ module Probatio
 
       (
         setups +
-        shuffle(tests) +
-        shuffle(groups) +
+        #shuffle(tests) + shuffle(groups) +
+        shuffle(tests_and_groups) +
         teardowns
       ).each { |c| c.run(run_opts) }
 
@@ -369,11 +369,12 @@ module Probatio
     def setups; @children.select { |c| c.is_a?(Probatio::Setup) }; end
     def teardowns; @children.select { |c| c.is_a?(Probatio::Teardown) }; end
 
-    def test_and_groups
+    def tests_and_groups
 
       @children.select { |c|
         c.is_a?(Probatio::Test) || c.is_a?(Probatio::Group) }
     end
+
     def tests; @children.select { |c| c.is_a?(Probatio::Test) }; end
     def groups; @children.select { |c| c.is_a?(Probatio::Group) }; end
 
