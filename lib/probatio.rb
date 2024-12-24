@@ -200,6 +200,8 @@ module Probatio
     def array_name; parent ? parent.array_name + [ name ] : [ name ]; end
     def full_name; array_name.join(' '); end
 
+    def pending?; @opts[:pending]; end
+
     def to_s(opts={})
 
       out = opts[:out] || StringIO.new

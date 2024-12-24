@@ -20,6 +20,20 @@ class Probatio::Recorder
       e.name == 'test_leave' &&
       e.node_full_name == test_node.full_name }
   end
+
+  def total_duration
+
+    @events.last.tstamp - @events.first.tstamp
+  end
+
+  def test_count; @events.count { |e| e.name == 'test_leave' }; end
+  def assertion_count; @events.count { |e| e.name == 'assertion_leave' }; end
+  def failure_count; @events.count { |e| e.name == 'test_fail' }; end
+
+  def pending_count
+
+    @events.map(&:node).uniq.compact.select(&:pending?).count
+  end
 end
 
 module Probatio
@@ -86,7 +100,32 @@ class Probatio::VanillaSummarizer
       puts "."
       puts ev.to_s
     end
+
+    r = Probatio.recorder_plugin
+
+    d = r.total_duration
+
+    tc = r.test_count
+    ac = r.assertion_count
+    fc = r.failure_count
+    pc = r.pending_count
+
+    tpc = tc / d
+    apc = ac / d
+
+    puts
+    print "Finished in #{Probatio.to_time_s(d)}, "
+    print "%0.3f tests/s, %0.3f assertions/s." % [ tpc, apc ]
+    puts
+    puts
+    print "#{tc} test#{s(tc)}, #{ac} assertion#{s(ac)}, "
+    print "#{fc} failure#{s(fc)}, #{pc} pending."
+    puts
   end
+
+  protected
+
+  def s(count); count == 1 ? '' : 's'; end
 end
 
 Probatio.plug(Probatio::Recorder.new)
