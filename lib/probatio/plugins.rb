@@ -7,6 +7,21 @@ class Probatio::Recorder
   def record(ev)
 
     (@events ||= []) << ev
+
+    # compute ev.leave_delta if ev is a "leave"
+
+    if ev.name.end_with?('_leave')
+
+      ent = "#{ev.type}_enter"
+
+      i = @events.length - 1; loop do
+        i = i - 1
+        e = @events[i]; break unless e
+        next unless e.name == ent
+        ev.leave_delta = ev.tstamp - e.tstamp
+        break
+      end
+    end
   end
 
   def failures

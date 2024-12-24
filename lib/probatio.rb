@@ -437,6 +437,7 @@ module Probatio
 
     attr_reader :tstamp, :delta
     attr_reader :name, :opts, :context, :group, :leaf, :error
+    attr_accessor :leave_delta
 
     def initialize(name, details)
 
@@ -459,6 +460,10 @@ module Probatio
     def direction; name.to_s.end_with?('_leave') ? :leave : :enter; end
     def node; @leaf || @group; end
     def depth; node.depth rescue 0; end
+
+    def type; @name.split('_').first; end
+      #
+      # which, in the case of assertion != self.node.type ...
   end
 end
 
