@@ -25,6 +25,22 @@ class Probatio::Context
     end
   end
 
+  def method_missing(name, *args, &block)
+
+    n = name.to_s
+
+    if n.start_with?('_assert') && self.respond_to?(n[1..-1])
+
+      Probatio.despatch(:assertion_pending, self, @__child)
+
+      :pending
+
+    else
+
+      super
+    end
+  end
+
   protected
 
   def do_assert(&block)
@@ -51,7 +67,8 @@ class Probatio::Context
       raise r
     end
 
-    true # end on a positive note...
+    return r if r == :pending
+    true
 
   ensure
 

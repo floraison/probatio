@@ -442,10 +442,10 @@ module Probatio
 
         Probatio.despatch("#{child.type}_enter", self, child, run_opts)
 
-        instance_eval(&child.block)
+        r = instance_eval(&child.block)
 
         Probatio.despatch(:test_succeed, self, child) \
-          if child.type == 'test'
+          if r != :pending && child.type == 'test'
 
       rescue AssertionError
 
