@@ -121,13 +121,15 @@ module Probatio
 
     def seconds_to_time_s(f)
 
-      ms = ("%0.3f" % (f % 1.0))[2..-1]
-
       i = f.to_i
       d = i / (24 * 3600); i = i % (24 * 3600)
       h = i / 3600; i = i % 3600
       m = i / 60; i = i % 60
       s = i
+
+      #ms = ('%0.3f' % (f % 1.0))[2..-1]
+      ms = ((f < 1 ? '%0.6f' : '%0.3f') % (f % 1.0))[2..-1]
+      ms = ms.insert(3, '_') if ms.length > 3
 
       [ d > 0 ? "#{d}d" : nil,
         h > 0 ? "#{h}h" : nil,
@@ -135,6 +137,7 @@ module Probatio
         "#{s}s",
         "#{ms}" ].compact.join('')
     end
+    alias to_time_s seconds_to_time_s
 
     protected
 
@@ -189,6 +192,7 @@ module Probatio
     end
 
     def type; self.class.name.split('::').last.downcase; end
+    def test?; type == 'test'; end
 
     def depth; parent ? parent.depth + 1 : 0; end
 
@@ -482,8 +486,29 @@ module Probatio
       #
       # which, in the case of assertion != self.node.type ...
 
+    def node_full_name; node && node.full_name; end
+
     def enter?; direction == :enter; end
     def leave?; direction == :leave; end
+
+    def to_s
+
+      lev =
+        node && node.test? && Probatio.recorder_plugin.test_leave_event(node)
+      led =
+        lev && lev.leave_delta
+
+      o = StringIO.new
+      o << "<event"
+      o << "\n  name=#{name.inspect}"
+      o << "\n  node=#{node.full_name.inspect}" if node
+      o << "\n  node_type=#{node.type.inspect}" if node
+      o << "\n  delta=\"#{Probatio.to_time_s(delta)}\"" if delta
+      o << "\n  leave_delta=\"#{Probatio.to_time_s(led)}\"" if led
+      o << ">"
+
+      o.string
+    end
   end
 end
 

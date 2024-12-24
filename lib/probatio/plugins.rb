@@ -4,6 +4,8 @@
 
 class Probatio::Recorder
 
+  #attr_reader :events
+
   def record(ev)
 
     (@events ||= []) << ev
@@ -34,7 +36,26 @@ class Probatio::Recorder
 
     @events.select { |ev| ev.name == 'test_succeed' }
   end
+
+  def test_leave_event(test_node)
+
+    @events.find { |e|
+      e.name == 'test_leave' &&
+      e.node_full_name == test_node.full_name }
+  end
 end
+
+module Probatio
+
+  class << self
+
+    def recorder_plugin
+
+      @plugins.find { |pl| pl.respond_to?(:record) }
+    end
+  end
+end
+
 
 class Probatio::DotReporter
 
@@ -64,6 +85,8 @@ class Probatio::VanillaSummarizer
       puts ev.leaf.trail
       puts ev.depth
       puts ev.error.inspect
+      puts "."
+      puts ev.to_s
     end
   end
 end
