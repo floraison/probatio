@@ -79,11 +79,7 @@ module Probatio
       # run
 
       puts "---\n" + root_group.to_s + "\n---\n" if $DEBUG
-
-      if run_opts[:print]
-        puts root_group.to_s
-        exit 0
-      end
+      if run_opts[:print] then; puts root_group.to_s; exit 0; end
 
       Probatio.despatch(:start, root_group, run_opts)
 
