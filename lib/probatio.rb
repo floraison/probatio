@@ -491,12 +491,16 @@ module Probatio
     def enter?; direction == :enter; end
     def leave?; direction == :leave; end
 
+    def determine_leave_delta
+
+      lev = Probatio.recorder_plugin.test_leave_event(node)
+
+      lev && lev.leave_delta
+    end
+
     def to_s
 
-      lev =
-        node && node.test? && Probatio.recorder_plugin.test_leave_event(node)
-      led =
-        lev && lev.leave_delta
+      led = determine_leave_delta
 
       o = StringIO.new
       o << "<event"
@@ -505,7 +509,7 @@ module Probatio
       o << "\n  node_type=#{node.type.inspect}" if node
       o << "\n  delta=\"#{Probatio.to_time_s(delta)}\"" if delta
       o << "\n  leave_delta=\"#{Probatio.to_time_s(led)}\"" if led
-      o << ">"
+      o << " />"
 
       o.string
     end
