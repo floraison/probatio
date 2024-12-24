@@ -4,11 +4,38 @@
 
 class Probatio::Recorder
 
-  #attr_reader :events
+  attr_reader :events
 
   def record(ev)
 
     (@events ||= []) << ev
+  end
+
+  def failures; @events.select { |ev| ev.name == 'test_fail' }; end
+  def successes; @events.select { |ev| ev.name == 'test_succeed' }; end
+
+  def test_leave_event(test_node)
+
+    @events.find { |e|
+      e.name == 'test_leave' &&
+      e.node_full_name == test_node.full_name }
+  end
+end
+
+module Probatio
+
+  class << self
+
+    def recorder_plugin
+
+      @plugins.find { |pl| pl.respond_to?(:events) }
+    end
+  end
+end
+
+class Probatio::Chronometer
+
+  def record(ev)
 
     # compute ev.leave_delta if ev is a "leave"
 
@@ -26,36 +53,7 @@ class Probatio::Recorder
       ev.leave_delta = ev.tstamp - e.tstamp
     end
   end
-
-  def failures
-
-    @events.select { |ev| ev.name == 'test_fail' }
-  end
-
-  def successes
-
-    @events.select { |ev| ev.name == 'test_succeed' }
-  end
-
-  def test_leave_event(test_node)
-
-    @events.find { |e|
-      e.name == 'test_leave' &&
-      e.node_full_name == test_node.full_name }
-  end
 end
-
-module Probatio
-
-  class << self
-
-    def recorder_plugin
-
-      @plugins.find { |pl| pl.respond_to?(:record) }
-    end
-  end
-end
-
 
 class Probatio::DotReporter
 
@@ -92,6 +90,7 @@ class Probatio::VanillaSummarizer
 end
 
 Probatio.plug(Probatio::Recorder.new)
+Probatio.plug(Probatio::Chronometer.new)
 Probatio.plug(Probatio::DotReporter.new)
 Probatio.plug(Probatio::VanillaSummarizer.new)
 
