@@ -106,10 +106,9 @@ opts[:dirs] = [ 'test' ] unless opts[:dirs] || opts[:files]
 opts[:includes] = switches['--name']
 opts[:excludes] = switches['--exclude']
 
-opts[:seed] =
-  (switches['--seed'] || [ (Time.now.to_f * 1000) % 99_999 ])
-    .first
-    .to_i
+s = switches['--seed'] || []
+s = s.any? ? s.first : (Time.now.to_f * 1000) % 99_999
+opts[:seed] = s.to_i
 
 puts " * opts: " + opts.inspect if $DEBUG
 
