@@ -119,6 +119,23 @@ module Probatio
     def monow; @ts = Process.clock_gettime(Process::CLOCK_MONOTONIC); end
     def monow_and_delta; ts0, ts1 = @ts, monow; [ ts1, ts1 - (ts0 || ts1) ]; end
 
+    def seconds_to_time_s(f)
+
+      ms = ("%0.3f" % (f % 1.0))[2..-1]
+
+      i = f.to_i
+      d = i / (24 * 3600); i = i % (24 * 3600)
+      h = i / 3600; i = i % 3600
+      m = i / 60; i = i % 60
+      s = i
+
+      [ d > 0 ? "#{d}d" : nil,
+        h > 0 ? "#{h}h" : nil,
+        m > 0 ? "#{m}m" : nil,
+        "#{s}s",
+        "#{ms}" ].compact.join('')
+    end
+
     protected
 
     def read_helper_file(group, path)
