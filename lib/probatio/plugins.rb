@@ -10,17 +10,18 @@ class Probatio::Recorder
 
     # compute ev.leave_delta if ev is a "leave"
 
-    if ev.name.end_with?('_leave')
+    if ev.enter?
 
-      ent = "#{ev.type}_enter"
+      (@enters ||= []) << ev
 
-      i = @events.length - 1; loop do
-        i = i - 1
-        e = @events[i]; break unless e
-        next unless e.name == ent
-        ev.leave_delta = ev.tstamp - e.tstamp
-        break
-      end
+    elsif ev.leave?
+
+      e = @enters.pop
+
+      fail "ev mismatch #{ev.name} vs #{e.name}" \
+        if ( ! e) || (ev.type != e.type)
+
+      ev.leave_delta = ev.tstamp - e.tstamp
     end
   end
 

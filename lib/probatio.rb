@@ -109,7 +109,7 @@ module Probatio
 
       @plugouts ||= @plugins.reverse
 
-      (ev.direction == :leave ? @plugins : @plugouts).each do |plugin|
+      (ev.leave? ? @plugouts : @plugins).each do |plugin|
 
         plugin.record(ev) if plugin.respond_to?(:record)
         plugin.send(me, ev) if plugin.respond_to?(me)
@@ -457,13 +457,16 @@ module Probatio
       end
     end
 
-    def direction; name.to_s.end_with?('_leave') ? :leave : :enter; end
+    def direction; @direction ||= name.split('_').last.to_sym; end
     def node; @leaf || @group; end
     def depth; node.depth rescue 0; end
 
     def type; @name.split('_').first; end
       #
       # which, in the case of assertion != self.node.type ...
+
+    def enter?; direction == :enter; end
+    def leave?; direction == :leave; end
   end
 end
 
