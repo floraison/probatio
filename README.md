@@ -36,10 +36,15 @@ Test tools for floraison and flor. Somewhere between Minitest and Rspec, but not
     -h, --help             Show this help message and quit
     --version              Show proba's version and exit
     -m, --monochrome       Disable colour output
+    -c, --color            Enable colour output anyway
     -y, --dry              Don't run the test, just flag them as successes
     -n, --name PATTERN     include tests matching /regexp/ or string in run
     -e, --exclude PATTERN  Exclude /regexp/ or string from run
+    -p, --print            Dumps the test tree
+    -s, --seed             Sets random seed
     -d, --debug            Sets $DEBUG to true
+    -x, --example          Outputs an example test file
+    -X, --plugin-example   Outputs an example plugin file
 
   Files:
     TODO
