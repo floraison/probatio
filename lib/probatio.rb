@@ -396,6 +396,7 @@ module Probatio
 
     def skip?(run_opts)
 
+      opts[:pending] ||
       tests_and_groups.all? { |n| n.skip?(run_opts) }
     end
 
@@ -468,7 +469,11 @@ module Probatio
       group.afters.each { |a| c.run(a, run_opts) }
     end
 
-    def skip?(run_opts); exclude?(run_opts); end
+    def skip?(run_opts)
+
+      opts[:pending] ||
+      exclude?(run_opts)
+    end
 
     protected
 
