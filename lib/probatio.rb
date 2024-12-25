@@ -270,25 +270,7 @@ module Probatio
 
     def exclude?(run_opts)
 
-      return false unless self.is_a?(Probatio::Test)
-
-      if incs = run_opts[:includes]
-        return true unless incs.find { |e| do_match?(e) }
-      elsif exes = run_opts[:excludes]
-        return true if exes.find { |e| do_match?(e) }
-      else
-        false
-      end
-    end
-
-    def do_match?(pattern_or_string)
-
-#p [ self.class, full_name, pattern_or_string ]
-      #if pattern_or_string.is_a?(Regexp)
-      #  return full_name.match?(pattern_or_string)
-      #else
-      #end
-      full_name.match?(pattern_or_string)
+      false
     end
   end
 
@@ -477,6 +459,29 @@ module Probatio
       c.run(self, run_opts)
 
       group.afters.each { |a| c.run(a, run_opts) }
+    end
+
+    protected
+
+    def exclude?(run_opts)
+
+      if incs = run_opts[:includes]
+        return true unless incs.find { |e| do_match?(e) }
+      elsif exes = run_opts[:excludes]
+        return true if exes.find { |e| do_match?(e) }
+      else
+        false
+      end
+    end
+
+    def do_match?(pattern_or_string)
+
+#p [ self.class, full_name, pattern_or_string ]
+      #if pattern_or_string.is_a?(Regexp)
+      #  return full_name.match?(pattern_or_string)
+      #else
+      #end
+      full_name.match?(pattern_or_string)
     end
   end
 
