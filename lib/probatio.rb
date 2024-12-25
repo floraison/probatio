@@ -158,22 +158,18 @@ module Probatio
 
     def to_rex_or_str(s)
 
-      if m = s.match(/^\/(.+)\/([imx]*)$/)
+      m = s.match(/^\/(.+)\/([imx]*)$/); return s unless m
 
-        pat = m[1]; opts = m[2]
+      pat = m[1]; opts = m[2]
 
-        ropts = 0; opts.each_char do |char|
-          case char
-          when 'i' then ropts |= Regexp::IGNORECASE
-          #when 'm' then ropts |= Regexp::MULTILINE
-          when 'x' then ropts |= Regexp::EXTENDED; end; end
+      ropts = opts.each_char.inject(0) { |r, c|
+        case c
+        when 'i' then r |= Regexp::IGNORECASE
+        #when 'm' then r |= Regexp::MULTILINE
+        when 'x' then r |= Regexp::EXTENDED
+        else r; end }
 
-        Regexp.new(pat, ropts)
-
-      else
-
-        s
-      end
+      Regexp.new(pat, ropts)
     end
 
     protected
