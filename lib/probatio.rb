@@ -150,6 +150,32 @@ module Probatio
     end
     alias to_time_s seconds_to_time_s
 
+
+    def to_rexes_and_strs(a)
+
+      a && a.collect { |e| to_rex_or_str(e) }
+    end
+
+    def to_rex_or_str(s)
+
+      if m = s.match(/^\/(.+)\/([imx]*)$/)
+
+        pat = m[1]; opts = m[2]
+
+        ropts = 0; opts.each_char do |char|
+          case char
+          when 'i' then ropts |= Regexp::IGNORECASE
+          #when 'm' then ropts |= Regexp::MULTILINE
+          when 'x' then ropts |= Regexp::EXTENDED; end; end
+
+        Regexp.new(pat, ropts)
+
+      else
+
+        s
+      end
+    end
+
     protected
 
     def read_helper_file(group, path)
@@ -243,6 +269,30 @@ module Probatio
 
       opts[:out] ? nil : out.string.strip
     end
+
+    protected
+
+    def exclude?(run_opts)
+
+      if incs = run_opts[:includes]
+        return false if incs.find { |e| do_match?(e) }
+      end
+      if exes = run_opts[:excludes]
+        return true if exes.find { |e| do_match?(e) }
+      end
+
+      false
+    end
+
+    def do_match?(pattern_or_string)
+
+      #p [ full_name, pattern_or_string ]
+      #if pattern_or_string.is_a?(Regexp)
+      #  return full_name.match?(pattern_or_string)
+      #else
+      #end
+      full_name.match?(pattern_or_string)
+    end
   end
 
   class Group < Node
@@ -274,6 +324,9 @@ module Probatio
     end
 
     def run(run_opts)
+
+      return Probatio.despatch(:group_excluded, self) \
+        if exclude?(run_opts)
 
       return Probatio.despatch(:group_pending, self) \
         if opts[:pending]
@@ -388,6 +441,9 @@ module Probatio
 
     def run(run_opts)
 
+      return Probatio.despatch("#{type}_excluded", self) \
+        if exclude?(run_opts)
+
       return Probatio.despatch("#{type}_pending", self) \
         if @opts[:pending]
 
@@ -410,6 +466,9 @@ module Probatio
     alias group parent
 
     def run(run_opts)
+
+      return Probatio.despatch(:test_excluded, self) \
+        if exclude?(run_opts)
 
       return Probatio.despatch(:test_pending, self) \
         if opts[:pending]

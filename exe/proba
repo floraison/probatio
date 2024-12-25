@@ -115,8 +115,8 @@ end
 
 opts[:dirs] = [ 'test' ] unless opts[:dirs] || opts[:files]
 
-opts[:includes] = switches['--name']
-opts[:excludes] = switches['--exclude']
+opts[:includes] = Probatio.to_rexes_and_strs(switches['--name'])
+opts[:excludes] = Probatio.to_rexes_and_strs(switches['--exclude'])
 
 s = switches['--seed'] || []
 s = s.any? ? s.first : (Time.now.to_f * 1000) % 99_999
