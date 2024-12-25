@@ -100,8 +100,36 @@ module Probatio
     def plug(x, position=:last)
 
       @plugins.insert(determine_plugin_pos(position), x)
-
       @plugouts = nil
+    end
+
+    def unplug(old)
+
+      i =
+        plug_index(old) ||
+        fail ArgumentError.new("Cannot locate plugin to remove")
+
+      @plugins.delete_at(i)
+      @plugouts = nil
+    end
+
+    def replug(old, new)
+
+      i =
+        plug_index(old) ||
+        fail ArgumentError.new("Cannot locate plugin to replace")
+
+      @plugins[i] = new
+      @plugouts = nil
+    end
+
+    def plugin_index(x)
+
+      return x if x.is_a?(Integer)
+
+      @plugins.index { |pl|
+        pl == x ||
+        ((x.is_a?(Class) || x.is_a?(Module)) && pl.is_a?(x)) }
     end
 
     def despatch(event_name, *details)
