@@ -48,6 +48,7 @@ push: build
 
 readme:
 	ruby src/make_readme.rb > README.md
+r: readme
 
 
 .PHONY: \
