@@ -171,11 +171,12 @@ class Probatio::ProbaOutputter
       .map { |ft|
         led = ft.determine_leave_delta
         led = led && Probatio.to_time_s(led)
-        { name: ft.name, location: ft.location, leave_delta: led } }
+        { n: ft.name, l: ft.location, d: led } }
 
-    d = { failed_tests: fts }
+    d = { argv: ARGV, failed_tests: fts }
 
     File.open('.proba-output.rb', 'wb') { |f| PP.pp(d, f) }
+    #File.open('.proba-output.rb', 'wb') { |f| Probatio.pp(d, f) }
   end
 end
 

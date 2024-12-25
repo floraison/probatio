@@ -41,7 +41,7 @@ READ lib/probatio/examples/a_test.rb
 
 TODO
 
-## .proba-output.*
+## .proba-output.rb
 
 TODO
 
