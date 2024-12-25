@@ -46,8 +46,11 @@ push: build
 
 ## specific to project ##
 
-# nothing
+readme:
+	ruby src/make_readme.rb >> README.md
 
 
-.PHONY: count_lines scan gemspec_validate name cw build push spec test
+.PHONY: \
+  count_lines scan gemspec_validate name cw build push spec test \
+  readme
 
