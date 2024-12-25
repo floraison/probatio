@@ -33,6 +33,8 @@ class Probatio::Recorder
     @events.last.tstamp - @events.first.tstamp
   end
 
+  def failed_tests; @events.select { |e| e.name == 'test_fail' }; end
+
   def test_count; @events.count { |e| e.name == 'test_leave' }; end
   def assertion_count; @events.count { |e| e.name == 'assertion_leave' }; end
   def failure_count; @events.count { |e| e.name == 'test_fail' }; end
@@ -156,8 +158,30 @@ class Probatio::VanillaSummarizer
   def s(count); count == 1 ? '' : 's'; end
 end
 
+class Probatio::ProbaOutputter
+
+  require 'pp'
+
+  def on_over(ev)
+
+# TODO unplug if --mute or some switch like that...
+    r = Probatio.recorder_plugin
+
+    fts = r.failed_tests
+      .map { |ft|
+        led = ft.determine_leave_delta
+        led = led && Probatio.to_time_s(led)
+        { name: ft.name, location: ft.location, leave_delta: led } }
+
+    d = { failed_tests: fts }
+
+    File.open('.proba-output.rb', 'wb') { |f| PP.pp(d, f) }
+  end
+end
+
 Probatio.plug(Probatio::Recorder.new)
 Probatio.plug(Probatio::Chronometer.new)
 Probatio.plug(Probatio::DotReporter.new)
 Probatio.plug(Probatio::VanillaSummarizer.new)
+Probatio.plug(Probatio::ProbaOutputter.new)
 

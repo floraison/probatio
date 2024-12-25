@@ -107,7 +107,7 @@ module Probatio
 
       i =
         plug_index(old) ||
-        fail ArgumentError.new("Cannot locate plugin to remove")
+        fail(ArgumentError.new("Cannot locate plugin to remove"))
 
       @plugins.delete_at(i)
       @plugouts = nil
@@ -117,7 +117,7 @@ module Probatio
 
       i =
         plug_index(old) ||
-        fail ArgumentError.new("Cannot locate plugin to replace")
+        fail(ArgumentError.new("Cannot locate plugin to replace"))
 
       @plugins[i] = new
       @plugouts = nil
@@ -125,11 +125,16 @@ module Probatio
 
     def plugin_index(x)
 
-      return x if x.is_a?(Integer)
+      return x \
+        if x.is_a?(Integer)
+      return @plugins.index { |pl| pl.respond_to?(x) } \
+        if x.is_a?(Symbol) || x.is_a?(String)
 
-      @plugins.index { |pl|
-        pl == x ||
-        ((x.is_a?(Class) || x.is_a?(Module)) && pl.is_a?(x)) }
+      i = @plugins.index(x); return i if i
+
+      return @plugins.index { |pl| pl.is_a?(x) } if x.is_a?(Module)
+
+      nil
     end
 
     def despatch(event_name, *details)
@@ -263,6 +268,11 @@ module Probatio
 
     def pending?; @opts[:pending]; end
 
+    def location
+      _, l = @block.respond_to?(:source_location) ? @block.source_location : nil
+      "#{@path}:#{l}"
+    end
+
     def to_s(opts={})
 
       out = opts[:out] || StringIO.new
@@ -271,8 +281,7 @@ module Probatio
       ind = '  ' * depth
       nam = @name ? ' ' + @name.inspect : ''
       nos = @opts.any? ? ' ' + @opts.inspect : ''
-      _, l = @block.respond_to?(:source_location) ? @block.source_location : nil
-      pali = @path ? " #{@path}:#{l}" : ''
+      pali = ' ' + location; pali = '' if pali.end_with?(':')
 
       out << "#{ind}#{type}#{nam}#{nos}#{pali}\n"
 
@@ -627,6 +636,8 @@ module Probatio
       lev && lev.leave_delta
     end
 
+    def location; node && node.location; end
+
     def to_s
 
       led = determine_leave_delta
@@ -636,6 +647,7 @@ module Probatio
       o << "\n  name=#{name.inspect}"
       o << "\n  node=#{node.full_name.inspect}" if node
       o << "\n  node_type=#{node.type.inspect}" if node
+      o << "\n  location=#{location.inspect}" if node
       o << "\n  delta=\"#{Probatio.to_time_s(delta)}\"" if delta
       o << "\n  leave_delta=\"#{Probatio.to_time_s(led)}\"" if led
       o << " />"
