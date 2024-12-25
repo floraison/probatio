@@ -266,12 +266,11 @@ module Probatio
       opts[:out] ? nil : out.string.strip
     end
 
+    def skip?(run_opts); false; end
+
     protected
 
-    def exclude?(run_opts)
-
-      false
-    end
+    def exclude?(run_opts); false; end
   end
 
   class Group < Node
@@ -309,6 +308,9 @@ module Probatio
 
       return Probatio.despatch(:group_pending, self) \
         if opts[:pending]
+
+      return Probatio.despatch(:group_skipped, self) \
+        if skip?(run_opts)
 
       Probatio.despatch(:group_enter, self)
 
@@ -392,6 +394,11 @@ module Probatio
       end
     end
 
+    def skip?(run_opts)
+
+      tests_and_groups.all? { |n| n.skip?(run_opts) }
+    end
+
     protected
 
     def setups; @children.select { |c| c.is_a?(Probatio::Setup) }; end
@@ -460,6 +467,8 @@ module Probatio
 
       group.afters.each { |a| c.run(a, run_opts) }
     end
+
+    def skip?(run_opts); exclude?(run_opts); end
 
     protected
 
