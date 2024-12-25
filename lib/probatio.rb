@@ -45,7 +45,10 @@ module Probatio
 
       (run_opts[:dirs] || []).each do |dir|
 
-        Dir[File.join(dir, '**', '*_helper.rb')].each do |path|
+        (
+          Dir[File.join(dir, '**', '*_helper.rb')] +
+          Dir[File.join(dir, '**', '*_helpers.rb')]
+        ).each do |path|
 
           read_helper_file(root_group, path)
         end
