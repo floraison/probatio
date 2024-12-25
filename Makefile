@@ -47,7 +47,7 @@ push: build
 ## specific to project ##
 
 readme:
-	ruby src/make_readme.rb >> README.md
+	ruby src/make_readme.rb > README.md
 
 
 .PHONY: \
