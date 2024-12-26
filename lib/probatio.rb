@@ -292,7 +292,7 @@ module Probatio
 
       @path = path
 
-      instance_eval(File.read(path))
+      instance_eval(File.read(path), path, 1)
     end
 
     def run(run_opts)
@@ -536,16 +536,32 @@ module Probatio
 
   class AssertionError < StandardError
 
+    attr_reader :file, :line
     attr_accessor :nested_error
 
-    def initialize(error_or_message)
+    def initialize(error_or_message, file, line)
+
+      @file = file
+      @line = line
 
       if error_or_message.is_a?(String)
-        super(message)
+        @msg = error_or_message
       else
-        super("error while asserting: " + error_or_message.message)
+        @msg = "error while asserting: " + error_or_message.message
         @nested_error = error_or_message
       end
+
+      super(@msg)
+    end
+
+    def location
+
+      [ @file, @line ]
+    end
+
+    def to_s
+
+      "#{self.class.name}: #{@msg}"
     end
   end
 
@@ -593,7 +609,11 @@ module Probatio
       lev && lev.leave_delta
     end
 
-    def location; node && node.location; end
+    def location
+
+      (error && error.respond_to?(:location) && error.location) ||
+      (node && node.location)
+    end
 
     def to_s
 
@@ -604,7 +624,8 @@ module Probatio
       o << "\n  name=#{name.inspect}"
       o << "\n  node=#{node.full_name.inspect}" if node
       o << "\n  node_type=#{node.type.inspect}" if node
-      o << "\n  location=#{location.inspect}" if node
+      o << "\n  error=#{error.to_s.inspect}" if error
+      o << "\n  location=#{location.map(&:to_s).join(':').inspect}" if node
       o << "\n  delta=\"#{Probatio.to_time_s(delta)}\"" if delta
       o << "\n  leave_delta=\"#{Probatio.to_time_s(led)}\"" if led
       o << " />"

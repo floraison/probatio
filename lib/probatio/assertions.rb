@@ -110,9 +110,11 @@ class Probatio::Context
 
     if r.is_a?(StandardError) || r.is_a?(String)
 
-      Probatio.despatch(:test_fail, self, @__child, r)
+      aerr = Probatio::AssertionError.new(r, *extract_file_and_line(caller))
 
-      fail Probatio::AssertionError.new(r)
+      Probatio.despatch(:test_fail, self, @__child, aerr)
+
+      raise aerr
 
     elsif r.is_a?(Exception)
 
@@ -128,6 +130,13 @@ class Probatio::Context
 
     #Probatio.despatch(:test_succeed, self, @__child)
     Probatio.despatch(:assertion_leave, self, @__child)
+  end
+
+  def extract_file_and_line(backtrace)
+
+    l = backtrace.find { |l| ! l.index('lib/probatio/assertions.rb') }
+    m = l && l.match(/([^:]+):(\d+)/)
+    m && [ m[1], m[2].to_i ]
   end
 end
 

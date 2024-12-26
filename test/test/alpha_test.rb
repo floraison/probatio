@@ -26,6 +26,7 @@ group 'alpha' do
 
   test 'two' do
 
+    assert @string, /heart/i
     assert_match @string, /heart/i
   end
 end
