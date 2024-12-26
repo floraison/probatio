@@ -4,12 +4,12 @@
 
 class Probatio::Context
 
-  def assert(*as)
+  def assert_equal(*as)
 
     do_assert do
 
       as.all? { |a| a == as[0] } ||
-      "no equal"
+      "not equal"
     end
   end
 
@@ -21,10 +21,28 @@ class Probatio::Context
       rex = others.find { |o| o.is_a?(Regexp) } || strings.pop
 
       strings.all? { |s| s.match?(rex) } ||
-      "no match"
+      "not matched"
     end
   end
 
+  def assert_include(*as)
+
+    ai =
+      as.index { |a| a.is_a?(Array) } ||
+      fail(ArgumentError.new("assert_include found no array"))
+
+    arr = as.delete_at(ai)
+
+    do_assert do
+
+      as.all? { |e| arr.include?(e) } ||
+      "not included"
+    end
+  end
+
+  # Checks whether its "_assert_something", if that's the case,
+  # just flags the assertion as :pending an moves on
+  #
   def method_missing(name, *args, &block)
 
     n = name.to_s
@@ -38,6 +56,42 @@ class Probatio::Context
     else
 
       super
+    end
+  end
+
+  # Jack of all trade assert
+  #
+  def assert(*as)
+
+    count = {
+      rexes: 0, hashes: 0, arrays: 0, strings: 0, scalars: 0, others: 0 }
+
+    as.each { |a|
+      k =
+        case a
+        when Regexp then :rexes
+        when Hash then :hashes
+        when Array then :arrays
+        when String then :strings
+        else :others; end
+      count[k] = count[k] + 1
+      count[:scalars] += 1 if %i[ rexes strings ].include?(k) }
+
+    if as.length == 1
+
+      do_assert { as[0] || "not trueish" }
+
+    elsif count[:rexes] == 1 && count[:strings] == as.length - 1
+
+      assert_match(*as)
+
+    elsif count[:arrays] > 0
+
+      assert_include(*as)
+
+    else
+
+      assert_equal(*as)
     end
   end
 

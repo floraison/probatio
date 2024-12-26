@@ -5,6 +5,12 @@ group 'bravo' do
 
     assert 1, 1
   end
+
+  test 'assert 0' do
+
+    assert true
+    assert false
+  end
 end
 
 group 'alpha' do

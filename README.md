@@ -85,8 +85,22 @@ group 'core' do
 
       MyLib.do_this_or_that()
 
-      assert 'one', 'o' + 'ne'
+      assert_equal 'one', 'o' + 'ne'
+        # checks that all its arguments are equal
+
       assert_match 'one', /^one$/
+        # checks that it receives a regex and one or more strings
+        # and that all those strings match the regex
+
+      assert_include 1, [ 1, 'two' ]
+        # checks that the first array argument includes all other arguments
+
+      assert 1, 1
+        # behaves like assert_equal
+      assert 'one', /one/i
+        # behaves like assert_match
+      assert 'one', [ 'one', 'two' ]
+        # behaves like assert_include
     end
   end
 
@@ -114,7 +128,7 @@ end
 
 TODO
 
-## .proba-output.*
+## .proba-output.rb
 
 TODO
 
