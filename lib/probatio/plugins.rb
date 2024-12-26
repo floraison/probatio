@@ -136,8 +136,9 @@ class Probatio::VanillaSummarizer
 
     tc = r.test_count
     ac = r.assertion_count
-    fc = r.failure_count
-    pc = r.pending_count
+
+    fc = r.failure_count; fc = Probatio.c.red(fc.to_s) if fc > 0
+    pc = r.pending_count; pc = Probatio.c.yellow(pc.to_s) if pc > 0
 
     tpc = tc / d
     apc = ac / d
