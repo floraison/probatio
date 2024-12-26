@@ -2,6 +2,7 @@
 #
 # probatio.rb
 
+require 'set'
 require 'stringio'
 require 'colorato'
 
