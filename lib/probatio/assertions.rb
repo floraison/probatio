@@ -77,7 +77,11 @@ class Probatio::Context
       count[k] = count[k] + 1
       count[:scalars] += 1 if %i[ rexes strings ].include?(k) }
 
-    if as.length == 1
+    if as.length == 1 && count[:hashes] == 1
+
+      do_assert { as[0].to_a.all? { |k, v| k == v } || "not equal" }
+
+    elsif as.length == 1
 
       do_assert { as[0] || "not trueish" }
 

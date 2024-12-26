@@ -101,6 +101,8 @@ group 'core' do
         # behaves like assert_match
       assert 'one', [ 'one', 'two' ]
         # behaves like assert_include
+      assert 'one' => 'on' + 'e', 'two' => :two.to_s
+        # assert equality between keys and values
     end
   end
 
