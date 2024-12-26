@@ -33,6 +33,19 @@ READ ! ruby -Ilib exe/proba --help
 
 ## Test files
 
+By default probatio looks into `test/` for test files ending in `_test.rb` or `_tests.rb` but first look at helpers ending in `_helper.rb` or `_helpers.rb`.
+
+A typical test hierarchy:
+```
+test/
+|-- helpers/
+|   |-- some_helpers.rb
+|   `-- some_other_helpers.rb
+|-- this_test.rb
+|-- that_test.rb
+`-- more_tests.rb
+```
+
 ```ruby
 READ lib/probatio/examples/a_test.rb
 ```
