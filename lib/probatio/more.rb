@@ -2,6 +2,7 @@
 #
 # probatio/more.rb
 
+
 module Probatio; class << self
 
   def monow; @ts = Process.clock_gettime(Process::CLOCK_MONOTONIC); end
