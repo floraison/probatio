@@ -161,23 +161,36 @@ end
 
 class Probatio::ProbaOutputter
 
-  require 'pp'
-
   def on_over(ev)
 
 # TODO unplug if --mute or some switch like that...
     r = Probatio.recorder_plugin
 
     fts = r.failed_tests
-      .map { |ft|
-        led = ft.determine_leave_delta
-        led = led && Probatio.to_time_s(led)
-        { n: ft.name, l: ft.location, d: led } }
 
-    d = { argv: ARGV, failed_tests: fts }
+    nw, pw, lw, tw = 2, 2, 1, 2
+      #
+    fts.each { |ft|
+      nw = [ nw, ft.name.length + 2 ].max
+      pw = [ pw, ft.location[0].length + 2 ].max
+      lw = [ lw, ft.location[1].to_s.length ].max
+      tw = [ tw, ft.delta_s.length + 2 ].max }
 
-    File.open('.proba-output.rb', 'wb') { |f| PP.pp(d, f) }
-    #File.open('.proba-output.rb', 'wb') { |f| Probatio.pp(d, f) }
+    fls = fts.collect { |ft|
+      "{ n: %#{nw}s, p: %#{pw}s, l: %#{lw}s, t: %#{tw}s }" % [
+        ft.name.inspect, ft.location[0].inspect, ft.location[1].to_s,
+        ft.delta_s.inspect ] }
+
+    File.open('.proba-output.rb', 'wb') do |o|
+      o << "{\n"
+      o << "argv: " << ARGV.inspect << ",\n"
+      o << "failures:\n"
+      o << "  [\n"
+      fls.each { |fl| o << '  ' << fl << ",\n" }
+      o << "  ],\n"
+      o << "duration: #{Probatio.to_time_s(r.total_duration).inspect},\n"
+      o << "}\n"
+    end
   end
 end
 

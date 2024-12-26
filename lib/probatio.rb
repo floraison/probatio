@@ -572,6 +572,12 @@ module Probatio
       lev && lev.leave_delta
     end
 
+    def delta_s
+
+      led = determine_leave_delta
+      led ? Probatio.to_time_s(led) : '?'
+    end
+
     def location
 
       (error && error.respond_to?(:location) && error.location) ||

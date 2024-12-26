@@ -50,19 +50,39 @@ test/
 READ lib/probatio/examples/a_test.rb
 ```
 
+
 ## .test-point
 
 TODO
 
+
 ## .proba-output.rb
 
-TODO
+By default, probatio summarizes a run in a `.proba-output.rb` file.
+
+Here is an example of such a file:
+```ruby
+{
+argv: ["-d"],
+failures:
+  [
+  { n: "test_fail", p: "test/bravo_test.rb", l: 12, t: "0s000_607" },
+  { n: "test_fail", p: "test/alpha_test.rb", l: 29, t: "0s000_055" },
+  { n: "test_fail", p: "test/bravo_test.rb", l: 20, t: "0s000_047" },
+  ],
+duration: "0s004_949",
+}
+```
+
+Probatio uses it when servicing `bundle exec proba 0` or `bundle exe proba -1`.
+
 
 ## Warnings
 
 ```
 $ RUBYOPT="-w $RUBYOPT" bundle exec proba
 ```
+
 
 ## Plugins
 
