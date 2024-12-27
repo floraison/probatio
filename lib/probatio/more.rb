@@ -56,6 +56,8 @@ module Probatio; class << self
   #
   # "cerata" waxed
 
+  # TODO deal with double width characters...
+
   def horizontal_a_to_s(a, indent='')
 
     o = StringIO.new
