@@ -19,7 +19,7 @@ group 'alpha' do
   after do
   end
 
-  _test 'one' do
+  test 'one' do
 
     assert_match 'Lionhearz', /heart/i
   end

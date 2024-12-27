@@ -161,6 +161,8 @@ end
 
 class Probatio::ProbaOutputter
 
+  require 'rbconfig'
+
   def on_over(ev)
 
 # TODO unplug if --mute or some switch like that...
@@ -181,6 +183,16 @@ class Probatio::ProbaOutputter
         ft.name.inspect, ft.location[0].inspect, ft.location[1].to_s,
         ft.delta_s.inspect ] }
 
+    rbp = File.join(
+      RbConfig::CONFIG['bindir'],
+      RbConfig::CONFIG['ruby_install_name'])
+    rbd = RUBY_DESCRIPTION
+    rbl = RUBY_PATCHLEVEL
+    rb = "{ p: #{rbp.inspect}, d: #{rbd.inspect}, l: #{rbl} }"
+
+    # TODO some env GEM_ RUBY_ see chruby
+    # TODO user and home?
+
     File.open('.proba-output.rb', 'wb') do |o|
       o << "{\n"
       o << "argv: " << ARGV.inspect << ",\n"
@@ -189,9 +201,19 @@ class Probatio::ProbaOutputter
       fls.each { |fl| o << '  ' << fl << ",\n" }
       o << "  ],\n"
       o << "duration: #{Probatio.to_time_s(r.total_duration).inspect},\n"
+      o << "pversion: #{Probatio::VERSION.inspect},\n"
+      o << "ruby: #{rb},\n"
       o << "}\n"
     end
   end
+
+    # TODO
+    #
+  #protected
+  #def h_to_s(h, indent='')
+  #end
+  #def t_to_s(a, indent='')
+  #end
 end
 
 Probatio.plug(Probatio::Recorder.new)
