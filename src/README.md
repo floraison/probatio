@@ -62,15 +62,31 @@ By default, probatio summarizes a run in a `.proba-output.rb` file.
 
 Here is an example of such a file:
 ```ruby
+# .proba-output.rb
 {
-argv: ["-d"],
+argv: [ "test/alpha_test.rb:23" ],
 failures:
   [
-  { n: "test_fail", p: "test/bravo_test.rb", l: 12, t: "0s000_607" },
-  { n: "test_fail", p: "test/alpha_test.rb", l: 29, t: "0s000_055" },
-  { n: "test_fail", p: "test/bravo_test.rb", l: 20, t: "0s000_047" },
+  { n: "test_fail", p: "test/alpha_test.rb", l: 24, t: "0s000_077" },
+  { n: "test_fail", p: "test/alpha_test.rb", l: 29, t: "0s000_033" },
   ],
-duration: "0s004_949",
+duration: "0s001_297",
+pversion: "1.0.0",
+ruby:
+  {
+  p: "/usr/local/bin/ruby33",
+  d: "ruby 3.3.5 (2024-09-03 revision ef084cc8f4) [x86_64-openbsd]",
+  l: 100,
+  },
+some_env:
+  {
+  USER: "jmettraux",
+  HOME: "/home/jmettraux",
+  PATH: "/home/jmettraux/.gem/ruby/3.3/bin:/home/jmettraux/.pkg_rubies/ruby33:/usr/local/jdk-21/bin:/home/jmettraux/bin:/bin:/usr/bin:/sbin:/usr/sbin:/usr/X11R6/bin:/usr/local/bin:/usr/local/sbin",
+  SHELL: "/usr/local/bin/fish",
+  GEM_HOME: "/home/jmettraux/.gem/ruby/3.3",
+  PWD: "/home/jmettraux/w/probatio/test",
+  },
 }
 ```
 

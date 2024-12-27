@@ -180,8 +180,10 @@ class Probatio::ProbaOutputter
     #rb = Cerata.horizontal_h_to_s(rb)
     rb = Cerata.vertical_h_to_s(rb, '  ')
 
-    # TODO some env GEM_ RUBY_ see chruby
-    # TODO user and home?
+    env = Cerata.vertical_h_to_s(
+      ENV.filter { |k, _|
+        k.match?(/^(RUBY_|GEM_|(HOME|PATH|USER|SHELL|PWD)$)/) },
+      '  ')
 
     File.open('.proba-output.rb', 'wb') do |o|
       o << "# .proba-output.rb\n"
@@ -195,6 +197,7 @@ class Probatio::ProbaOutputter
       o << "duration: #{Probatio.to_time_s(r.total_duration).inspect},\n"
       o << "pversion: #{Probatio::VERSION.inspect},\n"
       o << "ruby:\n#{rb},\n"
+      o << "some_env:\n#{env},\n"
       o << "}\n"
     end
   end
