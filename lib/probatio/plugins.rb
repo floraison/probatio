@@ -168,7 +168,7 @@ class Probatio::ProbaOutputter
 # TODO unplug if --mute or some switch like that...
     r = Probatio.recorder_plugin
 
-    fls = Probatio.table_to_s(r.failed_tests.collect(&:to_h), '  ')
+    fls = Cerata.table_to_s(r.failed_tests.collect(&:to_h), '  ')
 
     rb = {}
     rb[:p] = File.join(
@@ -177,8 +177,8 @@ class Probatio::ProbaOutputter
     rb[:d] = RUBY_DESCRIPTION
     rb[:l] = RUBY_PATCHLEVEL
       #
-    #rb = Probatio.horizontal_h_to_s(rb)
-    rb = Probatio.vertical_h_to_s(rb, '  ')
+    #rb = Cerata.horizontal_h_to_s(rb)
+    rb = Cerata.vertical_h_to_s(rb, '  ')
 
     # TODO some env GEM_ RUBY_ see chruby
     # TODO user and home?
@@ -186,7 +186,7 @@ class Probatio::ProbaOutputter
     File.open('.proba-output.rb', 'wb') do |o|
       o << "# .proba-output.rb\n"
       o << "{\n"
-      o << "argv: " << Probatio.horizontal_a_to_s(ARGV) << ",\n"
+      o << "argv: " << Cerata.horizontal_a_to_s(ARGV) << ",\n"
       o << "failures:\n"
       #o << "  [\n"
       #fls.each { |fl| o << '  ' << fl << ",\n" }

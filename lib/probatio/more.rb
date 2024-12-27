@@ -52,9 +52,10 @@ module Probatio; class << self
 
     Regexp.new(pat, ropts)
   end
+end; end
 
-  #
-  # "cerata" waxed
+
+module Cerata; class << self
 
   # TODO deal with double width characters...
 
