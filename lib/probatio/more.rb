@@ -53,27 +53,81 @@ module Probatio; class << self
     Regexp.new(pat, ropts)
   end
 
-  #def pp(h, out)
-  #  out << "{\n"
-  #  h.each do |k, v|
-  #    out << k << ":\n"
-  #    do_pp(v, '  ', out)
-  #    out << "\n"
-  #  end
-  #  out << "}\n"
-  #  nil
-  #end
+  #
+  # "cerata" waxed
 
-  #protected
+  def horizontal_a_to_s(a, indent='')
 
-  #def do_pp(x, indent, out)
-  #  s0 = indent + x.inspect
-  #  if s0.length < 80
-  #    out << s0
-  #  elsif x.is_a?(Array)
-  #    x.each_with_index do |e, i|
-  #    end
-  #  end
-  #end
+    o = StringIO.new
+
+    o << indent << '[ '
+    a1 = a.dup; while e = a1.shift
+      o << e.inspect
+      o << ', ' if a1.any?
+    end
+    o << ' ]'
+
+    o.string
+  end
+
+  def horizontal_h_to_s(h, indent='')
+
+    o = StringIO.new
+
+    o << indent << '{ '
+    kvs = h.to_a; while kv = kvs.shift
+      o << "#{kv.first}: " << kv[1].inspect
+      o << ', ' if kvs.any?
+    end
+    o << ' }'
+
+    o.string
+  end
+
+  def vertical_h_to_s(h, indent='')
+
+    o = StringIO.new
+
+    o << indent << "{\n"
+    h.each { |k, v| o << indent << "#{k}: " << v.inspect << ",\n" }
+    o << indent << '}'
+
+    o.string
+  end
+
+  # A "table" here is an array of hashes
+  #
+  def table_to_s(a, indent='')
+
+    all_keys =
+      a.collect { |h| h.keys }.flatten.uniq.map(&:to_s)
+    key_widths =
+      all_keys.inject({}) { |h, k| h[k] = k.length; h }
+    val_widths =
+      a.inject({}) { |w, h|
+        h.each { |k, v| k = k.to_s; w[k] = [ w[k] || 0, v.inspect.length ].max }
+        w }
+
+    o = StringIO.new
+
+    o << indent << "[\n"
+
+    a.each do |h|
+      o << indent << '{ '
+      kvs = h.to_a; while kv = kvs.shift
+        k, v = kv[0].to_s, kv[1].inspect
+        kl, vl = key_widths[k], val_widths[k]
+        kf = "%#{kl}s"
+        vf = v.start_with?('"') ? "%#{vl}s" : "%-#{vl}s"
+        o << ("#{kf}: #{vf}" % [ k, v ])
+        o << ', ' if kvs.any?
+      end
+      o << " },\n"
+    end
+
+    o << indent << ']'
+
+    o.string
+  end
 end; end
 

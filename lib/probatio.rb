@@ -601,6 +601,11 @@ module Probatio
 
       o.string
     end
+
+    def to_h
+
+      { n: name, p: location[0], l: location[1], t: delta_s }
+    end
   end
 end
 

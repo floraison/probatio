@@ -168,52 +168,36 @@ class Probatio::ProbaOutputter
 # TODO unplug if --mute or some switch like that...
     r = Probatio.recorder_plugin
 
-    fts = r.failed_tests
+    fls = Probatio.table_to_s(r.failed_tests.collect(&:to_h), '  ')
 
-    nw, pw, lw, tw = 2, 2, 1, 2
-      #
-    fts.each { |ft|
-      nw = [ nw, ft.name.length + 2 ].max
-      pw = [ pw, ft.location[0].length + 2 ].max
-      lw = [ lw, ft.location[1].to_s.length ].max
-      tw = [ tw, ft.delta_s.length + 2 ].max }
-
-    fls = fts.collect { |ft|
-      "{ n: %#{nw}s, p: %#{pw}s, l: %#{lw}s, t: %#{tw}s }" % [
-        ft.name.inspect, ft.location[0].inspect, ft.location[1].to_s,
-        ft.delta_s.inspect ] }
-
-    rbp = File.join(
+    rb = {}
+    rb[:p] = File.join(
       RbConfig::CONFIG['bindir'],
       RbConfig::CONFIG['ruby_install_name'])
-    rbd = RUBY_DESCRIPTION
-    rbl = RUBY_PATCHLEVEL
-    rb = "{ p: #{rbp.inspect}, d: #{rbd.inspect}, l: #{rbl} }"
+    rb[:d] = RUBY_DESCRIPTION
+    rb[:l] = RUBY_PATCHLEVEL
+      #
+    #rb = Probatio.horizontal_h_to_s(rb)
+    rb = Probatio.vertical_h_to_s(rb, '  ')
 
     # TODO some env GEM_ RUBY_ see chruby
     # TODO user and home?
 
     File.open('.proba-output.rb', 'wb') do |o|
+      o << "# .proba-output.rb\n"
       o << "{\n"
-      o << "argv: " << ARGV.inspect << ",\n"
+      o << "argv: " << Probatio.horizontal_a_to_s(ARGV) << ",\n"
       o << "failures:\n"
-      o << "  [\n"
-      fls.each { |fl| o << '  ' << fl << ",\n" }
-      o << "  ],\n"
+      #o << "  [\n"
+      #fls.each { |fl| o << '  ' << fl << ",\n" }
+      #o << "  ],\n"
+      o << fls << ",\n"
       o << "duration: #{Probatio.to_time_s(r.total_duration).inspect},\n"
       o << "pversion: #{Probatio::VERSION.inspect},\n"
-      o << "ruby: #{rb},\n"
+      o << "ruby:\n#{rb},\n"
       o << "}\n"
     end
   end
-
-    # TODO
-    #
-  #protected
-  #def h_to_s(h, indent='')
-  #end
-  #def t_to_s(a, indent='')
-  #end
 end
 
 Probatio.plug(Probatio::Recorder.new)
