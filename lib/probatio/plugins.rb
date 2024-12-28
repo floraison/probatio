@@ -43,6 +43,11 @@ class Probatio::Recorder
 
     @events.map(&:node).uniq.compact.select(&:pending?).count
   end
+
+  def file_count
+
+    @events.map(&:path).compact.uniq.count
+  end
 end
 
 module Probatio
@@ -146,13 +151,16 @@ class Probatio::VanillaSummarizer
     tpc = tc / d
     apc = ac / d
 
+    fic = r.file_count
+
     puts
     print "Finished in #{Probatio.to_time_s(d)}, "
     print "%0.3f tests/s, %0.3f assertions/s." % [ tpc, apc ]
     puts
     puts
     print "#{tc} test#{s(tc)}, #{ac} assertion#{s(ac)}, "
-    print "#{fc} failure#{s(fc)}, #{pc} pending."
+    print "#{fc} failure#{s(fc)}, #{pc} pending, "
+    print "#{fic} file#{s(fic)}."
     puts
     puts
   end

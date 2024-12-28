@@ -604,6 +604,11 @@ module Probatio
       (node && node.location)
     end
 
+    def path
+
+      node && node.path
+    end
+
     def to_s
 
       led = determine_leave_delta
