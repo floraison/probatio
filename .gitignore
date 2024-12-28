@@ -17,7 +17,7 @@ pkg/
 #.rspec.out
 #.bxsinfo.yaml
 #.bxsenvs.yaml
-.proba-output*
+.probatio-output.rb
 
 .todo.md
 
@@ -28,5 +28,4 @@ Gemfile.lock
 
 tmp/
 
-.probatio-output.rb
 

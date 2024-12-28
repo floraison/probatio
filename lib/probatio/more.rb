@@ -61,6 +61,8 @@ module Cerata; class << self
 
   def horizontal_a_to_s(a, indent='')
 
+    return '[]' if a.empty?
+
     o = StringIO.new
 
     o << indent << '[ '
@@ -74,6 +76,8 @@ module Cerata; class << self
   end
 
   def horizontal_h_to_s(h, indent='')
+
+    return '{}' if h.empty?
 
     o = StringIO.new
 
@@ -89,6 +93,8 @@ module Cerata; class << self
 
   def vertical_h_to_s(h, indent='')
 
+    return '{}' if h.empty?
+
     o = StringIO.new
 
     o << indent << "{\n"
@@ -101,6 +107,8 @@ module Cerata; class << self
   # A "table" here is an array of hashes
   #
   def table_to_s(a, indent='')
+
+    return '[]' if a.empty?
 
     all_keys =
       a.collect { |h| h.keys }.flatten.uniq.map(&:to_s)

@@ -207,7 +207,7 @@ class Probatio::ProbaOutputter
       #o << "  ],\n"
       o << fls << ",\n"
       o << "duration: #{Probatio.to_time_s(r.total_duration).inspect},\n"
-      o << "pversion: #{Probatio::VERSION.inspect},\n"
+      o << "probatio: { v: #{Probatio::VERSION.inspect} },\n"
       o << "ruby:\n#{rb},\n"
       o << "some_env:\n#{env},\n"
       o << "}\n"

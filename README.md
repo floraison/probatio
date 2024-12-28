@@ -147,13 +147,13 @@ end
 TODO
 
 
-## .proba-output.rb
+## .probatio-output.rb
 
-By default, probatio summarizes a run in a `.proba-output.rb` file.
+By default, probatio summarizes a run in a `.probatio-output.rb` file.
 
 Here is an example of such a file:
 ```ruby
-# .proba-output.rb
+# .probatio-output.rb
 {
 argv: [ "test/alpha_test.rb:23" ],
 failures:
@@ -162,7 +162,7 @@ failures:
   { n: "test_fail", p: "test/alpha_test.rb", l: 29, t: "0s000_033" },
   ],
 duration: "0s001_297",
-pversion: "1.0.0",
+probatio: { v: "1.0.0" },
 ruby:
   {
   p: "/usr/local/bin/ruby33",
