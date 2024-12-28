@@ -118,6 +118,9 @@ class Probatio::VanillaSummarizer
     recorder = Probatio.plugins.find { |pl| pl.respond_to?(:failures) }
     return unless recorder
 
+    puts c.dark_grey + "  ¯\\_(ツ)_/¯" + c.reset \
+      if recorder.test_count == 0
+
     puts
     recorder.failures.each do |ev|
       puts "---"
