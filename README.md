@@ -37,7 +37,7 @@ Usage: bundle exec proba [OPTIONS] [FILES] [DIRS]
     --version              Show proba's version and exit
     -m, --monochrome       Disable colour output
     -c, --color            Enable colour output anyway
-    -y, --dry              Don't run the test, just flag them as successes
+    -y, --dry              Don't run the tests, just flag them as successes
     -n, --name PATTERN     include tests matching /regexp/ or string in run
     -e, --exclude PATTERN  Exclude /regexp/ or string from run
     -p, --print            Dumps the test tree
