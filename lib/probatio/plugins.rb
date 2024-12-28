@@ -172,7 +172,7 @@ class Probatio::VanillaSummarizer
 end
 
 class Probatio::ProbaOutputter
-
+#
   require 'rbconfig'
 
   def on_over(ev)
@@ -183,6 +183,12 @@ class Probatio::ProbaOutputter
     fls = Cerata.table_to_s(r.failed_tests.collect(&:to_h), '  ')
 
     rb = {}
+      #
+    rv =
+      File.exist?('.ruby-version') &&
+      File.readlines('.ruby-version').find { |l| ! l.strip.start_with?('#') }
+      #
+    rb[:v] = ".ruby-version:#{rv.strip}" if rv
     rb[:p] = File.join(
       RbConfig::CONFIG['bindir'],
       RbConfig::CONFIG['ruby_install_name'])
