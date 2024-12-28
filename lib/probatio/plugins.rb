@@ -197,8 +197,8 @@ class Probatio::ProbaOutputter
         k.match?(/^(RUBY_|GEM_|(HOME|PATH|USER|SHELL|PWD)$)/) },
       '  ')
 
-    File.open('.proba-output.rb', 'wb') do |o|
-      o << "# .proba-output.rb\n"
+    File.open(Probatio.opath, 'wb') do |o|
+      o << '# ' << Probatio.opath << "\n"
       o << "{\n"
       o << "argv: " << Cerata.horizontal_a_to_s(ARGV) << ",\n"
       o << "failures:\n"

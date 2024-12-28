@@ -125,6 +125,9 @@ module Probatio
       end
     end
 
+    def opath; '.probatio-output.rb'; end
+    def tpath; '.test-point'; end
+
     protected
 
     def read_helper_file(group, path)

@@ -19,11 +19,11 @@ def rework_switch(a)
 end
 
 switches = {}
-dirs, files, strings = [], [], []
+dirs, files, strings, integers = [], [], [], []
 
 while a = args.shift
 
-  if a.match?(/^(-[a-z0-9]|--[a-z0-9][-a-z0-9]+)$/i)
+  if a.match?(/^(-[a-z]|--[a-z0-9][-a-z0-9]+)$/i)
     if k = rework_switch(a)
       (switches[k] ||= []) << args.shift
     else
@@ -33,6 +33,8 @@ while a = args.shift
     dirs << a
   elsif File.file?(a.split(':').first)
     files << a
+  elsif a.match?(/\A-?\d+\z/)
+    integers << a.to_i
   else
     strings << a
   end
@@ -40,7 +42,11 @@ end
 
 $DEBUG = true if switches['-d']
 
-puts " * switches: " + switches.inspect if $DEBUG
+if $DEBUG
+  puts " * switches:  " + switches.inspect
+  puts " * strings:   " + strings.inspect
+  puts " * integers:  " + integers.inspect
+end
 
 if switches['-h'] || switches['--help']
 
@@ -109,9 +115,25 @@ opts[:print] = true if switches['-p'] || switches['--print']
 opts[:dirs] = dirs if dirs.any?
 opts[:files] = files if files.any?
 
-if strings.include?('.') && File.exist?('.test-point')
-  (opts[:files] ||= []) << File.read('.test-point').strip
+prev = Kernel.eval(File.read(Probatio.opath)) rescue { failures: [] }
+fails = prev[:failures].collect { |f| "#{f[:p]}:#{f[:l]}" }
+  #
+tpoint = File.exist?(Probatio.tpath) ? File.read(Probatio.tpath).strip : nil
+  #
+strings.each do |s|
+  (opts[:files] ||= []) <<
+    case s
+    when '.' then tpoint
+    when '1st', 'first' then fails[0]
+    when 'last' then fails[-1]
+    else nil; end
 end
+integers.each do |i|
+  (opts[:files] ||= []) << fails[i]
+end
+opts[:files] = opts[:files].uniq.compact if opts[:files]
+opts[:files] = nil if opts[:files] && opts[:files].empty?
+p opts[:files]
 
 opts[:dirs] = [ 'test' ] unless opts[:dirs] || opts[:files]
 
