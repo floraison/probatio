@@ -18,12 +18,9 @@ module Probatio
     attr_reader :c # colours or not
     attr_reader :seed, :rng
 
-    def dry?; !! @dry; end
     def mono?; !! @mono; end
 
     def run(run_opts)
-
-      @dry = run_opts[:dry]
 
       @c =
         run_opts[:mono] ? Colorato.no_colours :
@@ -497,7 +494,9 @@ module Probatio
 
         Probatio.despatch("#{child.type}_enter", self, child, run_opts)
 
-        r = instance_eval(&child.block)
+        r =
+          run_opts[:dry] ? nil :
+          instance_eval(&child.block)
 
         Probatio.despatch(:test_succeed, self, child) \
           if r != :pending && child.type == 'test'
