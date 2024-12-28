@@ -92,6 +92,9 @@ module Probatio
       root_group.run(run_opts)
 
       Probatio.despatch(:over, root_group, run_opts)
+
+      Probatio.despatch(:exit, root_group, run_opts)
+        # some plugin will catch that and do `exit 0` or `exit 1`...
     end
 
     def init

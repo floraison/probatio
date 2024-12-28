@@ -215,9 +215,19 @@ class Probatio::ProbaOutputter
   end
 end
 
+class Probatio::Exitter
+
+  def on_exit(ev)
+
+    exit 1 if Probatio.recorder_plugin.failure_count > 0
+    exit 0
+  end
+end
+
 Probatio.plug(Probatio::Recorder.new)
 Probatio.plug(Probatio::Chronometer.new)
 Probatio.plug(Probatio::DotReporter.new)
 Probatio.plug(Probatio::VanillaSummarizer.new)
 Probatio.plug(Probatio::ProbaOutputter.new)
+Probatio.plug(Probatio::Exitter.new)
 
