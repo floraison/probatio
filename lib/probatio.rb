@@ -125,6 +125,11 @@ module Probatio
       end
     end
 
+    LINE_COUNTS = Hash.new { |h, k|
+      h[k] = (File.exist?(k) && File.readlines(k).count) || 99_999 }
+        #
+    def line_count(path); LINE_COUNTS[path]; end
+
     protected
 
     def read_helper_file(group, path)
@@ -198,7 +203,7 @@ module Probatio
       i = parent && parent.children.index(self)
       n = i && parent.children[i + 1]
 
-      n ? n.line - 1 : File.readlines(path).count
+      n ? n.line - 1 : Probatio.line_count(path)
     end
 
     def location
