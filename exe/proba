@@ -113,27 +113,32 @@ opts[:dry] = true if switches['-y'] || switches['--dry']
 opts[:print] = true if switches['-p'] || switches['--print']
 
 opts[:dirs] = dirs if dirs.any?
-opts[:files] = files if files.any?
+opts[:files] = files.any? ? files : []
 
 prev = Kernel.eval(File.read(Probatio.opath)) rescue { failures: [] }
 fails = prev[:failures].collect { |f| "#{f[:p]}:#{f[:l]}" }
+#pp fails
   #
 tpoint = File.exist?(Probatio.tpath) ? File.read(Probatio.tpath).strip : nil
   #
 strings.each do |s|
-  (opts[:files] ||= []) <<
+  opts[:files] <<
     case s
     when '.' then tpoint
     when '1st', 'first' then fails[0]
     when 'last' then fails[-1]
+    when /^:\d+$/ then fails.find { |f| f.end_with?(s) }
     else nil; end
 end
 integers.each do |i|
-  (opts[:files] ||= []) << fails[i]
+  opts[:files] << fails[i]
 end
-opts[:files] = opts[:files].uniq.compact if opts[:files]
-opts[:files] = nil if opts[:files] && opts[:files].empty?
-p opts[:files]
+  #
+opts[:files] = opts[:files].uniq.compact
+opts[:files] = nil if opts[:files].empty? && strings.empty? && integers.empty?
+#puts "-" * 40
+#p [ strings, integers ]
+#p [ 'fff',  opts[:files] ]
 
 opts[:dirs] = [ 'test' ] unless opts[:dirs] || opts[:files]
 
