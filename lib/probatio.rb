@@ -188,9 +188,22 @@ module Probatio
 
     def pending?; @opts[:pending]; end
 
+    def line
+
+      (@block.respond_to?(:source_location) ? @block.source_location : [])[1]
+    end
+
+    def last_line
+
+      i = parent && parent.children.index(self)
+      n = i && parent.children[i + 1]
+
+      n ? n.line - 1 : File.readlines(path).count
+    end
+
     def location
-      _, l = @block.respond_to?(:source_location) ? @block.source_location : nil
-      "#{@path}:#{l}"
+
+      "#{@path}:#{line}"
     end
 
     def to_s(opts={})
@@ -440,19 +453,26 @@ module Probatio
         return true unless incs.find { |e| do_match?(e) }
       elsif exes = run_opts[:excludes]
         return true if exes.find { |e| do_match?(e) }
-      else
-        false
       end
+
+      fz = run_opts[:filez]
+      return false if fz && fz.include?(@path)
+
+      fns = run_opts[:filen]
+      return true if fns && ! fns.find { |pa, li| path_and_line_match?(pa, li) }
+
+      false
     end
 
     def do_match?(pattern_or_string)
 
-#p [ self.class, full_name, pattern_or_string ]
-      #if pattern_or_string.is_a?(Regexp)
-      #  return full_name.match?(pattern_or_string)
-      #else
-      #end
       full_name.match?(pattern_or_string)
+    end
+
+    def path_and_line_match?(fpath, fline)
+
+      path == fpath &&
+        fline >= line && fline <= last_line
     end
   end
 
