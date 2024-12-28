@@ -38,11 +38,7 @@ class Probatio::Recorder
   def test_count; @events.count { |e| e.name == 'test_leave' }; end
   def assertion_count; @events.count { |e| e.name == 'assertion_leave' }; end
   def failure_count; @events.count { |e| e.name == 'test_fail' }; end
-
-  def pending_count
-
-    @events.map(&:node).uniq.compact.select(&:pending?).count
-  end
+  def pending_count; @events.count { |e| e.name == 'test_pending' }; end
 
   def file_count
 
