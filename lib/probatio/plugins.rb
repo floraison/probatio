@@ -131,11 +131,11 @@ class Probatio::VanillaSummarizer
       puts '-' * 80
       #puts ev.leaf.parent.to_s
       #puts ev.leaf.head
-      puts ev.leaf.trail
-      puts ev.depth
-      puts ev.error.inspect
-      puts '.'
-      puts ev.to_s
+      #puts ev.leaf.trail
+      puts ev.error.trail
+      #puts ev.error.inspect
+      #puts '.'
+      #puts ev.to_s
     end
     puts '-' * 80 if recorder.failures.any?
 

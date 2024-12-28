@@ -114,7 +114,8 @@ class Probatio::Context
 
     if r.is_a?(StandardError) || r.is_a?(String)
 
-      aerr = Probatio::AssertionError.new(r, *extract_file_and_line(caller))
+      aerr = Probatio::AssertionError
+        .new(r, @__child, *extract_file_and_line(caller))
 
       Probatio.despatch(:test_fail, self, @__child, aerr)
 

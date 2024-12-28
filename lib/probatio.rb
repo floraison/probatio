@@ -524,10 +524,12 @@ module Probatio
 
   class AssertionError < StandardError
 
-    attr_reader :file, :line
+    attr_reader :test, :file, :line
     attr_accessor :nested_error
 
-    def initialize(error_or_message, file, line)
+    def initialize(error_or_message, test, file, line)
+
+      @test = test
 
       @file = file
       @line = line
@@ -547,9 +549,20 @@ module Probatio
       [ @file, @line ]
     end
 
+    def loc
+
+      location.map(&:to_s).join(':')
+    end
+
     def to_s
 
       "#{self.class.name}: #{@msg}"
+    end
+
+    def trail
+
+      @test.trail + "\n" +
+      Probatio.c.red("#{'  ' * (test.depth + 1)}#{loc} --> #{@msg}")
     end
   end
 
