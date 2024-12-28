@@ -100,7 +100,7 @@ class Probatio::DotReporter
 
   def on_test_succeed(ev)
 
-    print c.dark_grey + '.' + c.reset
+    print c.dark_grey + '·' + c.reset
   end
 
   def on_test_fail(ev)
@@ -108,9 +108,9 @@ class Probatio::DotReporter
     print c.red + 'x' + c.reset
   end
 
-  def on_over(ev)
+  def on_test_pending(ev)
 
-    puts
+    print c.yellow + '.' + c.reset
   end
 end
 
@@ -123,20 +123,25 @@ class Probatio::VanillaSummarizer
     recorder = Probatio.plugins.find { |pl| pl.respond_to?(:failures) }
     return unless recorder
 
-    puts c.dark_grey + "  ¯\\_(ツ)_/¯" + c.reset \
-      if recorder.test_count == 0
+    if recorder.test_count == 0
+      puts c.dark_grey + "  ¯\\_(ツ)_/¯" + c.reset
+    else
+      puts
+    end
 
-    puts
     recorder.failures.each do |ev|
-      puts "---"
+
+      puts
+      puts '-' * 80
       #puts ev.leaf.parent.to_s
       #puts ev.leaf.head
       puts ev.leaf.trail
       puts ev.depth
       puts ev.error.inspect
-      puts "."
+      puts '.'
       puts ev.to_s
     end
+    puts '-' * 80 if recorder.failures.any?
 
     r = Probatio.recorder_plugin
 

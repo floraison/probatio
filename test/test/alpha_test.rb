@@ -29,5 +29,20 @@ group 'alpha' do
     assert @string, /heart/i
     assert_match @string, /heart/i
   end
+
+  _test 'three' do
+
+    # pending
+  end
+
+  test 'four' do
+
+    assert true
+  end
+
+  test 'five' do
+
+    assert false => false
+  end
 end
 
