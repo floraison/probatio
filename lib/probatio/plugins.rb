@@ -172,7 +172,7 @@ class Probatio::VanillaSummarizer
 end
 
 class Probatio::ProbaOutputter
-#
+
   require 'rbconfig'
 
   def on_over(ev)
