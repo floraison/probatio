@@ -17,6 +17,7 @@ module Probatio
 
     attr_reader :c # colours or not
     attr_reader :seed, :rng
+    attr_reader :map
 
     def mono?; !! @mono; end
 
@@ -149,6 +150,8 @@ module Probatio
 
     attr_reader :parent, :path, :opts, :block, :children
 
+    def map; @parent ? @parent.map : (@map ||= {}); end
+
     def initialize(parent, path, name, opts, block)
 
       @parent = parent
@@ -158,6 +161,8 @@ module Probatio
       @block = block
 
       @children = []
+
+      (map[path] ||= []) << self
     end
 
     def type; self.class.name.split('::').last.downcase; end
@@ -178,8 +183,9 @@ module Probatio
 
     def last_line
 
-      i = parent && parent.children.index(self)
-      n = i && parent.children[i + 1]
+      f = map[path]
+      i = f.index(self)
+      n = i && f[i + 1]
 
       n ? n.line - 1 : 9_999_999
     end
