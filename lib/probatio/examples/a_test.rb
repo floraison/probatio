@@ -21,6 +21,11 @@ group 'core' do
 
       MyLib.do_this_or_that()
 
+      assert_true true
+      assert_false 1 > 2
+      assert_trueish "yes", "no"
+      assert_falsey nil, false
+
       assert_equal 'one', 'o' + 'ne'
         # checks that all its arguments are equal
 

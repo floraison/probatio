@@ -16,6 +16,7 @@ class Probatio::Context
 
     do_assert(as, 'falsey') { |a| ! a }
   end
+  alias assert_falsy assert_falsey
   alias assert_falseish assert_falsey
 
   def assert_true(*as)
