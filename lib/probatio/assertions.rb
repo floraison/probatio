@@ -4,6 +4,41 @@
 
 class Probatio::Context
 
+  def assert_truthy(*as)
+
+    do_assert do
+
+      as.all? { |a| !! a } ||
+      "not truthy"
+    end
+  end
+  alias assert_trueish assert_truthy
+
+  def assert_falsey(*as)
+
+    as.all? { |a| ! a } ||
+    "not falsey"
+  end
+  alias assert_falseish assert_falsey
+
+  def assert_true(*as)
+
+    do_assert do
+
+      as.all? { |a| a == true } ||
+      "not true"
+    end
+  end
+
+  def assert_false(*as)
+
+    do_assert do
+
+      as.all? { |a| a == false } ||
+      "not false"
+    end
+  end
+
   def assert_equal(*as)
 
     do_assert do
@@ -37,6 +72,15 @@ class Probatio::Context
 
       as.all? { |e| arr.include?(e) } ||
       "not included"
+    end
+  end
+
+  def assert_hashy(*as)
+
+    do_assert do
+
+      as[0].to_a.all? { |k, v| k == v } ||
+      "not hashy equal"
     end
   end
 
@@ -79,11 +123,11 @@ class Probatio::Context
 
     if as.length == 1 && count[:hashes] == 1
 
-      do_assert { as[0].to_a.all? { |k, v| k == v } || "not equal" }
+      assert_hashy(*as)
 
     elsif as.length == 1
 
-      do_assert { as[0] || "not trueish" }
+      assert_truthy(*as)
 
     elsif count[:rexes] == 1 && count[:strings] == as.length - 1
 
