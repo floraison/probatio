@@ -48,5 +48,25 @@ module Probatio; class << self
 
     nil
   end
+
+  def determine_plugin_pos(pos)
+
+    return pos if pos.is_a?(Integer)
+
+    return 0 if pos == :first
+    #return @plugins.length if pos == :last
+
+    h = pos.is_a?(Hash) ? pos : {}
+
+    l = @plugins.length
+
+    if af = h[:after]
+      (@plugins.index { |pl| pl == af || (pl.is_a?(af) rescue nil) } || l) + 1
+    elsif bf = h[:before]
+      (@plugins.index { |pl| pl == bf || (pl.is_a?(bf) rescue nil) } || l)
+    else
+      l # last resort, put at the end...
+    end
+  end
 end; end
 
