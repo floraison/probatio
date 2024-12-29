@@ -134,7 +134,7 @@ class Probatio::VanillaSummarizer
       #puts ev.leaf.trail
       puts ev.error.trail
       puts
-      puts '| ' + c.dark_grey(ev.error.source_line)
+      puts "%4d %s" % [ ev.error.line, c.dark_grey(ev.error.source_line) ]
       #puts ev.error.inspect
       #puts '.'
       #puts ev.to_s
