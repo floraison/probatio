@@ -117,7 +117,7 @@ opts[:files] = files.any? ? files : []
 
 prev = Kernel.eval(File.read(Probatio.opath)) rescue { failures: [] }
 fails = prev[:failures].collect { |f| "#{f[:p]}:#{f[:l]}" }
-#pp fails
+#print 'fails:'; pp fails
   #
 tpoint = File.exist?(Probatio.tpath) ? File.read(Probatio.tpath).strip : nil
   #

@@ -474,6 +474,7 @@ module Probatio
 
     def path_and_line_match?(fpath, fline)
 
+#p [ path, line, last_line, '<-->', fpath, fline ]
       path == fpath &&
         fline >= line && fline <= last_line
     end
