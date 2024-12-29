@@ -551,6 +551,11 @@ module Probatio
       @test.trail + "\n" +
       Probatio.c.red("#{'  ' * (test.depth + 1)}#{loc} --> #{@msg}")
     end
+
+    def source_line
+
+      File.readlines(@file)[@line - 1]
+    end
   end
 
   class Event

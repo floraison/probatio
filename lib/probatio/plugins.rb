@@ -120,7 +120,7 @@ class Probatio::VanillaSummarizer
     return unless recorder
 
     if recorder.test_count == 0
-      puts c.dark_grey + "  ¯\\_(ツ)_/¯" + c.reset
+      puts c.dark_grey("  ¯\\_(ツ)_/¯")
     else
       puts
     end
@@ -133,11 +133,14 @@ class Probatio::VanillaSummarizer
       #puts ev.leaf.head
       #puts ev.leaf.trail
       puts ev.error.trail
+      puts
+      puts '| ' + c.dark_grey(ev.error.source_line)
       #puts ev.error.inspect
       #puts '.'
       #puts ev.to_s
+      puts
     end
-    puts '-' * 80 if recorder.failures.any?
+    #puts '-' * 80 if recorder.failures.any?
 
     r = Probatio.recorder_plugin
 
