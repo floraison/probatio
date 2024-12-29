@@ -3,7 +3,14 @@ group 'bravo' do
 
   test 'addition' do
 
-    assert 1, 1
+    assert 2, 1 + 1
+    assert_false false
+    assert_true true
+    assert_trueish 1
+    assert_equal 1, 1
+    assert_match 'doG', /og/i
+    assert_include [ 1, 2, 3 ], 3
+    assert_hashy "a" => 'A'.downcase
   end
 
   test 'assert 0' do
