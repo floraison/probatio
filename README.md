@@ -169,6 +169,14 @@ group 'core' do
     # marks it as _pending
   end
 end
+
+group 'core', 'sub-core', 'sub-sub-core' do
+  #
+  # it's OK to specifiy a path of group names
+
+  test 'this' do
+  end
+end
 ```
 
 
