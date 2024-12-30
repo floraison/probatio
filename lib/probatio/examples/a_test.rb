@@ -76,3 +76,11 @@ group 'core', 'sub-core', 'sub-sub-core' do
   end
 end
 
+group 'core < sub-core < sub-sub-core' do
+  #
+  # this is also ok...
+
+  test 'that' do
+  end
+end
+

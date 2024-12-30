@@ -315,6 +315,11 @@ module Probatio
     def group(*names, &block)
 
       opts = names.last.is_a?(Hash) ? names.pop : {}
+
+      names = names
+        .collect { |s| s.split(/\s*(?:\||::|<|>)\s*/) }
+        .flatten(1)
+
       last_name = names.last
 
       names.inject(self) do |g, name|

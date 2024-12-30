@@ -42,3 +42,11 @@ group 'alice', 'bob' do
   end
 end
 
+group 'alice | bob :: charly > doug < emily' do
+
+  test 'e' do
+
+    assert true
+  end
+end
+
