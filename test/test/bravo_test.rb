@@ -27,3 +27,18 @@ group 'alpha' do
     assert 2, 3
   end
 end
+
+group 'alice' do
+
+  test 'a' do
+  end
+end
+
+group 'alice', 'bob' do
+
+  test 'b' do
+
+    assert false
+  end
+end
+

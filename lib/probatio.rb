@@ -238,6 +238,11 @@ module Probatio
 
     def skip?(run_opts); false; end
 
+    def groups
+
+      @children.select { |c| c.is_a?(Probatio::Group) }
+    end
+
     protected
 
     def exclude?(run_opts); false; end
@@ -307,13 +312,25 @@ module Probatio
       @children << Probatio::After.new(self, @path, nil, opts, block)
     end
 
-    def group(name, opts={}, &block)
+    def group(*names, &block)
 
-      if g = @children.find { |e| e.is_a?(Probatio::Group) && e.name == name }
-        g.path = @path
-        g.add_block(block)
-      else
-        @children << Probatio::Group.new(self, @path, name, opts, block)
+      opts = names.last.is_a?(Hash) ? names.pop : {}
+      last_name = names.last
+
+      names.inject(self) do |g, name|
+
+        gg = g.groups.find { |e| e.name == name }
+
+        if gg
+          gg.path = @path
+        else
+          gg = Probatio::Group.new(g, @path, name, opts, nil)
+          g.children << gg
+        end
+
+        gg.add_block(block) if name == last_name
+
+        gg
       end
     end
 
