@@ -44,17 +44,20 @@ module Probatio
 
       (run_opts[:dirs] || []).each do |dir|
 
-        (
-          Dir[File.join(dir, '**', '*_helper.rb')] +
+        ( Dir[File.join(dir, '**', '*_helper.rb')] +
           Dir[File.join(dir, '**', '*_helpers.rb')]
+
         ).each do |path|
 
           read_helper_file(root_group, path)
         end
 
-        (
+        ( Dir[File.join(dir, '**', 'setup.rb')] +
+          Dir[File.join(dir, '**', '*_setup.rb')] +
+
           Dir[File.join(dir, '**', '*_test.rb')] +
           Dir[File.join(dir, '**', '*_tests.rb')]
+
         ).each do |path|
 
           run_opts[:filez] << path
@@ -164,6 +167,8 @@ module Probatio
 
       (map[path] ||= []) << self
     end
+
+    def filename; @filename ||= File.basename(@path); end
 
     def type; self.class.name.split('::').last.downcase; end
     def test?; type == 'test'; end
@@ -438,6 +443,8 @@ module Probatio
 
     def exclude?(run_opts)
 
+      return true if in_setup?
+
       if incs = run_opts[:includes]
         return true unless incs.find { |e| do_match?(e) }
       elsif exes = run_opts[:excludes]
@@ -463,6 +470,11 @@ module Probatio
 #p [ path, line, last_line, '<-->', fpath, fline ]
       path == fpath &&
         fline >= line && fline <= last_line
+    end
+
+    def in_setup?
+
+      filename == 'setup.rb' || filename.end_with?('_setup.rb')
     end
   end
 
