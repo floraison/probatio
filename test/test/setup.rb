@@ -6,6 +6,7 @@
 setup do
 
   #puts "SETUP!"
+  #pp ENV
 end
 
 teardown do

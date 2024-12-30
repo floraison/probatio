@@ -19,7 +19,7 @@ def rework_switch(a)
 end
 
 switches = {}
-dirs, files, strings, integers = [], [], [], []
+dirs, files, strings, environments, integers = [], [], [], [], []
 
 while a = args.shift
 
@@ -35,6 +35,8 @@ while a = args.shift
     files << a
   elsif a.match?(/\A-?\d+\z/)
     integers << a.to_i
+  elsif a.match?(/\A[A-Z][A-Z0-9]*\z/)
+    environments << a
   else
     strings << a
   end
@@ -43,9 +45,10 @@ end
 $DEBUG = true if switches['-d']
 
 if $DEBUG
-  puts " * switches:  " + switches.inspect
-  puts " * strings:   " + strings.inspect
-  puts " * integers:  " + integers.inspect
+  puts " * switches:      " + switches.inspect
+  puts " * strings:       " + strings.inspect
+  puts " * integers:      " + integers.inspect
+  puts " * environments:  " + environments.inspect
 end
 
 if switches['-h'] || switches['--help']
@@ -173,6 +176,18 @@ opts[:excludes] = Probatio.to_rexes_and_strs(switches['--exclude'])
 s = switches['--seed'] || []
 s = s.any? ? s.first : (Time.now.to_f * 1000) % 99_999
 opts[:seed] = s.to_i
+
+if environments.any?
+  envs =
+    (File.exist?(Probatio.epath) &&
+     Kernel.eval(File.read(Probatio.epath)) rescue nil) ||
+    {}
+  environments.each do |e|
+    (envs[e.to_sym] || {}).each { |k, v|
+      puts " . setting ENV[#{k.inspect}] to #{v.inspect}" if $DEBUG
+      ENV[k] = v }
+  end
+end
 
 puts " * opts: " + opts.inspect if $DEBUG
 

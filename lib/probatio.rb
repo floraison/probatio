@@ -129,6 +129,7 @@ module Probatio
       end
     end
 
+    def epath; '.probatio-environments.rb'; end
     def opath; '.probatio-output.rb'; end
     def tpath; '.test-point'; end
 
