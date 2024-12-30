@@ -39,10 +39,25 @@ module Probatio
 
       root_group = Group.new(nil, __FILE__, '_', {}, nil)
 
+      run_opts[:dirs] ||= []
+      run_opts[:files] ||= []
+
       run_opts[:filez] = []
       run_opts[:filen] = []
 
-      (run_opts[:dirs] || []).each do |dir|
+      run_opts[:hdirs] =
+        run_opts[:dirs].any? ? run_opts[:dirs] :
+        run_opts[:files].map { |e| File.split(e).first }.uniq
+
+      if $DEBUG
+        puts " / dirs :   #{run_opts[:dirs].inspect}"
+        puts " / files :  #{run_opts[:files].inspect}"
+        puts " / hdirs :  #{run_opts[:hdirs].inspect}"
+      end
+
+      # helpers and setups...
+
+      run_opts[:hdirs].sort.each do |dir|
 
         ( Dir[File.join(dir, '**', '*_helper.rb')] +
           Dir[File.join(dir, '**', '*_helpers.rb')]
@@ -60,6 +75,11 @@ module Probatio
           run_opts[:filez] << path
           read_test_file(root_group, path)
         end
+      end
+
+      # tests from dirs...
+
+      run_opts[:dirs].each do |dir|
 
         ( Dir[File.join(dir, '**', '*_test.rb')] +
           Dir[File.join(dir, '**', '*_tests.rb')]
@@ -71,7 +91,9 @@ module Probatio
         end
       end
 
-      (run_opts[:files] || []).each do |path|
+      # tests from files...
+
+      run_opts[:files].each do |path|
 
         colons = path.split(':')
         fpath = colons.shift
