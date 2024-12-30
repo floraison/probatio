@@ -185,7 +185,11 @@ class Probatio::Context
 
   def extract_file_and_line(backtrace)
 
-    l = backtrace.find { |l| ! l.index('lib/probatio/assertions.rb') }
+    #l = backtrace.find { |l|
+    #  ! l.index('lib/probatio/assertions.rb') &&
+    #  ! l.index('_helper.rb') }
+    l = backtrace.find { |l| l.index('_test.rb') }
+
     m = l && l.match(/([^:]+):(\d+)/)
     m && [ m[1], m[2].to_i ]
   end
