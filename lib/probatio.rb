@@ -53,7 +53,7 @@ module Probatio
             .map { |e|
               File.join(
                 File.split(e).first.split(File::SEPARATOR).first,
-                'helpers' }
+                'helpers') }
             .uniq
             .select { |e|
               File.directory?(e) }
