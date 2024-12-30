@@ -47,21 +47,26 @@ module Probatio
         ( Dir[File.join(dir, '**', '*_helper.rb')] +
           Dir[File.join(dir, '**', '*_helpers.rb')]
 
-        ).each do |path|
+        ).sort.each do |path|
 
           read_helper_file(root_group, path)
         end
 
         ( Dir[File.join(dir, '**', 'setup.rb')] +
-          Dir[File.join(dir, '**', '*_setup.rb')] +
+          Dir[File.join(dir, '**', '*_setup.rb')]
 
-          Dir[File.join(dir, '**', '*_test.rb')] +
+        ).sort.each do |path|
+
+          run_opts[:filez] << path
+          read_test_file(root_group, path)
+        end
+
+        ( Dir[File.join(dir, '**', '*_test.rb')] +
           Dir[File.join(dir, '**', '*_tests.rb')]
 
         ).each do |path|
 
           run_opts[:filez] << path
-
           read_test_file(root_group, path)
         end
       end
