@@ -28,7 +28,7 @@ Test tools for floraison and flor. Somewhere between Minitest and Rspec, but not
 ## Usage
 
 ```
-Usage: bundle exec proba [OPTIONS] [FILES] [DIRS]
+Usage: bundle exec proba [OPTIONS] [DIRS] [FILES] [OTHERS] [ENVS]
 
   A test runner for Ruby.
 
@@ -46,11 +46,36 @@ Usage: bundle exec proba [OPTIONS] [FILES] [DIRS]
     -x, --example          Outputs an example test file
     -X, --plugin-example   Outputs an example plugin file
 
-  Files:
-    TODO
-
   Dirs:
-    TODO
+    Defaults to test/ if no files nor dir are given.
+    Probatio will look at all the *_helper[s].rb, *_test[s].rb files
+    under the given dirs and also at the setup.rb, *_setup.rb files
+
+  Files:
+    List of test files to scan for tests.
+    A file may end with `:123` to indicate that the test at line 123 should
+    be run. Multiple "colon-lnumber" suffixes may be specified, as in
+    `test/fun/that_test.rb:123:456`
+
+  Others:
+    Short codes like
+    * `bundle exec proba -1`
+    * `bundle exec proba last` run the last failing test of the last run
+    * `bundle exec proba first`
+    * `bundle exec proba 1st`
+    * `bundle exec proba 0` run the first failing test of the last run
+
+  Envs:
+    Short FULLCAPS environment variable setters driven by a
+    `.probatio-environments.rb` file in the current work directory.
+
+    ```
+    # .probatio-environments.rb
+    {
+      D: { 'FLOR_DEBUG' => 'dbg,stdout' },
+      DD: { 'FLOR_DEBUG' => 'dbg,sto,stdout' },
+    }
+    ```
 
   Examples:
     # Run all tests in a dir
