@@ -64,6 +64,15 @@ class Probatio::Context
     do_assert(as[0].to_a, 'hashy equal') { |k, v| k == v }
   end
 
+  def assert_instance_of(*as)
+
+    moc = as.find { |a| a.is_a?(Module) }
+    as = as.delete(moc)
+
+    do_assert(as, 'instance of') { |e| e.is_a?(moc) }
+  end
+  alias assert_is_a assert_instance_of
+
   # Checks whether its "_assert_something", if that's the case,
   # just flags the assertion as :pending an moves on
   #
