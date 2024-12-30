@@ -46,9 +46,18 @@ module Probatio
       run_opts[:filen] = []
 
       run_opts[:hdirs] =
-        run_opts[:dirs].any? ? run_opts[:dirs] :
-        run_opts[:files].map { |e|
-          File.split(e).first.split(File::SEPARATOR).first }.uniq
+        if run_opts[:dirs].any?
+          run_opts[:dirs]
+        else
+          run_opts[:files]
+            .map { |e|
+              File.join(
+                File.split(e).first.split(File::SEPARATOR).first,
+                'helpers' }
+            .uniq
+            .select { |e|
+              File.directory?(e) }
+        end
 
       if $DEBUG
         puts " / dirs :   #{run_opts[:dirs].inspect}"
