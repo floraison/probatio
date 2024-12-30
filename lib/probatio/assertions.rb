@@ -67,7 +67,7 @@ class Probatio::Context
   def assert_instance_of(*as)
 
     moc = as.find { |a| a.is_a?(Module) }
-    as = as.delete(moc)
+    as.delete(moc)
 
     do_assert(as, 'instance of') { |e| e.is_a?(moc) }
   end
