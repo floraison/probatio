@@ -16,19 +16,12 @@ module Probatio
 
   class << self
 
-    attr_reader :c # colours or not
     attr_reader :seed, :rng
     attr_reader :map
 
-    def mono?; !! @mono; end
+    def c; $_PROBATIO_COLOURS; end
 
     def run(run_opts)
-
-      @c =
-        run_opts[:mono] ? Colorato.no_colours :
-        run_opts[:colour] ? Colorato.colours :
-        ( ! $stdout.tty?) ? Colorato.no_colours :
-        Colorato.colours
 
       @seed = run_opts[:seed]
       @rng = Random.new(@seed)

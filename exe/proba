@@ -42,14 +42,19 @@ while a = args.shift
   end
 end
 
+$_PROBATIO_COLOURS =
+  switches['-C'] || switches['--no-color'] ? Colorato.no_colours :
+  switches['-c'] || switches['--color'] ? Colorato.colours :
+  ( ! $stdout.tty?) ? Colorato.no_colours :
+  Colorato.colours
+
 $DEBUG = true if switches['-d']
 
-if $DEBUG
-  puts " * switches:      " + switches.inspect
-  puts " * strings:       " + strings.inspect
-  puts " * integers:      " + integers.inspect
-  puts " * environments:  " + environments.inspect
-end
+Probatio.debug {
+  ' * switches:      ' + switches.inspect + "\n" +
+  ' * strings:       ' + strings.inspect + "\n" +
+  ' * integers:      ' + integers.inspect + "\n" +
+  ' * environments:  ' + environments.inspect }
 
 if switches['-h'] || switches['--help']
 
@@ -61,8 +66,8 @@ if switches['-h'] || switches['--help']
   Options:
     -h, --help             Show this help message and quit
     --version              Show proba's version and exit
-    -m, --monochrome       Disable colour output
     -c, --color            Enable colour output anyway
+    -C, --no-color         Disable colour output
     -y, --dry              Don't run the tests, just flag them as successes
     -n, --name PATTERN     include tests matching /regexp/ or string in run
     -e, --exclude PATTERN  Exclude /regexp/ or string from run
@@ -131,11 +136,6 @@ end
 
 opts = {}
 
-opts[:mono] = true \
-  if switches['-m'] || switches['--monochrome'] || switches['--no-color']
-opts[:colour] = false \
-  if switches['-c'] || switches['--color'] || switches['--colour']
-
 opts[:dry] = true if switches['-y'] || switches['--dry']
 
 opts[:print] = true if switches['-p'] || switches['--print']
@@ -184,12 +184,12 @@ if environments.any?
     {}
   environments.each do |e|
     (envs[e.to_sym] || {}).each { |k, v|
-      puts " . setting ENV[#{k.inspect}] to #{v.inspect}" if $DEBUG
+      Probatio.debug { " . setting ENV[#{k.inspect}] to #{v.inspect}" }
       ENV[k] = v }
   end
 end
 
-puts " * opts: " + opts.inspect if $DEBUG
+Probatio.debug { ' * opts: ' + opts.inspect }
 
 #
 # run
