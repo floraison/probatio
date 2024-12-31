@@ -6,6 +6,7 @@ require 'set'
 require 'stringio'
 require 'colorato'
 
+require 'probatio/debug'
 require 'probatio/more'
 
 
@@ -55,10 +56,10 @@ module Probatio
             .select { |e| File.directory?(e) }
         end
 
-      if $DEBUG
-        puts " / dirs :   #{run_opts[:dirs].inspect}"
-        puts " / files :  #{run_opts[:files].inspect}"
-        puts " / hdirs :  #{run_opts[:hdirs].inspect}"
+      debug do
+        " / dirs:   #{run_opts[:dirs].inspect}\n" +
+        " / files:  #{run_opts[:files].inspect}\n" +
+        " / hdirs:  #{run_opts[:hdirs].inspect}"
       end
 
       # helpers and setups...
@@ -116,12 +117,13 @@ module Probatio
         read_test_file(root_group, fpath)
       end
 
-      puts " r " + run_opts.inspect if $DEBUG
+      dbg { Cerata.vertical_h_to_s(run_opts, ' run_opts| ') }
 
       #
       # run
 
-      puts "---\n" + root_group.to_s + "\n---\n" if $DEBUG
+      dbg { "---\n" + root_group.to_s + "\n---\n" }
+
       if run_opts[:print] then; puts root_group.to_s; exit 0; end
 
       Probatio.despatch(:start, root_group, run_opts)
@@ -150,8 +152,7 @@ module Probatio
       ev = Probatio::Event.new(en, details)
 #p [ :despatch, event_name, ev.delta ]
 
-      puts '  ' + [ :despatch, en, ev.node && ev.node.full_name ].inspect \
-        if $DEBUG
+      dbg { '  ' + [ :despatch, en, ev.node && ev.node.full_name ].inspect }
 
       @plugouts ||= @plugins.reverse
 
