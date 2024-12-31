@@ -10,10 +10,10 @@ module Probatio
 
       return unless $DEBUG
 
-      print Probatio.c.green
-      puts(*as) if as.any?
-      puts block.call if block
-      print Probatio.c.reset
+      $stderr.print Probatio.c.green
+      $stderr.puts(*as) if as.any?
+      $stderr.puts block.call if block
+      $stderr.print Probatio.c.reset
     end
 
     alias dbg debug
