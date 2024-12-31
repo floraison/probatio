@@ -35,8 +35,8 @@ Usage: bundle exec proba [OPTIONS] [DIRS] [FILES] [OTHERS] [ENVS]
   Options:
     -h, --help             Show this help message and quit
     --version              Show proba's version and exit
-    -m, --monochrome       Disable colour output
     -c, --color            Enable colour output anyway
+    -C, --no-color         Disable colour output
     -y, --dry              Don't run the tests, just flag them as successes
     -n, --name PATTERN     include tests matching /regexp/ or string in run
     -e, --exclude PATTERN  Exclude /regexp/ or string from run
@@ -190,7 +190,14 @@ end
 
 ## .test-point
 
-TODO
+By running `bx proba .`, one tells probatio to run the test pointed at in the file `.test-point`.
+
+For Vim users, here is a snippet that saves the current path and line number to `.test-point` every 700ms:
+```vim
+au BufEnter test/*_test.rb,test/**/*_test.rb :set updatetime=700
+
+au BufEnter,CursorHold,BufWrite test/*_test.rb,test/**/*_test.rb :call writefile([ expand('%') . ':' . line('.') ], '.test-point', 'b')
+```
 
 
 ## .probatio-output.rb
@@ -228,6 +235,8 @@ some_env:
 ```
 
 Probatio uses it when servicing `bundle exec proba 0` or `bundle exe proba -1`.
+
+It can also be useful to other tools around probatio.
 
 
 ## Warnings

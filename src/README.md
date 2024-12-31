@@ -53,7 +53,14 @@ READ lib/probatio/examples/a_test.rb
 
 ## .test-point
 
-TODO
+By running `bx proba .`, one tells probatio to run the test pointed at in the file `.test-point`.
+
+For Vim users, here is a snippet that saves the current path and line number to `.test-point` every 700ms:
+```vim
+au BufEnter test/*_test.rb,test/**/*_test.rb :set updatetime=700
+
+au BufEnter,CursorHold,BufWrite test/*_test.rb,test/**/*_test.rb :call writefile([ expand('%') . ':' . line('.') ], '.test-point', 'b')
+```
 
 
 ## .probatio-output.rb
@@ -91,6 +98,8 @@ some_env:
 ```
 
 Probatio uses it when servicing `bundle exec proba 0` or `bundle exe proba -1`.
+
+It can also be useful to other tools around probatio.
 
 
 ## Warnings
