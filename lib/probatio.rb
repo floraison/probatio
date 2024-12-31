@@ -50,13 +50,9 @@ module Probatio
           run_opts[:dirs]
         else
           run_opts[:files]
-            .map { |e|
-              File.join(
-                File.split(e).first.split(File::SEPARATOR).first,
-                'helpers') }
+            .map { |e| File.split(e).first.split(File::SEPARATOR).first }
             .uniq
-            .select { |e|
-              File.directory?(e) }
+            .select { |e| File.directory?(e) }
         end
 
       if $DEBUG
