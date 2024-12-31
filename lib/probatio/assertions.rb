@@ -60,12 +60,6 @@ class Probatio::Context
 
   def assert_hashy(*as)
 
-    do_assert_ do
-
-      as[0].to_a.all? { |k, v| k == v } ||
-      "not hashy equal"
-    end
-
     do_assert(as[0].to_a, 'hashy equal') { |k, v| k == v }
   end
 
