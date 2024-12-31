@@ -55,6 +55,11 @@ READ lib/probatio/examples/a_test.rb
 
 By running `bx proba .`, one tells probatio to run the test pointed at in the file `.test-point`.
 
+Here is an example of `.test-point` content:
+```
+test/wma/dwm/onboarding_benchmark_non_star_test.rb:189
+```
+
 For Vim users, here is a snippet that saves the current path and line number to `.test-point` every 700ms:
 ```vim
 au BufEnter test/*_test.rb,test/**/*_test.rb :set updatetime=700
