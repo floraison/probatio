@@ -72,6 +72,36 @@ class Probatio::Context
   end
   alias assert_is_a assert_instance_of
 
+  def assert_error(*as, &block)
+
+    block = block || as.find { |a| a.is_a?(Proc) }
+    as.delete(block)
+
+    fail ArgumentError.new("assert_error expects a block or a proc") \
+      unless block
+
+    err = nil;
+      begin; block.call; rescue => err; end
+
+    return "no error raised" unless err.is_a?(StandardError)
+
+    as.each do |a|
+
+      case a
+      when Regexp, String
+        return "error message #{err.message} did not match #{a.inspect}" \
+          unless err.message.match(a)
+      when Module
+        return "error is of class #{err.class} not #{a.name}" \
+          unless err.is_a?(a)
+      else
+        fail ArgumentError.new("assert_error cannot fathom #{a.inspect}")
+      end
+    end
+
+    true
+  end
+
   # Checks whether its "_assert_something", if that's the case,
   # just flags the assertion as :pending an moves on
   #

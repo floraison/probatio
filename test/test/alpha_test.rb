@@ -44,5 +44,13 @@ group 'alpha' do
 
     assert false => false
   end
+
+  test 'error' do
+
+    assert_error(
+      lambda { raise "nada" },
+      StandardError)
+
+  end
 end
 
