@@ -88,7 +88,10 @@ class Probatio::Context
     as.each do |a|
 
       case a
-      when Regexp, String
+      when String
+        return "error message #{err.message} is not #{a.inspect}" \
+          unless err.message == a
+      when Regexp
         return "error message #{err.message} did not match #{a.inspect}" \
           unless err.message.match(a)
       when Module

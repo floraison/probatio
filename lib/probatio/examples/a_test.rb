@@ -36,6 +36,17 @@ group 'core' do
       assert_include 1, [ 1, 'two' ]
         # checks that the first array argument includes all other arguments
 
+      assert_error(ArgumentError) { do_this_or_that() }
+        # checks that the given block raises an ArgumentError
+      assert_error(ArgumentError, /bad/) { do_this_or_that() }
+        # checks that the given block raises an ArgumentError and
+        # the error message matches the /bad/ regexp
+      assert_error lambda { do_this_or_that() }, ArgumentError
+        # checks that the given Proc raises an ArgumentError
+      assert_error lambda { do_this_or_that() }, ArgumentError, 'bad'
+        # checks that the given Proc raises an ArgumentError and
+        # the error message == "bad"
+
       assert 1, 1
         # behaves like assert_equal
       assert 'one', /one/i
