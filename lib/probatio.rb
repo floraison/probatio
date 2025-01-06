@@ -573,10 +573,13 @@ module Probatio
 
   class AssertionError < StandardError
 
-    attr_reader :test, :file, :line
+    attr_reader :assertion, :arguments, :test, :file, :line
     attr_accessor :nested_error
 
-    def initialize(error_or_message, test, file, line)
+    def initialize(assertion, arguments, error_or_message, test, file, line)
+
+      @assertion = assertion
+      @arguments = arguments
 
       @test = test
 
@@ -628,6 +631,17 @@ module Probatio
           .take_while { |_, l|
             l = l.strip
             l.length > 0 && l != 'end' && l != '}' }
+    end
+
+    def summary
+
+      s = StringIO.new
+      s << @assertion << ":"
+      @arguments.each_with_index do |a, i|
+        s << "\n  %d: %s" % [ i, a.inspect ]
+      end
+
+      s.string
     end
   end
 

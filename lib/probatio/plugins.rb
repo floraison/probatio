@@ -140,6 +140,7 @@ class Probatio::VanillaSummarizer
         puts "%4d %s" % [
           i, i == ev.error.line ? c.yellow(l) : c.dark_grey(l) ]
       end
+      puts; puts c.dark_grey(ev.error.summary)
       #puts ev.error.inspect
       #puts '.'
       #puts ev.to_s

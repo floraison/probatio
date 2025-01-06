@@ -168,7 +168,7 @@ class Probatio::Context
 
   def do_assert(as, msg, &block)
 
-    do_assert_ do
+    do_assert_(as) do
 
       rs, ws = as.partition(&block)
       wi = ws.empty? ? -1 : as.index(ws.first)
@@ -178,7 +178,7 @@ class Probatio::Context
     end
   end
 
-  def do_assert_(&block)
+  def do_assert_(as, &block)
 
     Probatio.despatch(:assertion_enter, self, @__child)
 
@@ -188,7 +188,9 @@ class Probatio::Context
     when StandardError, Hash, String
 
       aerr = Probatio::AssertionError
-        .new(r, @__child, *extract_file_and_line(caller))
+        .new(
+          extract_assert_method(caller),
+          as, r, @__child, *extract_file_and_line(caller))
 
       Probatio.despatch(:test_fail, self, @__child, aerr)
 
@@ -224,6 +226,16 @@ class Probatio::Context
 
     m = l && l.match(/([^:]+):(\d+)/)
     m && [ m[1], m[2].to_i ]
+  end
+
+  def extract_assert_method(backtrace)
+
+    backtrace.inject(nil) { |r, l|
+      r ||
+      begin
+        m = l.match(/[^a-zA-Z_](assert_[a-z0-9_]+)/)
+        m && m[1]
+      end }
   end
 
   MAX_VS_LENGTH = 42
