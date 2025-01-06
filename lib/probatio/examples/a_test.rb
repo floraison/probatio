@@ -23,8 +23,12 @@ group 'core' do
 
       assert_true true
       assert_false 1 > 2
+
+      assert_truthy "yes", "no"
       assert_trueish "yes", "no"
+      assert_falsy nil, false
       assert_falsey nil, false
+      assert_falseish nil, false
 
       assert_equal 'one', 'o' + 'ne'
         # checks that all its arguments are equal
@@ -46,6 +50,15 @@ group 'core' do
       assert_error lambda { do_this_or_that() }, ArgumentError, 'bad'
         # checks that the given Proc raises an ArgumentError and
         # the error message == "bad"
+
+      assert_hashy(
+        this_thing => 1,
+        that_thing => 'two')
+          # combines two assert_equals in one
+
+      assert_instance_of 1, Integer
+      assert_is_a Integer, 123
+        # checks that value or set of values are of a given of class
 
       assert 1, 1
         # behaves like assert_equal
