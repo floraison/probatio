@@ -616,7 +616,18 @@ module Probatio
 
     def source_line
 
-      File.readlines(@file)[@line - 1]
+      @source_line ||=
+        File.readlines(@file)[@line - 1]
+    end
+
+    def source_lines
+
+      @source_lines ||=
+        File.readlines(@file).each_with_index.to_a[@line - 1..-1]
+          .map { |l, i| [ i + 1, l.rstrip ] }
+          .take_while { |_, l|
+            l = l.strip
+            l.length > 0 && l != 'end' && l != '}' }
     end
   end
 
