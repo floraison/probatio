@@ -342,7 +342,7 @@ module Probatio
       opts = names.last.is_a?(Hash) ? names.pop : {}
 
       names = names
-        .collect { |s| s.split(/\s*(?:\||::|<|>)\s*/) }
+        .collect { |s| s.to_s.split(/\s*(?:\||::|<|>)\s*/) }
         .flatten(1)
 
       last_name = names.last
@@ -366,7 +366,7 @@ module Probatio
 
     def test(name, opts={}, &block)
 
-      @children << Probatio::Test.new(self, @path, name, opts, block)
+      @children << Probatio::Test.new(self, @path, name.to_s, opts, block)
     end
 
     def befores

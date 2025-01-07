@@ -20,3 +20,11 @@ group 'gamma' do
   end
 end
 
+group Probatio do
+
+  test String do
+
+    assert_equal 1, 2
+  end
+end
+
