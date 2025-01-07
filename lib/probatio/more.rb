@@ -52,6 +52,13 @@ module Probatio; class << self
 
     Regexp.new(pat, ropts)
   end
+
+  def term_width
+
+    (IO.console.winsize[1] rescue nil) ||
+    (`tput cols`.strip.to_i rescue nil) ||
+    80
+  end
 end; end
 
 

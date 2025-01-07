@@ -2,8 +2,11 @@
 #
 # probatio.rb
 
+require 'pp'
 require 'set'
 require 'stringio'
+require 'io/console'
+
 require 'colorato'
 
 require 'probatio/debug'
@@ -635,11 +638,19 @@ module Probatio
 
     def summary
 
+      tw = Probatio.term_width - 4
+
+      as = @arguments.collect { |a|
+        if (s0 = a.inspect).length < tw
+          "\n    " + s0
+        else
+          s1 = StringIO.new; PP.pp(a, s1, tw)
+          "\n" + s1.string.gsub(/^(.*)$/) { "    #{$1}" }
+        end }
+
       s = StringIO.new
       s << @assertion << ":"
-      @arguments.each_with_index do |a, i|
-        s << "\n  %d: %s" % [ i, a.inspect ]
-      end
+      as.each_with_index { |a, i| s << "\n  %d: %s" % [ i, a ] }
 
       s.string
     end
