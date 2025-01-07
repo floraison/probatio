@@ -575,6 +575,10 @@ module Probatio
     require 'probatio/assertions'
       #
       # where assert_* methods are defined...
+
+    require 'probatio/waiters'
+      #
+      # where wait_* methods are defined...
   end
 
   class AssertionError < StandardError
