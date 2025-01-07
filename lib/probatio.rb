@@ -636,24 +636,24 @@ module Probatio
             l.length > 0 && l != 'end' && l != '}' }
     end
 
-    def summary
+    def summary(indent='')
 
-      tw = Probatio.term_width - 4
+      tw = Probatio.term_width - 4 - indent.length
 
       as =
         @arguments.find { |a| a.inspect.length > tw } ?
           @arguments.collect { |a|
             if (s0 = a.inspect).length < tw
-              "\n    " + s0
+              "\n#{indent}    " + s0
             else
               s1 = StringIO.new; PP.pp(a, s1, tw)
-              "\n" + s1.string.gsub(/^(.*)$/) { "    #{$1}" }
+              "\n" + indent + s1.string.gsub(/^(.*)$/) { "    #{$1}" }
             end } :
         @arguments.collect(&:inspect)
 
       s = StringIO.new
-      s << @assertion << ":"
-      as.each_with_index { |a, i| s << "\n  %d: %s" % [ i, a ] }
+      s << indent << @assertion << ':'
+      as.each_with_index { |a, i| s << "\n#{indent}  %d: %s" % [ i, a ] }
 
       s.string
     end
