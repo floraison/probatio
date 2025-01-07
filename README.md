@@ -45,6 +45,7 @@ Usage: bundle exec proba [OPTIONS] [DIRS] [FILES] [OTHERS] [ENVS]
     -d, --debug            Sets $DEBUG to true
     -x, --example          Outputs an example test file
     -X, --plugin-example   Outputs an example plugin file
+    --mangle               Turns the given _spec.rb files into proba _test.rb
 
   Dirs:
     Defaults to test/ if no files nor dir are given.
@@ -138,6 +139,13 @@ group 'core' do
       assert_match 'one', /^one$/
         # checks that it receives a regex and one or more strings
         # and that all those strings match the regex
+
+      assert_start_with 'one', 'one two or three'
+        # checks that the shortest string is the start of the remaining string
+        # arguments
+      assert_end_with 'three', 'one two or three'
+        # checks that the shortest string is the end of the remaining string
+        # arguments
 
       assert_include 1, [ 1, 'two' ]
         # checks that the first array argument includes all other arguments

@@ -37,6 +37,13 @@ group 'core' do
         # checks that it receives a regex and one or more strings
         # and that all those strings match the regex
 
+      assert_start_with 'one', 'one two or three'
+        # checks that the shortest string is the start of the remaining string
+        # arguments
+      assert_end_with 'three', 'one two or three'
+        # checks that the shortest string is the end of the remaining string
+        # arguments
+
       assert_include 1, [ 1, 'two' ]
         # checks that the first array argument includes all other arguments
 

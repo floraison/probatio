@@ -47,6 +47,30 @@ class Probatio::Context
     do_assert(strings, 'matched') { |s| s.match?(rex) }
   end
 
+  def assert_start_with(*as)
+
+    fail ArgumentError.new(
+      "assert_start_with expects strings, not #{x.inspect}") \
+        if as.find { |a| ! a.is_a?(String) }
+
+    sta = as.inject { |s, a| s.length < a.length ? s : a }
+
+    do_assert(as.filter { |a| a != sta }, 'starting with') { |a|
+      a.start_with?(sta) }
+  end
+
+  def assert_end_with(*as)
+
+    fail ArgumentError.new(
+      "assert_end_with expects strings, not #{x.inspect}") \
+        if as.find { |a| ! a.is_a?(String) }
+
+    sta = as.inject { |s, a| s.length < a.length ? s : a }
+
+    do_assert(as.filter { |a| a != sta }, 'ending with') { |a|
+      a.end_with?(sta) }
+  end
+
   def assert_include(*as)
 
     ai =
