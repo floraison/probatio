@@ -18,6 +18,12 @@ def rework_switch(a)
   end
 end
 
+def is_directory_with_tests?(path)
+
+  File.directory?(path) &&
+  Dir[File.join(path, '**', '*_test.rb')].any?
+end
+
 switches = {}
 dirs, files, strings, environments, integers = [], [], [], [], []
 
@@ -175,7 +181,11 @@ opts[:files] = nil if opts[:files].empty? && strings.empty? && integers.empty?
 #p [ strings, integers ]
 #p [ 'fff',  opts[:files] ]
 
-opts[:dirs] = [ 'test' ] unless opts[:dirs] || opts[:files]
+opts[:dirs] = [
+  is_directory_with_tests?('test') ? 'test' :
+  is_directory_with_tests?('spec') ? 'spec' :
+  'test'
+    ] unless opts[:dirs] || opts[:files]
 
 opts[:includes] = Probatio.to_rexes_and_strs(switches['--name'])
 opts[:excludes] = Probatio.to_rexes_and_strs(switches['--exclude'])
