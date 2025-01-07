@@ -640,13 +640,16 @@ module Probatio
 
       tw = Probatio.term_width - 4
 
-      as = @arguments.collect { |a|
-        if (s0 = a.inspect).length < tw
-          "\n    " + s0
-        else
-          s1 = StringIO.new; PP.pp(a, s1, tw)
-          "\n" + s1.string.gsub(/^(.*)$/) { "    #{$1}" }
-        end }
+      as =
+        @arguments.find { |a| a.inspect.length > tw } ?
+          @arguments.collect { |a|
+            if (s0 = a.inspect).length < tw
+              "\n    " + s0
+            else
+              s1 = StringIO.new; PP.pp(a, s1, tw)
+              "\n" + s1.string.gsub(/^(.*)$/) { "    #{$1}" }
+            end } :
+        @arguments.collect(&:inspect)
 
       s = StringIO.new
       s << @assertion << ":"
