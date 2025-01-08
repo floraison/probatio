@@ -121,17 +121,19 @@ module Probatio
       if run_opts[:print]
 
         puts root_group.to_s
+
         exit 0
       end
 
       if run_opts[:map]
 
         root_group.map.each do |path, groups|
-          puts ". #{path}"
-          groups.each do |g|
-            puts "  - #{g.head}"
+          puts ". #{Probatio.c.green(path)}"
+          groups.each do |l, g|
+            puts "  #{Probatio.c.dark_grey('%4d')}  %s" % [ l, g.head ]
           end
         end
+
         exit 0
       end
 
@@ -214,7 +216,7 @@ module Probatio
 
       @children = []
 
-      (map[path] ||= []) << self
+      map_self
     end
 
     def filename; @filename ||= File.basename(@path); end
@@ -238,11 +240,10 @@ module Probatio
     def last_line
 
       f = map[path]
-      i = f.index(self)
+      i = f.index { |l, n| n == self }
       n = i && f[i + 1]
 
-      n ? n.line - 1 : 9_999_999
-      #(n && n.line) ? n.line - 1 : 9_999_999
+      n ? n.first - 1 : 9_999_999
     end
 
     def location
@@ -290,6 +291,16 @@ module Probatio
     protected
 
     def exclude?(run_opts); false; end
+
+    def map_self
+
+      l =
+        @block_source_location ? @block_source_location[1] :
+        @block ? @block.source_location[1] :
+        0
+
+      (map[path] ||= []) << [ l, self ]
+    end
   end
 
   class Group < Node
@@ -303,9 +314,9 @@ module Probatio
 
     def initialize(parent_group, path, name, opts, block)
 
-      super(parent_group, path, name, opts, block)
+      @block_source_location = block && block.source_location
 
-      add_block(block)
+      super(parent_group, path, name, opts, nil)
     end
 
     def add_block(block)
@@ -373,7 +384,7 @@ module Probatio
         if gg
           gg.path = @path
         else
-          gg = Probatio::Group.new(g, @path, name, opts, nil)
+          gg = Probatio::Group.new(g, @path, name, opts, block)
           g.children << gg
         end
 
