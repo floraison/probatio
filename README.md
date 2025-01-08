@@ -41,6 +41,7 @@ Usage: bundle exec proba [OPTIONS] [DIRS] [FILES] [OTHERS] [ENVS]
     -n, --name PATTERN     include tests matching /regexp/ or string in run
     -e, --exclude PATTERN  Exclude /regexp/ or string from run
     -p, --print            Dumps the test tree
+    -m, --map              Dumps the test file map
     -s, --seed             Sets random seed
     -d, --debug            Sets $DEBUG to true
     -x, --example          Outputs an example test file

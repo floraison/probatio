@@ -116,11 +116,29 @@ module Probatio
       dbg { Cerata.vertical_h_to_s(run_opts, ' run_opts| ') }
 
       #
+      # print or map
+
+      if run_opts[:print]
+
+        puts root_group.to_s
+        exit 0
+      end
+
+      if run_opts[:map]
+
+        root_group.map.each do |path, groups|
+          puts ". #{path}"
+          groups.each do |g|
+            puts "  - #{g.head}"
+          end
+        end
+        exit 0
+      end
+
+      #
       # run
 
       dbg { "---\n" + root_group.to_s + "\n---\n" }
-
-      if run_opts[:print] then; puts root_group.to_s; exit 0; end
 
       Probatio.despatch(:start, root_group, run_opts)
 
@@ -224,6 +242,7 @@ module Probatio
       n = i && f[i + 1]
 
       n ? n.line - 1 : 9_999_999
+      #(n && n.line) ? n.line - 1 : 9_999_999
     end
 
     def location
