@@ -42,7 +42,7 @@ group 'alice', 'bob' do
   end
 end
 
-group 'alice | bob :: charly > doug < emily' do
+group 'alice | bob ; charly > doug < emily ; farah' do
 
   test 'e' do
 

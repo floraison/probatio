@@ -410,7 +410,7 @@ module Probatio
       opts = names.last.is_a?(Hash) ? names.pop : {}
 
       names = names
-        .collect { |s| s.to_s.split(/\s*(?:\||::|<|>)\s*/) }
+        .collect { |s| s.to_s.split(/\s*(?:\||;|<|>)\s*/) }
         .flatten(1)
 
       last_name = names.last
