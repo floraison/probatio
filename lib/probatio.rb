@@ -113,6 +113,8 @@ module Probatio
         read_test_file(root_group, fpath)
       end
 
+      run_opts[:filen] = rework_filen(root_group, run_opts)
+
       dbg { Cerata.vertical_h_to_s(run_opts, ' run_opts| ') }
 
       #
@@ -129,8 +131,8 @@ module Probatio
 
         root_group.map.each do |path, groups|
           puts ". #{Probatio.c.green(path)}"
-          groups.each do |l, g|
-            puts "  #{Probatio.c.dark_grey('%4d')}  %s" % [ l, g.head ]
+          groups.each do |l0, l1, g|
+            puts "  #{Probatio.c.dark_grey('%4d %4d')}  %s" % [ l0, l1, g.head ]
           end
         end
 
@@ -198,6 +200,28 @@ module Probatio
 
       group.add_file(path)
     end
+
+    def rework_filen(root_group, run_opts)
+
+      run_opts[:filen]
+        .inject([]) { |a, fn| a.concat(rework_fn(root_group.map, fn)) }
+    end
+
+    def rework_fn(map, fn)
+
+      fmap = map[fn[0]]
+      fline = fn[1]
+
+      n = fmap.find { |l0, l1, n| fline >= l0 && fline <= l1 }
+
+      return [ fn ] if n && n[2].is_a?(Probatio::Test)
+
+      # we have a group, lists all its tests located in the given file...
+
+      n[2].all_tests
+        .select { |t| t.path == fn[0] }
+        .collect { |t| t.path_and_line }
+    end
   end
 
   class Node
@@ -239,11 +263,15 @@ module Probatio
 
     def last_line
 
-      f = map[path]
-      i = f.index { |l, n| n == self }
-      n = i && f[i + 1]
+      lln = map[path].find { |l0, l1, n| n == self }
 
-      n ? n.first - 1 : 9_999_999
+      l = lln && lln[1]
+      l && l > 0 ? l : 9_999_999
+    end
+
+    def path_and_line
+
+      [ @path, line ]
     end
 
     def location
@@ -299,7 +327,12 @@ module Probatio
         @block ? @block.source_location[1] :
         0
 
-      (map[path] ||= []) << [ l, self ]
+      f = (map[path] ||= [])
+
+      f0 = f.last
+      f0[1] = l - 1 if f0
+
+      f << [ l, 0, self ]
     end
   end
 
@@ -445,6 +478,11 @@ module Probatio
 
       opts[:pending] ||
       tests_and_groups.all? { |n| n.skip?(run_opts) }
+    end
+
+    def all_tests
+
+      tests + groups.inject([]) { |a, g| a.concat(g.all_tests) }
     end
 
     protected
