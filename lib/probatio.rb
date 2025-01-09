@@ -42,42 +42,27 @@ module Probatio
       run_opts[:filez] = []
       run_opts[:filen] = []
 
-      run_opts[:hdirs] =
-        if run_opts[:dirs].any?
-          run_opts[:dirs]
-        else
-          run_opts[:files]
-            .map { |e| File.split(e).first.split(File::SEPARATOR).first }
-            .uniq
-            .select { |e| File.directory?(e) }
-        end
+      helpers = locate(run_opts, '*_helper.rb', '*_helpers.rb')
+      setups = locate(run_opts, 'setup.rb', '*_setup.rb')
 
       debug do
-        " / dirs:   #{run_opts[:dirs].inspect}\n" +
-        " / files:  #{run_opts[:files].inspect}\n" +
-        " / hdirs:  #{run_opts[:hdirs].inspect}"
+        " / dirs:     #{run_opts[:dirs].inspect}\n" +
+        " / files:    #{run_opts[:files].inspect}\n" +
+        " / helpers:  #{helpers.inspect}\n" +
+        " / setups:   #{setups.inspect}\n"
       end
 
       # helpers and setups...
 
-      run_opts[:hdirs].sort.each do |dir|
+      helpers.each do |path|
 
-        ( Dir[File.join(dir, '**', '*_helper.rb')] +
-          Dir[File.join(dir, '**', '*_helpers.rb')]
+        read_helper_file(root_group, path)
+      end
 
-        ).sort.each do |path|
+      setups.each do |path|
 
-          read_helper_file(root_group, path)
-        end
-
-        ( Dir[File.join(dir, '**', 'setup.rb')] +
-          Dir[File.join(dir, '**', '*_setup.rb')]
-
-        ).sort.each do |path|
-
-          run_opts[:filez] << path
-          read_test_file(root_group, path)
-        end
+        run_opts[:filez] << path
+        read_test_file(root_group, path)
       end
 
       # tests from dirs...
@@ -221,6 +206,26 @@ module Probatio
       n[2].all_tests
         .select { |t| t.path == fn[0] }
         .collect { |t| t.path_and_line }
+    end
+
+    def locate(run_opts, *suffixes)
+
+      (
+        run_opts[:dirs].inject([]) { |a, d|
+          a.concat(do_locate(d, suffixes)) } +
+        run_opts[:files].inject([]) { |a, f|
+          a.concat(do_locate(File.dirname(f), suffixes)) }
+      ).uniq.sort
+    end
+
+    def do_locate(dir, suffixes)
+
+      return [] if dir == '.'
+
+      fs = suffixes
+        .inject([]) { |a, suf| a.concat(Dir[File.join(dir, '**', suf)]) }
+
+      fs.any? ? fs : do_locate(File.dirname(dir), suffixes)
     end
   end
 
