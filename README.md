@@ -125,6 +125,9 @@ group 'core' do
 
       MyLib.do_this_or_that()
 
+      assert_nil nil
+      assert_not_nil [], 1
+
       assert_true true
       assert_false 1 > 2
 

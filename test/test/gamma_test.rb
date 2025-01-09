@@ -36,5 +36,11 @@ group 'toto' do
 
     assert_equal 1, 2
   end
+
+  test 'x assert_not_nil' do
+
+    assert_not_nil [ 1, 2, 3 ]
+    assert_not_nil nil
+  end
 end
 

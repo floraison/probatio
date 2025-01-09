@@ -11,6 +11,11 @@ class Probatio::Context
     do_assert(as, 'nil') { |a| a == nil }
   end
 
+  def assert_not_nil(*as)
+
+    do_assert(as, 'not nil') { |a| a != nil }
+  end
+
   def assert_truthy(*as)
 
     do_assert(as, 'truthy') { |a| !! a }
