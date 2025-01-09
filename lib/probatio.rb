@@ -197,7 +197,7 @@ module Probatio
       fmap = map[fn[0]]
       fline = fn[1]
 
-      n = fmap.find { |l0, l1, n| fline >= l0 && fline <= l1 }
+      n = fmap.find { |l0, l1, n| fline >= l0 && (fline <= l1 || l1 < 1) }
 
       return [ fn ] if n && n[2].is_a?(Probatio::Test)
 
