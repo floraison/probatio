@@ -233,6 +233,7 @@ module Probatio
 
     attr_reader :parent, :path, :opts, :block, :children
 
+    def root; @parent ? @parent.root : self; end
     def map; @parent ? @parent.map : (@map ||= {}); end
 
     def initialize(parent, path, name, opts, block)
@@ -341,7 +342,7 @@ module Probatio
     end
   end
 
-  class Group < Node
+  class Section < Node
 
     def path=(pat)
 
@@ -355,6 +356,8 @@ module Probatio
       @block_source_location = block && block.source_location
 
       super(parent_group, path, name, opts, nil)
+
+      root.add_section(self, block) if self.class == Probatio::Section
     end
 
     def add_block(block)
@@ -408,47 +411,22 @@ module Probatio
       @children << Probatio::Around.new(self, @path, nil, opts, block)
     end
 
-    def group(*names, &block)
+    def _section_children
 
-      opts = names.last.is_a?(Hash) ? names.pop : {}
-
-      names = names
-        .collect { |s| s.to_s.split(/\s*(?:\||;|<|>)\s*/) }
-        .flatten(1)
-
-      last_name = names.last
-
-      names.inject(self) do |g, name|
-
-        gg = g.groups.find { |e| e.name == name }
-
-        if gg
-          gg.path = @path
-        else
-          gg = Probatio::Group.new(g, @path, name, opts, block)
-          g.children << gg
-        end
-
-        gg.add_block(block) if name == last_name
-
-        gg
-      end
-    end
-
-    def test(name, opts={}, &block)
-
-      @children << Probatio::Test.new(self, @path, name.to_s, opts, block)
+      (s = root.sections[name]; s ? s.children : [])
     end
 
     def arounds
 
       (@parent ? @parent.arounds : []) +
+      _section_children.select { |c| c.is_a?(Probatio::Around) } +
       @children.select { |c| c.is_a?(Probatio::Around) }
     end
 
     def befores
 
       (@parent ? @parent.befores : []) +
+      _section_children.select { |c| c.is_a?(Probatio::Before) } +
       @children.select { |c| c.is_a?(Probatio::Before) }
     end
 
@@ -456,6 +434,7 @@ module Probatio
 
       (
         (@parent ? @parent.afters : []) +
+        _section_children.select { |c| c.is_a?(Probatio::After) } +
         @children.select { |c| c.is_a?(Probatio::After) }
       ).reverse
     end
@@ -501,6 +480,12 @@ module Probatio
       tests + groups.inject([]) { |a, g| a.concat(g.all_tests) }
     end
 
+    def add_section(section, block)
+
+      s = (sections[section.name] ||= section)
+      s.add_block(block)
+    end
+
     protected
 
     def setups; @children.select { |c| c.is_a?(Probatio::Setup) }; end
@@ -522,6 +507,48 @@ module Probatio
       when -1 then a.reverse
       else a.shuffle(random: Probatio.rng)
       end
+    end
+  end
+
+  class Group < Section
+
+    def sections; @sections ||= {}; end
+
+    def group(*names, &block)
+
+      opts = names.last.is_a?(Hash) ? names.pop : {}
+
+      names = names
+        .collect { |s| s.to_s.split(/\s*(?:\||;|<|>)\s*/) }
+        .flatten(1)
+
+      last_name = names.last
+
+      names.inject(self) do |g, name|
+
+        gg = g.groups.find { |e| e.name == name }
+
+        if gg
+          gg.path = @path
+        else
+          gg = Probatio::Group.new(g, @path, name, opts, block)
+          g.children << gg
+        end
+
+        gg.add_block(block) if name == last_name
+
+        gg
+      end
+    end
+
+    def section(name, opts={}, &block)
+
+      @children << Probatio::Section.new(self, @path, name.to_s, opts, block)
+    end
+
+    def test(name, opts={}, &block)
+
+      @children << Probatio::Test.new(self, @path, name.to_s, opts, block)
     end
   end
 
