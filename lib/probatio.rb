@@ -445,8 +445,10 @@ module Probatio
 
     def afters
 
-      (@parent ? @parent.afters : []) +
-      @children.select { |c| c.is_a?(Probatio::After) }
+      (
+        (@parent ? @parent.afters : []) +
+        @children.select { |c| c.is_a?(Probatio::After) }
+      ).reverse
     end
 
     ATTRS = %i[ @parent @name @group_opts @path @children ].freeze
