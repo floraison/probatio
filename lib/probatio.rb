@@ -404,6 +404,9 @@ module Probatio
     def after(opts={}, &block)
       @children << Probatio::After.new(self, @path, nil, opts, block)
     end
+    def around(opts={}, &block)
+      @children << Probatio::Around.new(self, @path, nil, opts, block)
+    end
 
     def group(*names, &block)
 
@@ -435,6 +438,12 @@ module Probatio
     def test(name, opts={}, &block)
 
       @children << Probatio::Test.new(self, @path, name.to_s, opts, block)
+    end
+
+    def arounds
+
+      (@parent ? @parent.arounds : []) +
+      @children.select { |c| c.is_a?(Probatio::Around) }
     end
 
     def befores
@@ -539,6 +548,7 @@ module Probatio
 
   class Before < Leaf; end
   class After < Leaf; end
+  class Around < Leaf; end
 
   class Test < Leaf
 
@@ -554,11 +564,17 @@ module Probatio
 
       c = Probatio::Context.new(group)
 
-      group.befores.each { |b| c.run(b, run_opts) }
+      group.arounds.each do |ar|
 
-      c.run(self, run_opts)
+        c.run(ar, run_opts) do
 
-      group.afters.each { |a| c.run(a, run_opts) }
+          group.befores.each { |b| c.run(b, run_opts) }
+
+          c.run(self, run_opts)
+
+          group.afters.each { |a| c.run(a, run_opts) }
+        end
+      end
     end
 
     def skip?(run_opts)
@@ -613,7 +629,9 @@ module Probatio
       group.context.each { |k, v| instance_variable_set(k, v) }
     end
 
-    def run(child, run_opts)
+    def block; @__block; end
+
+    def run(child, run_opts, &block)
 
       fail ArgumentError.new("invalid child opts #{child.opts.inspect}") \
         unless child.opts.is_a?(Hash)
@@ -624,6 +642,7 @@ module Probatio
       begin
 
         @__child = child
+        @__block = block
 
         Probatio.despatch("#{child.type}_enter", self, child, run_opts)
 

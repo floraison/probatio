@@ -20,6 +20,12 @@ group 'delta' do
       p :after_d1
     end
 
+    around do
+      p :around_before
+      block.yield
+      p :around_after
+    end
+
     test 'd1a' do
       p :__test_d1a
     end
