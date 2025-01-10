@@ -637,7 +637,12 @@ module Probatio
         #Probatio.despatch(:test_fail, self, child)
           # done in the assertion implementation...
 
-        # keeping calm and carrying on...
+      rescue StandardError => serr
+
+        class << serr; include Probatio::ExtraErrorMethods; end
+        serr.test = child
+
+        Probatio.despatch(:test_fail, self, child, serr)
 
       ensure
 
@@ -709,11 +714,7 @@ module Probatio
     def source_lines
 
       @source_lines ||=
-        File.readlines(@file).each_with_index.to_a[@line - 1..-1]
-          .map { |l, i| [ i + 1, l.rstrip ] }
-          .take_while { |_, l|
-            l = l.strip
-            l.length > 0 && l != 'end' && l != '}' }
+        Probatio::AssertionError.select_source_lines(@file, @line)
     end
 
     def summary(indent='')
@@ -736,6 +737,58 @@ module Probatio
       as.each_with_index { |a, i| s << "\n#{indent}  %d: %s" % [ i, a ] }
 
       s.string
+    end
+
+    class << self
+
+      def select_source_lines(path, line)
+
+        File.readlines(path).each_with_index.to_a[line - 1..-1]
+          .map { |l, i| [ i + 1, l.rstrip ] }
+          .take_while { |_, l|
+            l = l.strip
+            l.length > 0 && l != 'end' && l != '}' }
+      end
+    end
+  end
+
+  module ExtraErrorMethods
+
+    attr_accessor :test
+
+    def location; [ test.path, line ]; end
+    def loc; location.map(&:to_s).join(':'); end
+
+    def trail
+
+      msg = "#{self.class}: #{self.message}"
+
+      @test.trail + "\n" +
+      Probatio.c.red("#{'  ' * (test.depth + 1)}#{loc} --> #{msg}")
+    end
+
+    def source_lines
+
+      @source_lines ||=
+        Probatio::AssertionError.select_source_lines(test.path, line)
+    end
+
+    def summary(indent='')
+
+      indent + 'summary' # TODO
+    end
+
+    def line
+
+      backtrace.each do |l|
+
+        ss = l.split(':')
+
+        next unless ss.find { |e| e == test.path }
+        return ss.find { |e| e.match?(/^\d+$/) }.to_i
+      end
+
+      -1
     end
   end
 

@@ -42,5 +42,10 @@ group 'toto' do
     assert_not_nil [ 1, 2, 3 ]
     assert_not_nil nil
   end
+
+  test 'pure fail' do
+
+    fail 'should be caught and not exit...'
+  end
 end
 
