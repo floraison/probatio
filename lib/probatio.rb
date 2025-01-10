@@ -562,19 +562,7 @@ module Probatio
       return Probatio.despatch(:test_pending, self) \
         if opts[:pending]
 
-      c = Probatio::Context.new(group)
-
-      group.arounds.each do |ar|
-
-        c.run(ar, run_opts) do
-
-          group.befores.each { |b| c.run(b, run_opts) }
-
-          c.run(self, run_opts)
-
-          group.afters.each { |a| c.run(a, run_opts) }
-        end
-      end
+      Probatio::Context.new(group, self).run(run_opts)
     end
 
     def skip?(run_opts)
@@ -624,14 +612,35 @@ module Probatio
 
   class Context
 
-    def initialize(group)
+    def initialize(group, test)
+
+      @__group = group
+      @__test = test
 
       group.context.each { |k, v| instance_variable_set(k, v) }
     end
 
     def block; @__block; end
 
-    def run(child, run_opts, &block)
+    def run(run_opts)
+
+      _run(@__group.arounds + [ :do_run ], run_opts)
+    end
+
+    protected
+
+    def _run(arounds, run_opts)
+
+      if (ar = arounds.shift).is_a?(Probatio::Around)
+        do_run(ar, run_opts) { _run(arounds, run_opts) }
+      else
+        @__group.befores.each { |bf| do_run(bf, run_opts) }
+        do_run(@__test, run_opts)
+        @__group.afters.each { |af| do_run(af, run_opts) }
+      end
+    end
+
+    def do_run(child, run_opts, &block)
 
       fail ArgumentError.new("invalid child opts #{child.opts.inspect}") \
         unless child.opts.is_a?(Hash)

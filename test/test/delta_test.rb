@@ -10,6 +10,18 @@ group 'delta' do
   after do
     p :after_d
   end
+  #around do
+  #  p :aB
+  #  block.yield
+  #  p :aA
+  #end
+
+  group 'delta0' do
+
+    test 'd0a' do
+      p :__test_d0a
+    end
+  end
 
   group 'delta1' do
 
@@ -21,9 +33,15 @@ group 'delta' do
     end
 
     around do
-      p :around_before
+      p :around_0_before
       block.yield
-      p :around_after
+      p :around_0_after
+    end
+
+    around do
+      p :around_1_before
+      block.yield
+      p :around_1_after
     end
 
     test 'd1a' do
