@@ -754,7 +754,7 @@ module Probatio
       details.each do |d|
         case d
         when Hash then @opts = d
-        when String, Exception then @error = d
+        when Exception then @error = d
         when Probatio::Leaf then @leaf = d
         when Probatio::Group then @group = d
         when Probatio::Context then @context = d
