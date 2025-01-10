@@ -135,6 +135,7 @@ class Probatio::VanillaSummarizer
       puts ev.error.trail
       puts
       #puts "%4d %s" % [ ev.error.line, c.dark_grey(ev.error.source_line) ]
+      #puts c.dark_grey(ev.error.path)
       ev.error.source_lines.each do |i, l|
         #puts "%4d %s" % [ i, c.dark_grey(l) ]
         puts "%4d %s" % [

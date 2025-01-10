@@ -664,6 +664,8 @@ module Probatio
     attr_reader :assertion, :arguments, :test, :file, :line
     attr_accessor :nested_error
 
+    alias path file
+
     def initialize(assertion, arguments, error_or_message, test, file, line)
 
       @assertion = assertion
@@ -756,12 +758,13 @@ module Probatio
 
     attr_accessor :test
 
-    def location; [ test.path, line ]; end
+    def path; test.path; end
+    def location; [ path, line ]; end
     def loc; location.map(&:to_s).join(':'); end
 
     def trail
 
-      msg = "#{self.class}: #{self.message}"
+      msg = "#{self.class}: #{self.message.inspect}"
 
       @test.trail + "\n" +
       Probatio.c.red("#{'  ' * (test.depth + 1)}#{loc} --> #{msg}")
@@ -775,7 +778,16 @@ module Probatio
 
     def summary(indent='')
 
-      indent + 'summary' # TODO
+      o = StringIO.new
+
+      o << self.class.name << ': ' << self.message.inspect << "\n"
+
+      i = backtrace.index { |l| l.match?(/\/lib\/probatio\.rb:/) } || -1
+
+      backtrace[0..i]
+        .inject(o) { |o, l| o << indent << l << "\n" }
+
+      o.string
     end
 
     def line
