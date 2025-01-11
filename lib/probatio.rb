@@ -450,8 +450,10 @@ module Probatio
     end
 
     METHS = %i[
-      _group _section _setup _teardown _before _after _test
-        ].freeze
+      _group _section
+        _setup _teardown _before _after
+          _test
+            ].freeze
 
     def method_missing(name, *args, &block)
 
