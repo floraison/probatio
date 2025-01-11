@@ -287,15 +287,18 @@ module Probatio
 
     def to_s(opts={})
 
+      col = Probatio.c
       out = opts[:out] || StringIO.new
       opts1 = opts.merge(out: out)
 
-      ind = '  ' * depth
-      nam = @name ? ' ' + @name.inspect : ''
-      nos = @opts.any? ? ' ' + @opts.inspect : ''
-      pali = ' ' + location; pali = '' if pali.end_with?(':')
+      pali = location; pali = pali.chop if pali.end_with?(':')
 
-      out << "#{ind}#{type}#{nam}#{nos}#{pali}\n"
+      out << '  ' * depth
+      out << col.yellow(type)
+      out << (@name ? ' ' + @name.inspect : '')
+      out << (@opts.any? ? ' ' + @opts.inspect : '')
+      out << ' ' << col.dark_grey(pali)
+      out << "\n"
 
       @children.each { |c| c.to_s(opts1) } unless opts[:head]
 
@@ -555,7 +558,6 @@ module Probatio
 
     def section(name, opts={}, &block)
 
-p [ name, @path ]
       @children << Probatio::Section.new(self, @path, name.to_s, opts, block)
     end
 
