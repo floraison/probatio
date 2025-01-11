@@ -357,7 +357,8 @@ module Probatio
 
       super(parent_group, path, name, opts, nil)
 
-      root.add_section(self, block) if self.class == Probatio::Section
+      parent_group.add_section(self, block) \
+        if self.class == Probatio::Section
     end
 
     def add_block(block)
@@ -411,22 +412,17 @@ module Probatio
       @children << Probatio::Around.new(self, @path, nil, opts, block)
     end
 
-    def _section_children
-
-      (s = root.sections[name]; s ? s.children : [])
-    end
-
     def arounds
 
       (@parent ? @parent.arounds : []) +
-      _section_children.select { |c| c.is_a?(Probatio::Around) } +
+      sections.select { |s| s.is_a?(Probatio::Around) } +
       @children.select { |c| c.is_a?(Probatio::Around) }
     end
 
     def befores
 
       (@parent ? @parent.befores : []) +
-      _section_children.select { |c| c.is_a?(Probatio::Before) } +
+      sections.select { |s| s.is_a?(Probatio::Before) } +
       @children.select { |c| c.is_a?(Probatio::Before) }
     end
 
@@ -434,7 +430,7 @@ module Probatio
 
       (
         (@parent ? @parent.afters : []) +
-        _section_children.select { |c| c.is_a?(Probatio::After) } +
+        sections.select { |c| c.is_a?(Probatio::After) } +
         @children.select { |c| c.is_a?(Probatio::After) }
       ).reverse
     end
@@ -482,7 +478,7 @@ module Probatio
 
     def add_section(section, block)
 
-      s = (sections[section.name] ||= section)
+      s = ((@sections ||= {})[section.name] ||= section)
       s.add_block(block)
     end
 
@@ -508,11 +504,27 @@ module Probatio
       else a.shuffle(random: Probatio.rng)
       end
     end
+
+    def section_drill
+
+      (@parent ? @parent.section_drill : []) +
+      (@sections || {}).values
+    end
+
+    def sections
+
+      @_sections ||=
+        begin
+          sd = section_drill
+          array_name
+            .collect { |n| sd.find { |s| s.name == n } }
+            .compact
+            .inject([]) { |a, s| a.concat(s.children) }
+        end
+    end
   end
 
   class Group < Section
-
-    def sections; @sections ||= {}; end
 
     def group(*names, &block)
 
@@ -543,6 +555,7 @@ module Probatio
 
     def section(name, opts={}, &block)
 
+p [ name, @path ]
       @children << Probatio::Section.new(self, @path, name.to_s, opts, block)
     end
 
