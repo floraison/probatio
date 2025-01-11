@@ -61,7 +61,7 @@ group 'epsilon' do
   end
 end
 
-section 'with db' do
+_section 'with db' do
 
   around do
     p :with_db_around_bf

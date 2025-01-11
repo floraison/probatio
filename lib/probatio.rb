@@ -391,7 +391,6 @@ module Probatio
 
       (
         setups +
-        #shuffle(tests) + shuffle(groups) +
         shuffle(tests_and_groups) +
         teardowns
       ).each { |c| c.run(run_opts) }
@@ -450,7 +449,9 @@ module Probatio
       h
     end
 
-    METHS = %i[ _group _setup _teardown _before _after _test ].freeze
+    METHS = %i[
+      _group _section _setup _teardown _before _after _test
+        ].freeze
 
     def method_missing(name, *args, &block)
 
@@ -558,7 +559,8 @@ module Probatio
 
     def section(name, opts={}, &block)
 
-      @children << Probatio::Section.new(self, @path, name.to_s, opts, block)
+      @children << Probatio::Section.new(self, @path, name.to_s, opts, block) \
+        unless opts[:pending]
     end
 
     def test(name, opts={}, &block)
