@@ -490,8 +490,17 @@ module Probatio
 
     protected
 
-    def setups; @children.select { |c| c.is_a?(Probatio::Setup) }; end
-    def teardowns; @children.select { |c| c.is_a?(Probatio::Teardown) }; end
+    def setups
+
+      group_sections.select { |c| c.is_a?(Probatio::Setup) } +
+      @children.select { |c| c.is_a?(Probatio::Setup) }
+    end
+
+    def teardowns
+
+      group_sections.select { |c| c.is_a?(Probatio::Teardown) } +
+      @children.select { |c| c.is_a?(Probatio::Teardown) }
+    end
 
     def tests_and_groups
 
@@ -527,6 +536,13 @@ module Probatio
             .compact
             .inject([]) { |a, s| a.concat(s.children) }
         end
+    end
+
+    def group_sections
+
+      @_group_sections ||=
+        section_drill
+          .inject([]) { |a, s| a.concat(s.children) if s.name == name; a }
     end
   end
 
