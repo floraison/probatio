@@ -14,6 +14,7 @@ def rework_switch(a)
   when '-n', '--name' then '--name'
   when '-e', '--exclude' then '--exclude'
   when '-s', '--seed' then '--seed'
+  when '-d', '--debug' then '--debug'
   else nil
   end
 end
@@ -54,9 +55,12 @@ $_PROBATIO_COLOURS =
   ( ! $stdout.tty?) ? Colorato.no_colours :
   Colorato.colours
 
-$DEBUG = true if switches['-d']
+$_PROBATIO_DEBUG =
+  (switches['--debug'] || []).join.downcase.chars.collect(&:to_sym)
+$DEBUG =
+  true if $_PROBATIO_DEBUG.include?(:r)
 
-Probatio.debug {
+Probatio.dbg_s {
   ' * switches:      ' + switches.inspect + "\n" +
   ' * strings:       ' + strings.inspect + "\n" +
   ' * integers:      ' + integers.inspect + "\n" +
@@ -80,7 +84,7 @@ if switches['-h'] || switches['--help']
     -p, --print            Dumps the test tree
     -m, --map              Dumps the test file map
     -s, --seed             Sets random seed
-    -d, --debug            Sets $DEBUG to true
+    -d, --debug smr        's' for start opts, 'm' for messages, 'r' for $DEBUG
     -x, --example          Outputs an example test file
     -X, --plugin-example   Outputs an example plugin file
     --mangle               Turns the given _spec.rb files into proba _test.rb

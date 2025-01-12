@@ -45,7 +45,7 @@ module Probatio
       helpers = locate(run_opts, '*_helper.rb', '*_helpers.rb')
       setups = locate(run_opts, 'setup.rb', '*_setup.rb')
 
-      debug do
+      debug(2) do
         " / dirs:     #{run_opts[:dirs].inspect}\n" +
         " / files:    #{run_opts[:files].inspect}\n" +
         " / helpers:  #{helpers.inspect}\n" +
@@ -100,7 +100,7 @@ module Probatio
 
       run_opts[:filen] = rework_filen(root_group, run_opts)
 
-      dbg { Cerata.vertical_h_to_s(run_opts, ' run_opts| ') }
+      dbg_s { Cerata.vertical_h_to_s(run_opts, ' run_opts| ') }
 
       #
       # print or map
@@ -127,7 +127,7 @@ module Probatio
       #
       # run
 
-      dbg { "---\n" + root_group.to_s + "\n---\n" }
+      dbg_s { "---\n" + root_group.to_s + "\n---\n" }
 
       Probatio.despatch(:start, root_group, run_opts)
 
@@ -155,7 +155,7 @@ module Probatio
       ev = Probatio::Event.new(en, details)
 #p [ :despatch, event_name, ev.delta ]
 
-      dbg { '  ' + [ :despatch, en, ev.node && ev.node.full_name ].inspect }
+      dbg_m { '  ' + [ :despatch, en, ev.node && ev.node.full_name ].inspect }
 
       @plugouts ||= @plugins.reverse
 

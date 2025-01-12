@@ -43,7 +43,7 @@ Usage: bundle exec proba [OPTIONS] [DIRS] [FILES] [OTHERS] [ENVS]
     -p, --print            Dumps the test tree
     -m, --map              Dumps the test file map
     -s, --seed             Sets random seed
-    -d, --debug            Sets $DEBUG to true
+    -d, --debug smr        's' for start opts, 'm' for messages, 'r' for $DEBUG
     -x, --example          Outputs an example test file
     -X, --plugin-example   Outputs an example plugin file
     --mangle               Turns the given _spec.rb files into proba _test.rb
