@@ -27,7 +27,7 @@ module Probatio::Waiters
   alias wait_for wait_until
 end
 
-class Probatio::Group
+class Probatio::Section
 
   include Probatio::Waiters
 end
