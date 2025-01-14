@@ -183,9 +183,8 @@ class Probatio::Context
 
       assert_match(*as)
 
-    elsif count[:arrays] > 0
-
-      assert_include(*as)
+    #elsif count[:arrays] > 0
+    #  assert_include(*as)
 
     else
 
