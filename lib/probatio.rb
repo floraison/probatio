@@ -441,6 +441,9 @@ module Probatio
 
     def context(h={})
 
+      fail ArgumentError.new('Probatio says "trailing RSpec context?"') \
+        unless h.is_a?(Hash)
+
       instance_variables
         .each { |k|
           h[k] = instance_variable_get(k) unless ATTRS.include?(k) }
