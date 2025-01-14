@@ -810,7 +810,8 @@ module Probatio
               "\n#{indent}    " + s0
             else
               s1 = StringIO.new; PP.pp(a, s1, tw)
-              "\n" + indent + s1.string.gsub(/^(.*)$/) { "    #{$1}" }
+              qualify_argument(a) + "\n" +
+              indent + s1.string.gsub(/^(.*)$/) { "    #{$1}" }
             end } :
         @arguments.collect(&:inspect)
 
@@ -831,6 +832,16 @@ module Probatio
             l = l.strip
             l.length > 0 && l != 'end' && l != '}' }
       end
+    end
+
+    protected
+
+    def qualify_argument(a)
+
+      '<' +
+      a.class.to_s +
+      (a.respond_to?(:size) ? " size:#{a.size}" : '') +
+      '>'
     end
   end
 
