@@ -417,14 +417,14 @@ module Probatio
     def arounds
 
       (@parent ? @parent.arounds : []) +
-      sections.select { |s| s.is_a?(Probatio::Around) } +
+      group_sections.select { |s| s.is_a?(Probatio::Around) } +
       @children.select { |c| c.is_a?(Probatio::Around) }
     end
 
     def befores
 
       (@parent ? @parent.befores : []) +
-      sections.select { |s| s.is_a?(Probatio::Before) } +
+      group_sections.select { |s| s.is_a?(Probatio::Before) } +
       @children.select { |c| c.is_a?(Probatio::Before) }
     end
 
@@ -432,7 +432,7 @@ module Probatio
 
       (
         (@parent ? @parent.afters : []) +
-        sections.select { |c| c.is_a?(Probatio::After) } +
+        group_sections.select { |c| c.is_a?(Probatio::After) } +
         @children.select { |c| c.is_a?(Probatio::After) }
       ).reverse
     end
@@ -524,18 +524,6 @@ module Probatio
 
       (@parent ? @parent.section_drill : []) +
       (@sections || {}).values
-    end
-
-    def sections
-
-      @_sections ||=
-        begin
-          sd = section_drill
-          array_name
-            .collect { |n| sd.find { |s| s.name == n } }
-            .compact
-            .inject([]) { |a, s| a.concat(s.children) }
-        end
     end
 
     def group_sections
