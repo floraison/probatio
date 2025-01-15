@@ -50,7 +50,7 @@ group 'alice | bob ; charly > doug < emily ; farah' do
   end
 end
 
-group 'any empty' do
+group 'any empty size' do
 
   test 'f' do
 
@@ -59,6 +59,15 @@ group 'any empty' do
 
     #assert_any '', []
     #assert_empty '1', []
+  end
+
+  test 'g' do
+
+    assert_size '', [], 0
+    assert_size 'abc', [ 1, 2, 3 ], 3
+
+    #assert_size '', [], 1
+    #assert_size 'abc', [ 1, 2, 3 ], 2
   end
 end
 

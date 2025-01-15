@@ -97,6 +97,17 @@ class Probatio::Context
     do_assert(as, 'included') { |e| arr.include?(e) }
   end
 
+  def assert_size(*as)
+
+    ai =
+      as.index { |a| a.is_a?(Integer) && a >= 0 } ||
+      fail(ArgumentError.new("assert_size found no integer >= 0"))
+
+    sz = as.delete_at(ai)
+
+    do_assert(as, "size #{sz}") { |e| e.respond_to?(:size) && e.size == sz }
+  end
+
   def assert_hashy(*as)
 
     do_assert(as[0].to_a, 'hashy equal') { |k, v| k == v }
