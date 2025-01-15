@@ -702,7 +702,7 @@ module Probatio
         unless child.opts.is_a?(Hash)
 
       return Probatio.despatch("#{child.type}_pending", self, child, run_opts) \
-        if child.opts[:pending]
+        if child.opts[:pending] || child.block.nil?
 
       begin
 
