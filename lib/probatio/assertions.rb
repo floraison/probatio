@@ -39,6 +39,16 @@ class Probatio::Context
     do_assert(as, 'false') { |a| a == false }
   end
 
+  def assert_any(*as)
+
+    do_assert(as, 'any') { |a| a.respond_to?(:size) && a.size > 0 }
+  end
+
+  def assert_empty(*as)
+
+    do_assert(as, 'empty') { |a| a.respond_to?(:size) && a.size == 0 }
+  end
+
   def assert_equal(*as)
 
     do_assert(as, 'equal') { |a| a == as[0] }

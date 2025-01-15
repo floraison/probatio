@@ -137,6 +137,9 @@ group 'core' do
       assert_falsey nil, false
       assert_falseish nil, false
 
+      assert_any %w[ an array ], 'a string'
+      assert_empty [], ''
+
       assert_equal 'one', 'o' + 'ne'
         # checks that all its arguments are equal
 

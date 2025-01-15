@@ -50,3 +50,15 @@ group 'alice | bob ; charly > doug < emily ; farah' do
   end
 end
 
+group 'any empty' do
+
+  test 'f' do
+
+    assert_any 'a', [ 1 ]
+    assert_empty '', []
+
+    #assert_any '', []
+    #assert_empty '1', []
+  end
+end
+
