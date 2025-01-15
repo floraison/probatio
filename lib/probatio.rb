@@ -665,6 +665,9 @@ module Probatio
 
   class Context
 
+    attr_reader :__group
+    attr_reader :__test
+
     def initialize(group, test)
 
       @__group = group
