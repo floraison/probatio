@@ -27,6 +27,7 @@ module Probatio
               f.write(
                 l
                   .gsub(/\A(\s*)describe(\s+)/) { "#{$1}group#{$2}" }
+                  .gsub(/\A(\s*)context(\s+)/) { "#{$1}group#{$2}" }
                   .gsub(/\A(\s*)it(\s+)/) { "#{$1}test#{$2}" }
                   .gsub(/\A(\s*)expect(\(|\s)/) { "#{$1}assert#{$2}" }
                   .gsub(/\)\.to (eq|match)\(/) { ', ' }
