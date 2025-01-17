@@ -45,7 +45,7 @@ module Probatio
       helpers = locate(run_opts, '*_helper.rb', '*_helpers.rb')
       setups = locate(run_opts, 'setup.rb', '*_setup.rb')
 
-      debug(2) do
+      dbg_s do
         " / dirs:     #{run_opts[:dirs].inspect}\n" +
         " / files:    #{run_opts[:files].inspect}\n" +
         " / helpers:  #{helpers.inspect}\n" +
