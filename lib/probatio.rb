@@ -339,7 +339,7 @@ module Probatio
       f = (map[path] ||= [])
 
       f0 = f.last
-      f0[1] = l - 1 if f0
+      f0[1] = (l == 0 ? f0[0] : l - 1) if f0
 
       f << [ l, 0, self ]
     end
@@ -653,8 +653,9 @@ module Probatio
     def path_and_line_match?(fpath, fline)
 
 #p [ path, line, last_line, '<-->', fpath, fline ]
-      path == fpath &&
-        fline >= line && fline <= last_line
+      line &&
+        path == fpath &&
+          fline >= line && fline <= last_line
     end
 
     def in_setup?
