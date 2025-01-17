@@ -236,10 +236,7 @@ class Probatio::Context
 
     when StandardError, Hash, String
 
-      aerr = Probatio::AssertionError
-        .new(
-          extract_assert_method(caller),
-          as, r, @__child, *extract_file_and_line(caller))
+      aerr = make_assertion_error(as, r)
 
       Probatio.despatch(:test_fail, self, @__child, aerr)
 
@@ -264,6 +261,17 @@ class Probatio::Context
 
     #Probatio.despatch(:test_succeed, self, @__child)
     Probatio.despatch(:assertion_leave, self, @__child)
+  end
+
+  def make_assertion_error(arguments, result)
+
+    Probatio::AssertionError
+      .new(
+        extract_assert_method(caller),
+        arguments,
+        result,
+        @__child,
+        *extract_file_and_line(caller))
   end
 
   def extract_file_and_line(backtrace)
