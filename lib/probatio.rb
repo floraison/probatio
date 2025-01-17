@@ -201,9 +201,14 @@ module Probatio
 
       return [ fn ] if n && n[2].is_a?(Probatio::Test)
 
+      # we don't have a test...
+
+      n2 = n[2]
+      n2 = n2.parent unless n2.is_a?(Probatio::Group)
+
       # we have a group, lists all its tests located in the given file...
 
-      n[2].all_tests
+      n2.all_tests
         .select { |t| t.path == fn[0] }
         .collect { |t| t.path_and_line }
     end
