@@ -107,6 +107,7 @@ class Probatio::Context
 
     do_assert(as, "size #{sz}") { |e| e.respond_to?(:size) && e.size == sz }
   end
+  alias assert_count assert_size
 
   def assert_hashy(*as)
 

@@ -39,6 +39,7 @@ group 'core' do
       assert_size [], 0
       assert_size 'foo', 3
       assert_size { a: 1 }, 1
+      assert_count %w[ a b c ], 3
 
       assert_equal 'one', 'o' + 'ne'
         # checks that all its arguments are equal
