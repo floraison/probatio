@@ -207,12 +207,18 @@ if environments.any?
     {}
   environments.each do |e|
     (envs[e.to_sym] || {}).each { |k, v|
-      Probatio.debug { " . setting ENV[#{k.inspect}] to #{v.inspect}" }
+      Probatio.dbg_s { " . setting ENV[#{k.inspect}] to #{v.inspect}" }
       ENV[k] = v }
   end
 end
 
-Probatio.debug { ' * opts: ' + opts.inspect }
+Probatio.dbg_s { ' * opts: ' + opts.inspect }
+
+if strings & %w[ . 1st first last ]
+  puts $_PROBATIO_COLOURS.dark_grey
+  puts opts[:files]
+  print $_PROBATIO_COLOURS.reset
+end
 
 #
 # run
