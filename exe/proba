@@ -172,6 +172,7 @@ strings.each do |s|
   opts[:files] <<
     case s
     when '.' then tpoint
+    when 'f' then tpoint && tpoint.split(':').first
     when '1st', 'first' then fails[0]
     when 'last' then fails[-1]
     when /^:\d+$/ then fails.find { |f| f.end_with?(s) }
