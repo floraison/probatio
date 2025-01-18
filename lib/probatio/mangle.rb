@@ -31,7 +31,6 @@ module Probatio
                   .gsub(/\A(\s*)it(\s+)/) { "#{$1}test#{$2}" }
                   .gsub(/\A(\s*)expect(\(|\s)/) { "#{$1}assert#{$2}" }
                   .gsub(/\)\.to (eq|match)\(/) { ', ' }
-                  .gsub(/^\s*,/, ',')
               )
             end
           end
