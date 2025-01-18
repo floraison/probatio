@@ -25,6 +25,11 @@ module Probatio::Waiters
     fail "timeout after #{timeout}s"
   end
   alias wait_for wait_until
+
+  def monow
+
+    Process.clock_gettime(Process::CLOCK_MONOTONIC)
+  end
 end
 
 class Probatio::Section
