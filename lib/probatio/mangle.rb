@@ -23,16 +23,15 @@ module Probatio
           next if dry
 
           File.open(p1, 'wb') do |f|
-            File.readlines(path).each do |l|
-              f.write(
-                l
-                  .gsub(/\A(\s*)describe(\s+)/) { "#{$1}group#{$2}" }
-                  .gsub(/\A(\s*)context(\s+)/) { "#{$1}group#{$2}" }
-                  .gsub(/\A(\s*)it(\s+)/) { "#{$1}test#{$2}" }
-                  .gsub(/\A(\s*)expect(\(|\s)/) { "#{$1}assert#{$2}" }
-                  .gsub(/\)\.to (eq|match)\(/) { ', ' }
-              )
-            end
+            f.write(
+              File.read(path)
+                .gsub(/^(\s*)describe(\s+)/) { "#{$1}group#{$2}" }
+                .gsub(/^(\s*)context(\s+)/) { "#{$1}group#{$2}" }
+                .gsub(/^(\s*)it(\s+)/) { "#{$1}test#{$2}" }
+                .gsub(/^(\s*)expect(\(|\s)/) { "#{$1}assert#{$2}" }
+                .gsub(/\)\.to (eq|match)\(/) { ', ' }
+                .gsub(/\n\s*, */) { ",\n" }
+            )
           end
 
           puts c.dark_gray("    .. wrote to #{c.light_green(p1)}")
