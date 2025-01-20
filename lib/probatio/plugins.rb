@@ -190,7 +190,8 @@ class Probatio::ProbaOutputter
 # TODO unplug if --mute or some switch like that...
     r = Probatio.recorder_plugin
 
-    fls = Cerata.table_to_s(r.failed_tests.collect(&:to_h), '  ')
+    flh = r.failed_tests.collect(&:to_h).each { |h| h.delete(:n) }
+    fls = Cerata.table_to_s(flh, '  ')
 
     rb = {}
       #
