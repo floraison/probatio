@@ -105,7 +105,9 @@ class Probatio::Context
 
     sz = as.delete_at(ai)
 
-    do_assert(as, "size #{sz}") { |e| e.respond_to?(:size) && e.size == sz }
+    as = as.collect { |a| a.respond_to?(:size) ? a.size : a.class }
+
+    do_assert(as, "size #{sz}") { |a| a == sz }
   end
   alias assert_count assert_size
 
