@@ -127,8 +127,8 @@ class Probatio::VanillaSummarizer
 
     recorder.failures.each do |ev|
 
-      puts
-      puts '-' * 80
+      #puts
+      puts '-' * [ Probatio.term_width, 80 ].min
       #puts ev.leaf.parent.to_s
       #puts ev.leaf.head
       #puts ev.leaf.trail
@@ -145,7 +145,7 @@ class Probatio::VanillaSummarizer
       #puts ev.error.inspect
       #puts '.'
       #puts ev.to_s
-      puts
+      #puts
     end
     #puts '-' * 80 if recorder.failures.any?
 
@@ -164,6 +164,7 @@ class Probatio::VanillaSummarizer
 
     fic = r.file_count
 
+    puts
     puts
     print "Finished in #{Probatio.to_time_s(d)}, "
     print "%0.3f tests/s, %0.3f assertions/s." % [ tpc, apc ]
