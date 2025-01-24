@@ -137,9 +137,11 @@ class Probatio::VanillaSummarizer
       #puts "%4d %s" % [ ev.error.line, c.dark_grey(ev.error.source_line) ]
       #puts c.dark_grey(ev.error.path)
       ev.error.source_lines.each do |i, l|
-        #puts "%4d %s" % [ i, c.dark_grey(l) ]
-        puts "%4d %s" % [
-          i, i == ev.error.line ? c.yellow(l) : c.dark_grey(l) ]
+        puts "%4s %s" % [
+          i == ev.error.line ? c.underlined(i.to_s) :
+          i % 5 == 0 ? c.dark_grey(i.to_s) :
+          c.white(i.to_s),
+          i == ev.error.line ? c.yellow(l) : c.dark_grey(l) ]
       end
       puts; puts c.dark_grey(ev.error.summary('  '))
       #puts ev.error.inspect
