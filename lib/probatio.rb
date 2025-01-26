@@ -689,6 +689,9 @@ module Probatio
       _run(@__group.arounds + [ :do_run ], run_opts)
     end
 
+    def __test_name; @__test.name; end
+    def __group_name; @__group.name; end
+
     protected
 
     def _run(arounds, run_opts)
