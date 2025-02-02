@@ -26,7 +26,7 @@ def is_directory_with_tests?(path)
 end
 
 switches = {}
-dirs, files, strings, environments, integers = [], [], [], [], []
+dirs, files, lists, strings, environments, integers = [], [], [], [], [], []
 
 while a = args.shift
 
@@ -38,6 +38,8 @@ while a = args.shift
     end
   elsif File.directory?(a) && a != '.'
     dirs << a
+  elsif File.file?(a) && (a.match?(/(\.txt|_list\.rb)$/))
+    lists << a
   elsif File.file?(a.split(':').first)
     files << a
   elsif a.match?(/\A-?\d+\z/)
@@ -181,12 +183,25 @@ end
 integers.each do |i|
   opts[:files] << fails[i]
 end
+lists.each do |li|
+  if li.end_with?('_list.rb')
+    Kernel.eval(File.read(li)).each do |e|
+      if e.is_a?(Hash)
+        opts[:files] << [ e[:p], e[:l] ].compact.map(&:to_s).join(':')
+      else # String
+        opts[:files] << e
+      end
+    end
+  else # .txt
+    File.readlines(li).each do |l|
+      fpath = l.strip; next if fpath.start_with?('#')
+      opts[:files] << fpath if File.file?(fpath)
+    end
+  end
+end
   #
 opts[:files] = opts[:files].uniq.compact
 opts[:files] = nil if opts[:files].empty? && strings.empty? && integers.empty?
-#puts "-" * 40
-#p [ strings, integers ]
-#p [ 'fff',  opts[:files] ]
 
 opts[:dirs] = [
   is_directory_with_tests?('test') ? 'test' :
