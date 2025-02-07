@@ -164,6 +164,27 @@ opts[:print] = true if switches['-p'] || switches['--print']
 opts[:dirs] = dirs if dirs.any?
 opts[:files] = files.any? ? files : []
 
+def read_list(a, item)
+
+  case item
+  when Array
+    item.each { |e| read_list(a, e) }
+  when Hash
+    if item[:p].is_a?(String)
+      a << [ item[:p], item[:l] ].compact.collect(&:to_s).join(':')
+    elsif (fs = item[:failures] || item[:files] || item[:paths]).is_a?(Array)
+      read_list(a, fs)
+    #else
+      # no item to add...
+    end
+  else
+    s = item.to_s.strip
+    a << s if File.file?(s.split(':').first)
+  end
+
+  a
+end
+
 prev = Kernel.eval(File.read(Probatio.opath)) rescue { failures: [] }
 fails = prev[:failures].collect { |f| "#{f[:p]}:#{f[:l]}" }
 #print 'fails:'; pp fails
@@ -184,20 +205,9 @@ integers.each do |i|
   opts[:files] << fails[i]
 end
 lists.each do |li|
-  if li.end_with?('_list.rb')
-    Kernel.eval(File.read(li)).each do |e|
-      if e.is_a?(Hash)
-        opts[:files] << [ e[:p], e[:l] ].compact.map(&:to_s).join(':')
-      else # String
-        opts[:files] << e
-      end
-    end
-  else # .txt
-    File.readlines(li).each do |l|
-      fpath = l.strip; next if fpath.start_with?('#')
-      opts[:files] << fpath if File.file?(fpath)
-    end
-  end
+  opts[:files].concat(
+    li.end_with?('_list.rb') ? read_list([], Kernel.eval(File.read(li))) :
+    read_list([], File.readlines(li)))
 end
   #
 opts[:files] = opts[:files].uniq.compact
