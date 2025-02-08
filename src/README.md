@@ -87,10 +87,13 @@ some_env:
   {
   USER: "jmettraux",
   HOME: "/home/jmettraux",
-  PATH: "/home/jmettraux/.gem/ruby/3.3/bin:/home/jmettraux/.pkg_rubies/ruby33:/usr/local/jdk-21/bin:/home/jmettraux/bin:/bin:/usr/bin:/sbin:/usr/sbin:/usr/X11R6/bin:/usr/local/bin:/usr/local/sbin",
   SHELL: "/usr/local/bin/fish",
   GEM_HOME: "/home/jmettraux/.gem/ruby/3.3",
   PWD: "/home/jmettraux/w/probatio/test",
+  PATH:
+    "/home/jmettraux/.gem/ruby/3.3/bin:/home/jmettraux/.pkg_rubies/ruby33:" +
+    "/usr/local/jdk-21/bin:/home/jmettraux/bin:/bin:/usr/bin:/sbin:" +
+    "/usr/sbin:/usr/X11R6/bin:/usr/local/bin:/usr/local/sbin",
   },
 }
 ```
