@@ -109,6 +109,10 @@ if switches['-h'] || switches['--help']
     * `bundle exec proba first`
     * `bundle exec proba 1st`
     * `bundle exec proba 0` run the first failing test of the last run
+  Lists:
+    * `bundle exec proba list.txt` will run all the tests in list.txt
+    * `bundle exec proba a_list.rb` will eval and lists the arrayed tests
+
 
   Envs:
     Short FULLCAPS environment variable setters driven by a

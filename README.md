@@ -9,23 +9,13 @@ Test tools for floraison and flor. Somewhere between Minitest and Rspec, but not
 
 ## Goals
 
-* `bundle exec proba test/there/`
-* `bundle exec proba test/there/that.rb`
-* `bundle exec proba test/there/that.rb:123`
-* `bundle exec proba test/there/that.rb:123:210`
-* `bundle exec proba test/there/that.rb:123-210`
-* `bundle exec proba test/there/ -n /_for_rm\$/`
-* `bundle exec proba test/there/ -n "that test"`
-* `bundle exec proba 1st`
-* `bundle exec proba first`
-* `bundle exec proba last -2`
-* `bundle exec proba 0 1`
-* `bundle exec proba -1 -2`
-* `bundle exec proba .`
-* `bundle exec proba f`
-* dots
-* colors
-* times monow
+* versatile `bundle exec proba`, run this or these tests, at the line
+* `bundle exec proba first` for first failing tests
+* `bundle exec proba last` for last failing tests
+* `bundle exec proba .` for the test currently edited `.test-point`
+* `bundle exec proba f` for the test file currently edited `.test-point`
+* `bundle exec proba list.txt` to run a list of tests
+* `bundle exec proba list.rb` to run a list of tests (Ruby array)
 
 
 ## Usage
@@ -69,6 +59,10 @@ Usage: bundle exec proba [OPTIONS] [DIRS] [FILES] [OTHERS] [ENVS]
     * `bundle exec proba first`
     * `bundle exec proba 1st`
     * `bundle exec proba 0` run the first failing test of the last run
+  Lists:
+    * `bundle exec proba list.txt` will run all the tests in list.txt
+    * `bundle exec proba a_list.rb` will eval and lists the arrayed tests
+
 
   Envs:
     Short FULLCAPS environment variable setters driven by a
