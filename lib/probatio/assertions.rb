@@ -158,6 +158,19 @@ class Probatio::Context
     true
   end
 
+  def assert_not_error(*as, &block)
+
+    block = block || as.find { |a| a.is_a?(Proc) }
+
+    err = nil;
+      begin; block.call; rescue => err; end
+
+    return "no error expected but returned #{err.class} #{err.name}" if err
+
+    true
+  end
+  alias assert_no_error assert_not_error
+
   # Checks whether its "_assert_something", if that's the case,
   # just flags the assertion as :pending an moves on
   #
