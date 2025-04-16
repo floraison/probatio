@@ -2,7 +2,7 @@
 # CHANGELOG.md
 
 
-## proba 1.1.0 not yet released
+## proba 1.1.0 released 2025-04-16
 
 * Introduce `assert_no_error { do_this_or_that() }`
 
