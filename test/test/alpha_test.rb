@@ -50,7 +50,28 @@ group 'alpha' do
     assert_error(
       lambda { raise "nada" },
       StandardError)
+  end
 
+  test 'error 1' do
+
+    assert_error(
+      lambda { "foo".bamboozle },
+      NoMethodError)
+
+    assert_error(
+      lambda { "foo".bamboozle },
+      ArgumentError)
+  end
+
+  test 'error 2' do
+
+    assert_no_error(
+      lambda { 1 + 1 })
+    assert_no_error {
+      1 + 1 }
+
+    assert_no_error(
+      lambda { "foo".bamboozle })
   end
 end
 

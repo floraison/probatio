@@ -138,24 +138,31 @@ class Probatio::Context
 
     return "no error raised" unless err.is_a?(StandardError)
 
+    s = nil
+
     as.each do |a|
 
-      case a
-      when String
-        return "error message #{err.message} is not #{a.inspect}" \
-          unless err.message == a
-      when Regexp
-        return "error message #{err.message} did not match #{a.inspect}" \
-          unless err.message.match(a)
-      when Module
-        return "error is of class #{err.class} not #{a.name}" \
-          unless err.is_a?(a)
-      else
-        fail ArgumentError.new("assert_error cannot fathom #{a.inspect}")
-      end
+      s ||=
+        case a
+        when String
+          if err.message != a
+            msg = err.message.sub(/\s*Did you mean\?.+/, '')
+            "error message #{msg.inspect} is not #{a.inspect}"
+          else
+            nil
+          end
+        when Regexp
+          ! err.message.match(a) ?
+            "error message #{err.message} did not match #{a.inspect}" : nil
+        when Module
+          ! err.is_a?(a) ?
+            "error is of class #{err.class} not #{a.name}" : nil
+        else
+          fail ArgumentError.new("assert_error cannot fathom #{a.inspect}")
+        end
     end
 
-    true
+    do_assert_(as) { s }
   end
 
   def assert_not_error(*as, &block)
@@ -165,9 +172,8 @@ class Probatio::Context
     err = nil;
       begin; block.call; rescue => err; end
 
-    return "no error expected but returned #{err.class} #{err.name}" if err
-
-    true
+    do_assert_([]) {
+      err && "no error expected but returned #{err.class} #{err.name}" }
   end
   alias assert_no_error assert_not_error
 

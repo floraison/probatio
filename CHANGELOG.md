@@ -4,6 +4,8 @@
 
 ## proba 1.1.1 not yet released
 
+* Fix assert_error and assert_no_error
+
 
 ## proba 1.1.0 released 2025-04-16
 
