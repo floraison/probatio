@@ -136,7 +136,7 @@ module Cerata; class << self
         k, v = kv[0].to_s, kv[1].inspect
         kl, vl = key_widths[k], val_widths[k]
         kf = "%#{kl}s"
-        vf = v.start_with?('"') ? "%#{vl}s" : "%-#{vl}s"
+        vf = (v.is_a?(String) && v.start_with?('"')) ? "%-#{vl}s" : "%#{vl}s"
         o << ("#{kf}: #{vf}" % [ k, v ])
         o << ', ' if kvs.any?
       end

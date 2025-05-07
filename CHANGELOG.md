@@ -4,6 +4,7 @@
 
 ## proba 1.1.1 not yet released
 
+* Fix .probatio-output.rb string/number alignment
 * Fix assert_error and assert_no_error
 
 
