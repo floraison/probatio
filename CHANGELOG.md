@@ -2,7 +2,7 @@
 # CHANGELOG.md
 
 
-## proba 1.1.1 not yet released
+## proba 1.1.1 released 2025-05-08
 
 * Fix .probatio-output.rb string/number alignment
 * Fix assert_error and assert_no_error
