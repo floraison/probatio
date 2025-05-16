@@ -2,6 +2,9 @@
 # CHANGELOG.md
 
 
+## proba 1.2.0 not yet released
+
+
 ## proba 1.1.1 released 2025-05-08
 
 * Fix .probatio-output.rb string/number alignment
