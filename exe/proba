@@ -49,7 +49,7 @@ while a = args.shift
     rework_switch(switches, a, args)
   elsif File.directory?(a) && a != '.'
     dirs << a
-  elsif File.file?(a) && (a.match?(/(\.txt|_list\.rb)$/))
+  elsif File.file?(a) && (a == 'list.rb' || a.match?(/(\.txt|_list\.rb)$/))
     lists << a
   elsif File.file?(a.split(':').first)
     files << a
@@ -224,7 +224,7 @@ integers.each do |i|
 end
 lists.each do |li|
   opts[:files].concat(
-    li.end_with?('_list.rb') ? read_list([], Kernel.eval(File.read(li))) :
+    li.end_with?('.rb') ? read_list([], Kernel.eval(File.read(li))) :
     read_list([], File.readlines(li)))
 end
   #
