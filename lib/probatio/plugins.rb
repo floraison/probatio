@@ -235,6 +235,14 @@ class Probatio::ProbaOutputter
   end
 end
 
+class Probatio::Beeper
+
+  def on_exit(ev)
+
+    (ev.opts[:beeps] || 0).times { STDOUT.print "\a"; sleep 0.5 }
+  end
+end
+
 class Probatio::Exitter
 
   def on_exit(ev)
@@ -249,5 +257,6 @@ Probatio.plug(Probatio::Chronometer.new)
 Probatio.plug(Probatio::DotReporter.new)
 Probatio.plug(Probatio::VanillaSummarizer.new)
 Probatio.plug(Probatio::ProbaOutputter.new)
+Probatio.plug(Probatio::Beeper.new)
 Probatio.plug(Probatio::Exitter.new)
 
