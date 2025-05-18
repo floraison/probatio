@@ -26,7 +26,6 @@ def rework_switch(switches, a, args)
       [ false, a, true ]
     end
 
-p [ a, ':', arr, k, v ]
   if arr == true
     (switches[k] ||= []) << v
   elsif arr == false
