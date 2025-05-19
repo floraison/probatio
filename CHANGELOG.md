@@ -2,7 +2,11 @@
 # CHANGELOG.md
 
 
-## proba 1.2.0 not yet released
+## proba 1.2.0 released 2025-05-19
+
+* Introduce Probatio::Context#beep
+* Introduce --beeps {n || 1}
+* Allow for list.rb as 'list'
 
 
 ## proba 1.1.1 released 2025-05-08
