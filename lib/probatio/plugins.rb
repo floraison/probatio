@@ -235,11 +235,26 @@ class Probatio::ProbaOutputter
   end
 end
 
+module Probatio
+
+  # For easy override...
+  #
+  def self._beep
+
+    STDOUT.print("\a")
+  end
+
+  def self.beep(count=1)
+
+    count.times { Probatio._beep; sleep 0.5 }
+  end
+end
+
 class Probatio::Beeper
 
   def on_exit(ev)
 
-    (ev.opts[:beeps] || 0).times { STDOUT.print "\a"; sleep 0.5 }
+    Probatio.beep(ev.opts[:beeps])
   end
 end
 

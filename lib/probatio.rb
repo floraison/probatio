@@ -752,6 +752,10 @@ module Probatio
     require 'probatio/waiters'
       #
       # where wait_* methods are defined...
+
+    require 'probatio/helpers'
+      #
+      # where beep and friends are defined...
   end
 
   class AssertionError < StandardError
