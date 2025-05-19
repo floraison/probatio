@@ -246,7 +246,7 @@ module Probatio
 
   def self.beep(count=1)
 
-    count.times { Probatio._beep; sleep 0.5 }
+    (count || 0).times { Probatio._beep; sleep 0.5 }
   end
 end
 
@@ -254,7 +254,7 @@ class Probatio::Beeper
 
   def on_exit(ev)
 
-    Probatio.beep(ev.opts[:beeps])
+    Probatio.beep(ev.opts[:beeps] || 0)
   end
 end
 
