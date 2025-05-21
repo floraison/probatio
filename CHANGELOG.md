@@ -2,6 +2,9 @@
 # CHANGELOG.md
 
 
+## probatio 1.3.0 not yet released
+
+
 ## probatio 1.2.1 released 2025-05-20
 
 * Tighten Probatio.beep and friends
