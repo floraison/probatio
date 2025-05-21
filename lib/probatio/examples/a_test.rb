@@ -69,6 +69,12 @@ group 'core' do
         # checks that the given Proc raises an ArgumentError and
         # the error message == "bad"
 
+      assert_no_error { do_this_or_that() }
+      assert_no_error lambda { do_this_or_that() }
+      assert_not_error { do_this_or_that() }
+      assert_not_error lambda { do_this_or_that() }
+        # checks that the block or Proc does not raise an error
+
       assert_hashy(
         this_thing => 1,
         that_thing => 'two')

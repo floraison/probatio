@@ -39,6 +39,7 @@ Usage: bundle exec proba [OPTIONS] [DIRS] [FILES] [OTHERS] [ENVS]
     -d, --debug smr        's' for start opts, 'm' for messages, 'r' for $DEBUG
     -x, --example          Outputs an example test file
     -X, --plugin-example   Outputs an example plugin file
+    -b, --beep[s] {n || 1} Beeps n time before exit
     --mangle               Turns the given _spec.rb files into proba _test.rb
 
   Dirs:
@@ -276,10 +277,13 @@ some_env:
   {
   USER: "jmettraux",
   HOME: "/home/jmettraux",
-  PATH: "/home/jmettraux/.gem/ruby/3.3/bin:/home/jmettraux/.pkg_rubies/ruby33:/usr/local/jdk-21/bin:/home/jmettraux/bin:/bin:/usr/bin:/sbin:/usr/sbin:/usr/X11R6/bin:/usr/local/bin:/usr/local/sbin",
   SHELL: "/usr/local/bin/fish",
   GEM_HOME: "/home/jmettraux/.gem/ruby/3.3",
   PWD: "/home/jmettraux/w/probatio/test",
+  PATH:
+    "/home/jmettraux/.gem/ruby/3.3/bin:/home/jmettraux/.pkg_rubies/ruby33:" +
+    "/usr/local/jdk-21/bin:/home/jmettraux/bin:/bin:/usr/bin:/sbin:" +
+    "/usr/sbin:/usr/X11R6/bin:/usr/local/bin:/usr/local/sbin",
   },
 }
 ```
