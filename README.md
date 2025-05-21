@@ -293,6 +293,28 @@ Probatio uses it when servicing `bundle exec proba 0` or `bundle exe proba -1`.
 It can also be useful to other tools around probatio.
 
 
+## Helpers
+
+Built-in helpers:
+```ruby
+  jruby?    # => returns true when running on JRuby
+  windows?  # => returns true when running on Windows
+```
+
+_Waiter_ helpers:
+```ruby
+  wait_for {
+    some_condition == true
+  }
+  wait_for(timeout: 60, frequency: 1) { # wait for 60 seconds, check every sec
+    some_condition == true
+  }
+  wait_until { # wait_until is an alias to wait_for
+    some_condition == true
+  }
+```
+
+
 ## Warnings
 
 ```
