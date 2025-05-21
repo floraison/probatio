@@ -130,3 +130,48 @@ group 'core < sub-core < sub-sub-core' do
   end
 end
 
+
+group 'notcore' do
+
+  # A section allows for some kind of "inheritance" between groups...
+  #
+  section 'with db' do
+
+    setup do
+
+      prepare_db
+    end
+
+    before do
+
+      reset_and_load_fixtures
+    end
+  end
+
+  group 'alpha' do
+
+    group 'without db' do
+
+      # ...
+    end
+
+    group 'with db' do
+
+      # gets the setup and before from the "with db" section
+    end
+  end
+
+  group 'bravo' do
+
+    group 'without db' do
+
+      # ...
+    end
+
+    group 'with db' do
+
+      # gets the setup and before from the "with db" section
+    end
+  end
+end
+
