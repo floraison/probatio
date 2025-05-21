@@ -8,6 +8,16 @@ module Probatio::Helpers
 
     Probatio.beep(count || 0)
   end
+
+  def jruby?
+
+    !! RUBY_PLATFORM.match?(/java/)
+  end
+
+  def windows?
+
+    Gem.win_platform?
+  end
 end
 
 class Probatio::Section
