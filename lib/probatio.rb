@@ -845,6 +845,8 @@ module Probatio
 
       def select_source_lines(path, line)
 
+        return [] unless path
+
         File.readlines(path).each_with_index.to_a[line - 1..-1]
           .map { |l, i| [ i + 1, l.rstrip ] }
           .take_while { |_, l|

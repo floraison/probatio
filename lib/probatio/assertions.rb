@@ -298,13 +298,13 @@ class Probatio::Context
 
   def extract_file_and_line(backtrace)
 
-    #l = backtrace.find { |l|
-    #  ! l.index('lib/probatio/assertions.rb') &&
-    #  ! l.index('_helper.rb') }
-    l = backtrace.find { |l| l.index('_test.rb') }
+    l =
+      backtrace.find { |l| l.index('_test.rb') } ||
+      backtrace.find { |l| ! l.index('/lib/probatio/') }
+    m =
+      l && l.match(/([^:]+):(\d+)/)
 
-    m = l && l.match(/([^:]+):(\d+)/)
-    m && [ m[1], m[2].to_i ]
+    m ? [ m[1], m[2].to_i ] : [ nil, -1 ]
   end
 
   def extract_assert_method(backtrace)
