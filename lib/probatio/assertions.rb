@@ -176,6 +176,7 @@ class Probatio::Context
       err && "no error expected but returned #{err.class} #{err.name}" }
   end
   alias assert_no_error assert_not_error
+  alias assert_nothing_raised assert_not_error
 
   # Checks whether its "_assert_something", if that's the case,
   # just flags the assertion as :pending an moves on

@@ -4,6 +4,8 @@
 
 ## probatio 1.3.0 not yet released
 
+Alias `assert_nothing_raised` to `assert_no_error`
+
 
 ## probatio 1.2.1 released 2025-05-20
 

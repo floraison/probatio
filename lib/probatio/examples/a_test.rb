@@ -73,6 +73,8 @@ group 'core' do
       assert_no_error lambda { do_this_or_that() }
       assert_not_error { do_this_or_that() }
       assert_not_error lambda { do_this_or_that() }
+      assert_nothing_raised { do_this_or_that() }
+      assert_nothing_raised lambda { do_this_or_that() }
         # checks that the block or Proc does not raise an error
 
       assert_hashy(
