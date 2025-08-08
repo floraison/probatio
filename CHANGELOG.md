@@ -2,9 +2,10 @@
 # CHANGELOG.md
 
 
-## probatio 1.3.0 not yet released
+## probatio 1.3.0 released 2025-08-08
 
-Alias `assert_nothing_raised` to `assert_no_error`
+* Add windows? and jruby? to Probatio::Group
+* Alias `assert_nothing_raised` to `assert_no_error`
 
 
 ## probatio 1.2.1 released 2025-05-20
