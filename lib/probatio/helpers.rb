@@ -20,6 +20,12 @@ module Probatio::Helpers
   end
 end
 
+
+class Probatio::Group
+
+  include Probatio::Helpers
+end
+
 class Probatio::Section
 
   include Probatio::Helpers
