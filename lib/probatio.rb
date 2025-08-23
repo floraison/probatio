@@ -838,6 +838,23 @@ module Probatio
       s << indent << @assertion << ':'
       as.each_with_index { |a, i| s << "\n#{indent}  %d: %s" % [ i, a ] }
 
+      if @arguments.collect(&:class) == [ Hash, Hash ]
+
+        d0 = @arguments[0].to_a - @arguments[1].to_a
+        d1 = @arguments[1].to_a - @arguments[0].to_a
+
+        dh = {}
+          d0.each { |k, v| dh[k] = [ v, nil ] }
+          d1.each { |k, v| dv = (dh[k] ||= [ nil, nil ]); dv[1] = v }
+
+        s << "\n  Hash diff:"
+        dh.each do |k, (v0, v1)|
+          s << "\n    #{k.inspect} =>"
+          s << "\n      0: #{v0.inspect}"
+          s << "\n      1: #{v1.inspect}"
+        end
+      end
+
       s.string
     end
 
