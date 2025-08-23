@@ -2,6 +2,9 @@
 # CHANGELOG.md
 
 
+## probatio 1.4.0 not yet released
+
+
 ## probatio 1.3.0 released 2025-08-08
 
 * Add windows? and jruby? to Probatio::Group
