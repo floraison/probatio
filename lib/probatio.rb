@@ -851,7 +851,9 @@ module Probatio
         dh.each do |k, (v0, v1)|
           s << "\n    #{k.inspect} =>"
           s << "\n      0: #{v0.inspect}"
+          s << " -- has_key? #{@arguments[0].has_key?(k)}" if v0 == nil
           s << "\n      1: #{v1.inspect}"
+          s << " -- has_key? #{@arguments[1].has_key?(k)}" if v1 == nil
         end
       end
 
