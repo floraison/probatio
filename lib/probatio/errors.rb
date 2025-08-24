@@ -1,0 +1,184 @@
+
+#
+# probatio/errors.rb
+
+module Probatio
+
+  class AssertionError < StandardError
+
+    attr_reader :assertion, :arguments, :test, :file, :line
+    attr_accessor :nested_error
+
+    alias path file
+
+    def initialize(assertion, arguments, error_or_message, test, file, line)
+
+      @assertion = assertion
+      @arguments = arguments
+
+      @test = test
+
+      @file = file
+      @line = line
+
+      if error_or_message.is_a?(String)
+        @msg = error_or_message
+      else
+        @msg = "error while asserting: " + error_or_message.message
+        @nested_error = error_or_message
+      end
+
+      super(@msg)
+    end
+
+    def location
+
+      [ @file, @line ]
+    end
+
+    def loc
+
+      location.map(&:to_s).join(':')
+    end
+
+    def to_s
+
+      "#{self.class.name}: #{@msg}"
+    end
+
+    def trail
+
+      @test.trail + "\n" +
+      Probatio.c.red("#{'  ' * (test.depth + 1)}#{loc} --> #{@msg}")
+    end
+
+    def source_line
+
+      @source_line ||=
+        File.readlines(@file)[@line - 1]
+    end
+
+    def source_lines
+
+      @source_lines ||=
+        Probatio::AssertionError.select_source_lines(@file, @line)
+    end
+
+    def summary(indent='')
+
+      tw = Probatio.term_width - 4 - indent.length
+
+      as =
+        @arguments.find { |a| a.inspect.length > tw } ?
+          @arguments.collect { |a|
+            if (s0 = a.inspect).length < tw
+              "\n#{indent}    " + s0
+            else
+              s1 = StringIO.new; PP.pp(a, s1, tw)
+              qualify_argument(a) + "\n" +
+              indent + s1.string.gsub(/^(.*)$/) { "    #{$1}" }
+            end } :
+        @arguments.collect(&:inspect)
+
+      s = StringIO.new
+      s << indent << @assertion << ':'
+      as.each_with_index { |a, i| s << "\n#{indent}  %d: %s" % [ i, a ] }
+
+      if @arguments.collect(&:class) == [ Hash, Hash ]
+
+        d0 = @arguments[0].to_a - @arguments[1].to_a
+        d1 = @arguments[1].to_a - @arguments[0].to_a
+
+        dh = {}
+          d0.each { |k, v| dh[k] = [ v, nil ] }
+          d1.each { |k, v| dv = (dh[k] ||= [ nil, nil ]); dv[1] = v }
+
+        s << "\n  Hash diff:"
+        dh.each do |k, (v0, v1)|
+          s << "\n    #{k.inspect} =>"
+          s << "\n      0: #{v0.inspect}"
+          s << " -- has_key? #{@arguments[0].has_key?(k)}" if v0 == nil
+          s << "\n      1: #{v1.inspect}"
+          s << " -- has_key? #{@arguments[1].has_key?(k)}" if v1 == nil
+        end
+      end
+
+      s.string
+    end
+
+    class << self
+
+      def select_source_lines(path, line)
+
+        return [] unless path
+
+        File.readlines(path).each_with_index.to_a[line - 1..-1]
+          .map { |l, i| [ i + 1, l.rstrip ] }
+          .take_while { |_, l|
+            l = l.strip
+            l.length > 0 && l != 'end' && l != '}' }
+      end
+    end
+
+    protected
+
+    def qualify_argument(a)
+
+      '<' +
+      a.class.to_s +
+      (a.respond_to?(:size) ? " size:#{a.size}" : '') +
+      '>'
+    end
+  end
+
+  module ExtraErrorMethods
+
+    attr_accessor :test
+
+    def path; test.path; end
+    def location; [ path, line ]; end
+    def loc; location.map(&:to_s).join(':'); end
+
+    def trail
+
+      msg = "#{self.class}: #{self.message.inspect}"
+
+      @test.trail + "\n" +
+      Probatio.c.red("#{'  ' * (test.depth + 1)}#{loc} --> #{msg}")
+    end
+
+    def source_lines
+
+      @source_lines ||=
+        Probatio::AssertionError.select_source_lines(test.path, line)
+    end
+
+    def summary(indent='')
+
+      o = StringIO.new
+
+      o << self.class.name << ': ' << self.message.inspect << "\n"
+
+      i = backtrace.index { |l| l.match?(/\/lib\/probatio\.rb:/) } || -1
+
+      backtrace[0..i]
+        .inject(o) { |o, l| o << indent << l << "\n" }
+
+      o.string
+    end
+
+    def line
+
+      backtrace.each do |l|
+
+        ss = l.split(':')
+
+        next unless ss.find { |e| e == test.path }
+        return ss.find { |e| e.match?(/^\d+$/) }.to_i
+      end
+
+      -1
+    end
+  end
+end
+
