@@ -66,13 +66,15 @@ module Probatio
 
     def summary(indent='')
 
+      nl = "\n" + indent
+
       tw = Probatio.term_width - 4 - indent.length
 
       as =
         @arguments.find { |a| a.inspect.length > tw } ?
           @arguments.collect { |a|
             if (s0 = a.inspect).length < tw
-              "\n#{indent}    " + s0
+              nl + '    ' + s0 + "\n"
             else
               s1 = StringIO.new; PP.pp(a, s1, tw)
               qualify_argument(a) + "\n" +
@@ -82,7 +84,7 @@ module Probatio
 
       s = StringIO.new
       s << indent << @assertion << ':'
-      as.each_with_index { |a, i| s << "\n#{indent}  %d: %s" % [ i, a ] }
+      as.each_with_index { |a, i| s << nl << '  %d: %s' % [ i, a ] }
 
       if @arguments.collect(&:class) == [ Hash, Hash ]
 
@@ -95,12 +97,12 @@ module Probatio
           d0.each { |k, v| dh[k] = [ v, nil ] }
           d1.each { |k, v| dv = (dh[k] ||= [ nil, nil ]); dv[1] = v }
 
-        s << "\n  Hash diff:"
+        s << nl << '  Hash diff:'
         dh.each do |k, (v0, v1)|
-          s << "\n    " << c.yellow(k.inspect) << c.dg << ' =>'
-          s << "\n      " << c.white(0) << c.dg << ': ' << v0.inspect
+          s << nl << '    ' << c.yellow(k.inspect) << c.dg << ' =>'
+          s << nl << '      ' << c.white(0) << c.dg << ': ' << v0.inspect
           s << " -- has_key? #{@arguments[0].has_key?(k)}" if v0 == nil
-          s << "\n      " << c.white(1) << c.dg << ': ' << v1.inspect
+          s << nl << '      ' << c.white(1) << c.dg << ': ' << v1.inspect
           s << " -- has_key? #{@arguments[1].has_key?(k)}" if v1 == nil
         end
       end
