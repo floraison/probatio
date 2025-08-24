@@ -86,6 +86,8 @@ module Probatio
 
       if @arguments.collect(&:class) == [ Hash, Hash ]
 
+        c = Probatio.c
+
         d0 = @arguments[0].to_a - @arguments[1].to_a
         d1 = @arguments[1].to_a - @arguments[0].to_a
 
@@ -95,10 +97,10 @@ module Probatio
 
         s << "\n  Hash diff:"
         dh.each do |k, (v0, v1)|
-          s << "\n    #{k.inspect} =>"
-          s << "\n      0: #{v0.inspect}"
+          s << "\n    " << c.yellow(k.inspect) << c.dg << ' =>'
+          s << "\n      " << c.white(0) << c.dg << ': ' << v0.inspect
           s << " -- has_key? #{@arguments[0].has_key?(k)}" if v0 == nil
-          s << "\n      1: #{v1.inspect}"
+          s << "\n      " << c.white(1) << c.dg << ': ' << v1.inspect
           s << " -- has_key? #{@arguments[1].has_key?(k)}" if v1 == nil
         end
       end
