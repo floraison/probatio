@@ -84,27 +84,15 @@ module Probatio
 
       s = StringIO.new
       s << indent << @assertion << ':'
-      as.each_with_index { |a, i| s << nl << '  %d: %s' % [ i, a ] }
 
-      if @arguments.collect(&:class) == [ Hash, Hash ]
-
-        c = Probatio.c
-
-        d0 = @arguments[0].to_a - @arguments[1].to_a
-        d1 = @arguments[1].to_a - @arguments[0].to_a
-
-        dh = {}
-          d0.each { |k, v| dh[k] = [ v, nil ] }
-          d1.each { |k, v| dv = (dh[k] ||= [ nil, nil ]); dv[1] = v }
-
-        s << nl << '  Hash diff:'
-        dh.each do |k, (v0, v1)|
-          s << nl << '    ' << c.yellow(k.inspect) << c.dg << ' =>'
-          s << nl << '      ' << c.white(0) << c.dg << ': ' << v0.inspect
-          s << " -- has_key? #{@arguments[0].has_key?(k)}" if v0 == nil
-          s << nl << '      ' << c.white(1) << c.dg << ': ' << v1.inspect
-          s << " -- has_key? #{@arguments[1].has_key?(k)}" if v1 == nil
-        end
+      case @arguments.collect(&:class)
+      when [ Hash, Hash ]
+        as.each_with_index { |a, i| s << nl << '  %d: %s' % [ i, a ] }
+        output_hash_diff(s)
+      when [ String, String ]
+        output_string_diff(s)
+      else
+        as.each_with_index { |a, i| s << nl << '  %d: %s' % [ i, a ] }
       end
 
       s.string
@@ -125,6 +113,40 @@ module Probatio
     end
 
     protected
+
+    def output_hash_diff(s)
+
+      c = Probatio.c
+
+      d0 = @arguments[0].to_a - @arguments[1].to_a
+      d1 = @arguments[1].to_a - @arguments[0].to_a
+
+      dh = {}
+        d0.each { |k, v| dh[k] = [ v, nil ] }
+        d1.each { |k, v| dv = (dh[k] ||= [ nil, nil ]); dv[1] = v }
+
+      s << nl << '  Hash diff:'
+      dh.each do |k, (v0, v1)|
+        s << nl << '    ' << c.yellow(k.inspect) << c.dg << ' =>'
+        s << nl << '      ' << c.white(0) << c.dg << ': ' << v0.inspect
+        s << " -- has_key? #{@arguments[0].has_key?(k)}" if v0 == nil
+        s << nl << '      ' << c.white(1) << c.dg << ': ' << v1.inspect
+        s << " -- has_key? #{@arguments[1].has_key?(k)}" if v1 == nil
+      end
+    end
+
+    def output_string_diff(s)
+
+      a0, a1 = @arguments
+
+      sep = "\n" + ('-' * 63)
+      c = Probatio.c
+
+      s <<
+        sep << " length: #{a0.length}\n" << c.yellow << a0 << c.dark_grey <<
+        sep << " length: #{a1.length}\n" << c.yellow << a1 << c.dark_grey <<
+        sep
+    end
 
     def qualify_argument(a)
 
