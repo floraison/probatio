@@ -7,6 +7,8 @@ require 'set'
 require 'stringio'
 require 'io/console'
 
+require 'diff-lcs'
+
 require 'colorato'
 
 require 'probatio/debug'

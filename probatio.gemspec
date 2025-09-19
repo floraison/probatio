@@ -38,8 +38,9 @@ Test tools for floraison and flor. Somewhere between Minitest and Rspec, but not
     "#{s.name}.gemspec",
   ]
 
+  s.add_runtime_dependency 'stringio'
+  s.add_runtime_dependency 'diff-lcs', '~> 1.6'
   s.add_runtime_dependency 'colorato', '~> 1.0'
-  #s.add_runtime_dependency 'diff-lcs', '~> 1.5'
 
   s.require_path = 'lib'
 

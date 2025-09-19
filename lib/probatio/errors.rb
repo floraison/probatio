@@ -139,7 +139,7 @@ module Probatio
 
     def output_string_diff(indent, s)
 
-      #nl = "\n" + indent
+      nl = "\n"
 
       a0, a1 = @arguments
 
@@ -150,6 +150,33 @@ module Probatio
         sep << " length: #{a0.length}\n" << c.yellow << a0 << c.dark_grey <<
         sep << " length: #{a1.length}\n" << c.yellow << a1 << c.dark_grey <<
         sep
+
+      ls0, ls1 = @arguments.map(&:lines)
+
+      diff = Diff::LCS.sdiff(ls0, ls1).collect(&:to_a)
+
+      maxl = diff
+        .inject([]) { |a, d| a << d[1][0]; a << d[2][0]; a }
+        .max.to_s.length
+      forl = "%0#{maxl}d"
+
+      s << nl << c.dg << sep
+      diff.each do |d|
+        if d[0] == '='
+          s << nl << c.dg << '= ' << (forl % d[1][0]) << ' ' << d[1][1].rstrip
+        elsif d[0] == '+'
+#s << nl << d.inspect
+          s << nl << c.gn << '+ ' << (forl % d[2][0]) << ' ' << d[2][1].strip
+        elsif d[0] == '-'
+#s << nl << d.inspect
+          s << nl << c.rd << '- ' << (forl % d[1][0]) << ' ' << d[1][1].strip
+        else # '!'
+          a, b = d[1], d[2]
+          s << nl << c.y << '! ' << (forl % a[0]) << ' ' << a[1].strip
+          s << nl << c.y << '  ' << (forl % b[0]) << ' ' << b[1].strip
+        end
+      end
+      s << c.dg << sep << c.reset
     end
 
     def qualify_argument(a)
