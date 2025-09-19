@@ -151,7 +151,8 @@ module Probatio
         sep << " length: #{a1.length}\n" << c.yellow << a1 << c.dark_grey <<
         sep
 
-      ls0, ls1 = @arguments.map(&:lines)
+      ls0 = @arguments[0].lines.map(&:chomp)
+      ls1 = @arguments[1].lines.map(&:chomp)
 
       diff = Diff::LCS.sdiff(ls0, ls1).collect(&:to_a)
 
@@ -160,20 +161,24 @@ module Probatio
         .max.to_s.length
       forl = "%0#{maxl}d"
 
+      #ov = c.rev(' ')
+      ov = c.dg + c.rev('<')
+      fence = lambda { |s| s + (s.match?(/\s$/) ? ov : '') }
+
       s << nl << c.dg << sep
       diff.each do |d|
         if d[0] == '='
-          s << nl << c.dg << '= ' << (forl % d[1][0]) << ' ' << d[1][1].rstrip
+          s << nl << c.dg << '= ' << (forl % d[1][0]) << ' ' << d[1][1]
         elsif d[0] == '+'
 #s << nl << d.inspect
-          s << nl << c.gn << '+ ' << (forl % d[2][0]) << ' ' << d[2][1].strip
+          s << nl << c.gn << '+ ' << (forl % d[2][0]) << ' ' << fence[d[2][1]]
         elsif d[0] == '-'
 #s << nl << d.inspect
-          s << nl << c.rd << '- ' << (forl % d[1][0]) << ' ' << d[1][1].strip
+          s << nl << c.rd << '- ' << (forl % d[1][0]) << ' ' << fence[d[1][1]]
         else # '!'
           a, b = d[1], d[2]
-          s << nl << c.y << '! ' << (forl % a[0]) << ' ' << a[1].strip
-          s << nl << c.y << '  ' << (forl % b[0]) << ' ' << b[1].strip
+          s << nl << c.y << '! ' << (forl % a[0]) << ' ' << fence[a[1]]
+          s << nl << c.y << '  ' << (forl % b[0]) << ' ' << fence[b[1]]
         end
       end
       s << c.dg << sep << c.reset
