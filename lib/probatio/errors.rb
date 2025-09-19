@@ -88,9 +88,9 @@ module Probatio
       case @arguments.collect(&:class)
       when [ Hash, Hash ]
         as.each_with_index { |a, i| s << nl << '  %d: %s' % [ i, a ] }
-        output_hash_diff(s)
+        output_hash_diff(indent, s)
       when [ String, String ]
-        output_string_diff(s)
+        output_string_diff(indent, s)
       else
         as.each_with_index { |a, i| s << nl << '  %d: %s' % [ i, a ] }
       end
@@ -114,7 +114,9 @@ module Probatio
 
     protected
 
-    def output_hash_diff(s)
+    def output_hash_diff(indent, s)
+
+      nl = "\n" + indent
 
       c = Probatio.c
 
@@ -135,7 +137,9 @@ module Probatio
       end
     end
 
-    def output_string_diff(s)
+    def output_string_diff(indent, s)
+
+      #nl = "\n" + indent
 
       a0, a1 = @arguments
 
