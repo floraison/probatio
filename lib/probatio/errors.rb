@@ -154,6 +154,8 @@ module Probatio
       ls0 = @arguments[0].lines.map(&:chomp)
       ls1 = @arguments[1].lines.map(&:chomp)
 
+      return if ls0.length < 2 && ls1.length < 2
+
       diff = Diff::LCS.sdiff(ls0, ls1).collect(&:to_a)
 
       maxl = diff
