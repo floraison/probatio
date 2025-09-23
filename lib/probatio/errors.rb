@@ -142,13 +142,17 @@ module Probatio
       nl = "\n"
 
       a0, a1 = @arguments
+      a0l, a1l = a0.length, a1.length
+      a0c, a1c = a0.lines.count, a1.lines.count
 
-      sep = "\n" + ('-' * 63)
+      sep = "\n" + ('-' * 49)
       c = Probatio.c
 
       s <<
-        sep << " length: #{a0.length}\n" << c.yellow << a0 << c.dark_grey <<
-        sep << " length: #{a1.length}\n" << c.yellow << a1 << c.dark_grey <<
+        sep << " length: #{a0l} / lines: #{a0c}\n" <<
+          c.yellow << a0 << c.dark_grey <<
+        sep << " length: #{a1l} / lines: #{a1c}\n" <<
+          c.yellow << a1 << c.dark_grey <<
         sep
 
       ls0 = @arguments[0].lines.map(&:chomp)
