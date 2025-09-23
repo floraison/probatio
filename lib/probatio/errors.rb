@@ -89,6 +89,8 @@ module Probatio
       when [ Hash, Hash ]
         as.each_with_index { |a, i| s << nl << '  %d: %s' % [ i, a ] }
         output_hash_diff(indent, s)
+      when [ Array, Array ]
+        output_array_diff(indent, s)
       when [ String, String ]
         output_string_diff(indent, s)
       else
@@ -139,8 +141,6 @@ module Probatio
 
     def output_string_diff(indent, s)
 
-      nl = "\n"
-
       a0, a1 = @arguments
       a0l, a1l = a0.length, a1.length
       a0c, a1c = a0.lines.count, a1.lines.count
@@ -160,7 +160,34 @@ module Probatio
 
       return if ls0.length < 2 && ls1.length < 2
 
-      diff = Diff::LCS.sdiff(ls0, ls1).collect(&:to_a)
+      output_sdiff(ls0, ls1, s)
+    end
+
+    def output_array_diff(indent, s)
+
+      a0, a1 = @arguments
+      a0c, a1c = a0.count, a1.count
+
+      sep = "\n" + ('-' * 49)
+      c = Probatio.c
+
+      s << c.dg << sep << "length: #{a0c}\n" << c.white << a0.inspect
+      s << c.dg << sep << "length: #{a1c}\n" << c.white << a1.inspect
+      s << c.dg << sep
+
+      s0 = a0.collect { |e| e.is_a?(String) ? e : e.inspect }
+      s1 = a1.collect { |e| e.is_a?(String) ? e : e.inspect }
+
+      output_sdiff(s0, s1, s)
+    end
+
+    def output_sdiff(a0, a1, s)
+
+      c = Probatio.c
+      nl = "\n"
+      sep = "\n" + ('-' * 49)
+
+      diff = Diff::LCS.sdiff(a0, a1).collect(&:to_a)
 
       maxl = diff
         .inject([]) { |a, d| a << d[1][0]; a << d[2][0]; a }
