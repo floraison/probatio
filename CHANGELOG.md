@@ -2,7 +2,10 @@
 # CHANGELOG.md
 
 
-## probatio 1.4.0 not yet released
+## probatio 1.4.0 released 2025-10-13
+
+* Work on StringDiff, HashDiff, and ArrayDiff
+* Use diff-lcs for StringDiff
 
 
 ## probatio 1.3.0 released 2025-08-08
