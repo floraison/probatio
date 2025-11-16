@@ -136,9 +136,7 @@ class Probatio::Context
     err = nil;
       begin; block.call; rescue => err; end
 
-    return "no error raised" unless err.is_a?(StandardError)
-
-    s = nil
+    s = err ? nil : 'no error raised'
 
     as.each do |a|
 
