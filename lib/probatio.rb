@@ -333,6 +333,14 @@ module Probatio
       @children.select { |c| c.is_a?(Probatio::Group) }
     end
 
+    #def path_location
+    #  ([ '' ] + File.readlines(@path))
+    #    .index { |l|
+    #      l.match?(/^\s*#{type}\s*\(?\s*["']/) &&
+    #      (l.match?(/"#{name}"\s*\)?\s*$/) || l.match?(/'#{name}'\s*\)?\s*$/))
+    #        } || 0
+    #end
+
     protected
 
     def exclude?(run_opts); false; end
@@ -581,6 +589,8 @@ module Probatio
     end
 
     def test(name, opts={}, &block)
+
+      opts[:pending] = true if block.nil?
 
       @children << Probatio::Test.new(self, @path, name.to_s, opts, block)
     end
