@@ -101,6 +101,8 @@ module Probatio
         read_test_file(root_group, fpath)
       end
 
+      rework_line_numbers(root_group)
+
       run_opts[:filen] = rework_filen(root_group, run_opts)
 
       dbg_s { Cerata.vertical_h_to_s(run_opts, ' run_opts| ') }
@@ -200,7 +202,9 @@ module Probatio
       fmap = map[fn[0]]
       fline = fn[1]
 
-      n = fmap.find { |l0, l1, n| fline >= l0 && (fline <= l1 || l1 < 1) }
+      n = fmap
+        .select { |l0, l1, n| fline >= l0 && (fline <= l1 || l1 < 1) }
+        .last
 
       return [ fn ] if n && n[2].is_a?(Probatio::Test)
 
@@ -234,6 +238,32 @@ module Probatio
         .inject([]) { |a, suf| a.concat(Dir[File.join(dir, '**', suf)]) }
 
       fs.any? ? fs : do_locate(File.dirname(dir), suffixes)
+    end
+
+    def rework_line_numbers(root_group)
+
+        # if the start line is 0, set it to the end line
+        # if the end line is 0, set it to the file's last line
+        #
+      root_group.map.each do |path, groups|
+        groups.each do |llg|
+          llg[0] = llg[1] if llg[0] == 0
+          llg[1] = File.readlines(path).count if llg[1] == 0
+        end
+      end
+
+        # ensure that group end lines are their last child's end line
+        #
+      root_group
+        .map
+        .inject([]) { |a, (_, groups)|
+          groups.each { |llg| a << llg if llg[2].is_a?(Probatio::Group) }
+          a }
+        .reverse
+        .each { |llg|
+          g = llg[2]; next if g.name == '_'
+          lc = g.children.last
+          llg[1] = lc.last_line if lc }
     end
   end
 
@@ -333,14 +363,6 @@ module Probatio
       @children.select { |c| c.is_a?(Probatio::Group) }
     end
 
-    #def path_location
-    #  ([ '' ] + File.readlines(@path))
-    #    .index { |l|
-    #      l.match?(/^\s*#{type}\s*\(?\s*["']/) &&
-    #      (l.match?(/"#{name}"\s*\)?\s*$/) || l.match?(/'#{name}'\s*\)?\s*$/))
-    #        } || 0
-    #end
-
     protected
 
     def exclude?(run_opts); false; end
@@ -356,6 +378,7 @@ module Probatio
 
       f0 = f.last
       f0[1] = (l == 0 ? f0[0] : l - 1) if f0
+        # sets the last line of the previous node...
 
       f << [ l, 0, self ]
     end
@@ -670,10 +693,8 @@ module Probatio
 
     def path_and_line_match?(fpath, fline)
 
-#p [ path, line, last_line, '<-->', fpath, fline ]
-      line &&
-        path == fpath &&
-          fline >= line && fline <= last_line
+      path == fpath &&
+      fline && line && fline >= line && fline <= last_line
     end
 
     def in_setup?
