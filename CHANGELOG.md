@@ -2,6 +2,9 @@
 # CHANGELOG.md
 
 
+## probatio 1.4.2 not yet released
+
+
 ## probatio 1.4.1 released 2025-11-16
 
 * Fixed assert_error versus no errors
