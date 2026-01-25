@@ -4,6 +4,8 @@
 
 ## probatio 1.5.0 not yet released
 
+* Alias `assert_class` to `assert_instance_of`
+
 
 ## probatio 1.4.2 released 2025-11-26
 

@@ -124,6 +124,7 @@ class Probatio::Context
     do_assert(as, 'instance of') { |e| e.is_a?(moc) }
   end
   alias assert_is_a assert_instance_of
+  alias assert_class assert_instance_of
 
   def assert_error(*as, &block)
 
