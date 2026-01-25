@@ -4,6 +4,7 @@
 
 ## probatio 1.5.0 not yet released
 
+* Introduce `time do; end` helper
 * Alias `assert_class` to `assert_instance_of`
 
 
