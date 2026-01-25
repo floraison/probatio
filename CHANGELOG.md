@@ -2,6 +2,9 @@
 # CHANGELOG.md
 
 
+## probatio 1.5.0 not yet released
+
+
 ## probatio 1.4.2 released 2025-11-26
 
 * Allow pointing at a group with a line number between tests
