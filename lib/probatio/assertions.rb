@@ -86,6 +86,14 @@ class Probatio::Context
       a.end_with?(sta) }
   end
 
+  def assert_not_match(*as)
+
+    strings, others = as.partition { |a| a.is_a?(String) }
+    rex = others.find { |o| o.is_a?(Regexp) } || strings.pop
+
+    do_assert(strings, 'not matched') { |s| ! s.match?(rex) }
+  end
+
   def assert_include(*as)
 
     ai =
