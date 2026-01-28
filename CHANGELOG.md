@@ -2,7 +2,7 @@
 # CHANGELOG.md
 
 
-## probatio 1.5.0 not yet released
+## probatio 1.5.0 released 2026-01-28
 
 * Introduce `assert_not_match`
 * Introduce `time do; end` helper
