@@ -150,6 +150,9 @@ group 'core' do
         # checks that it receives a regex and one or more strings
         # and that all those strings match the regex
 
+      assert_not_match 'one', /^two$/
+        # assert( ! 'one'.match(/^two$/))
+
       assert_start_with 'one', 'one two or three'
         # checks that the shortest string is the start of the remaining string
         # arguments
