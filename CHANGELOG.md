@@ -2,7 +2,7 @@
 # CHANGELOG.md
 
 
-## probatio 1.6.0 not yet released
+## probatio 1.6.0 released 2026-02-04
 
 * Let `proba` accept leaf globs directly
 
