@@ -203,6 +203,11 @@ def read_list(a, item)
   a
 end
 
+test_dir =
+  is_directory_with_tests?('test') ? 'test' :
+  is_directory_with_tests?('spec') ? 'spec' :
+  'test'
+
 prev = Kernel.eval(File.read(Probatio.opath)) rescue { failures: [] }
 fails = prev[:failures].collect { |f| "#{f[:p]}:#{f[:l]}" }
 #print 'fails:'; pp fails
@@ -217,7 +222,7 @@ strings.each do |s|
     when '1st', 'first' then fails[0]
     when 'last' then fails[-1]
     when /^:\d+$/ then fails.find { |f| f.end_with?(s) }
-    else nil; end
+    else Dir[File.join(test_dir, '**', s)]; end
 end
 integers.each do |i|
   opts[:files] << fails[i]
@@ -228,14 +233,10 @@ lists.each do |li|
     read_list([], File.readlines(li)))
 end
   #
-opts[:files] = opts[:files].uniq.compact
+opts[:files] = opts[:files].flatten.uniq.compact
 opts[:files] = nil if opts[:files].empty? && strings.empty? && integers.empty?
 
-opts[:dirs] = [
-  is_directory_with_tests?('test') ? 'test' :
-  is_directory_with_tests?('spec') ? 'spec' :
-  'test'
-    ] unless opts[:dirs] || opts[:files]
+opts[:dirs] = [ test_dir ] unless opts[:dirs] || opts[:files]
 
 opts[:includes] = Probatio.to_rexes_and_strs(switches['--name'])
 opts[:excludes] = Probatio.to_rexes_and_strs(switches['--exclude'])

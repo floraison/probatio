@@ -4,6 +4,8 @@
 
 ## probatio 1.6.0 not yet released
 
+* Let `proba` accept leaf globs directly
+
 
 ## probatio 1.5.0 released 2026-01-28
 
