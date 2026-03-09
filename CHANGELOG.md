@@ -4,6 +4,8 @@
 
 ## probatio 1.6.1 not yet released
 
+* Fix issue with `assert_no_error`
+
 
 ## probatio 1.6.0 released 2026-02-04
 

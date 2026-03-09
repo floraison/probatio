@@ -180,7 +180,7 @@ class Probatio::Context
       begin; block.call; rescue => err; end
 
     do_assert_([]) {
-      err && "no error expected but returned #{err.class} #{err.name}" }
+      err && "no error expected but returned #{err.class} #{err.message}" }
   end
   alias assert_no_error assert_not_error
   alias assert_nothing_raised assert_not_error
