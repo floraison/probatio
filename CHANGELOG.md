@@ -2,7 +2,7 @@
 # CHANGELOG.md
 
 
-## probatio 1.6.1 not yet released
+## probatio 1.6.1 released 2026-03-15
 
 * Fix issue with `assert_no_error`
 
