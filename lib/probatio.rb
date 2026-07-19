@@ -741,8 +741,11 @@ module Probatio
 
     def do_run(child, run_opts, &block)
 
-      fail ArgumentError.new("invalid child opts #{child.opts.inspect}") \
-        unless child.opts.is_a?(Hash)
+      fail ArgumentError.new(
+        "invalid opts #{child.opts.inspect} " +
+        "for child #{child.class} " +
+        "at #{child.path_and_line}"
+      ) unless child.opts.is_a?(Hash)
 
       return Probatio.despatch("#{child.type}_pending", self, child, run_opts) \
         if child.opts[:pending] || child.block.nil?
