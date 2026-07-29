@@ -4,6 +4,8 @@
 
 ## probatio 1.6.2 not yet released
 
+* Introduce `assert_not`
+
 
 ## probatio 1.6.1 released 2026-03-15
 

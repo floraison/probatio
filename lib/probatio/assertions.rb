@@ -39,6 +39,11 @@ class Probatio::Context
     do_assert(as, 'false') { |a| a == false }
   end
 
+  def assert_not(*as)
+
+    do_assert(as, 'not') { |a| ! a }
+  end
+
   def assert_any(*as)
 
     do_assert(as, 'any') { |a| a.respond_to?(:size) && a.size > 0 }

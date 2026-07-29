@@ -126,6 +126,8 @@ group 'core' do
       assert_nil nil
       assert_not_nil [], 1
 
+      assert_not answers.include?('no')
+
       assert_true true
       assert_false 1 > 2
 
