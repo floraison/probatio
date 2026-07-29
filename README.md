@@ -201,6 +201,9 @@ group 'core' do
         # assert equality between key and value
       assert 'one' => 'on' + 'e', 'two' => :two.to_s
         # assert equality between keys and values
+
+      refute 'one', /two/
+        # refute is the counter-part to assert...
     end
   end
 

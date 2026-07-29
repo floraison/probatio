@@ -265,7 +265,7 @@ class Probatio::Context
 
     else
 
-      dir == :assert ? assert_equal(*as) : refute(*as)
+      dir == :assert ? assert_equal(*as) : assert_not(*as)
     end
   end
 

@@ -20,5 +20,12 @@ group 'nada' do
     refute :a => 'a', :b => 'b'
     refute 'a' => 'a', 'b' => 'b'
   end
+
+  test 'refute equal' do
+
+    refute 1 > 3
+    refute 1 > 3, 1 > 8
+    refute 1 > 3, 8 > 1
+  end
 end
 
