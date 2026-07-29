@@ -2,10 +2,12 @@
 # CHANGELOG.md
 
 
-## probatio 1.6.2 not yet released
+## probatio 1.6.2 released 2026-07-29
 
 * Introduce `refute` as counterpart to `assert` jack of some trades
 * Introduce `assert_not`
+* Indicate choke point on `before :each do`
+* Introduce bxp.fish, fish bxp completion
 
 
 ## probatio 1.6.1 released 2026-03-15
