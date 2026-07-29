@@ -4,6 +4,7 @@
 
 ## probatio 1.6.2 not yet released
 
+* Introduce `refute` as counterpart to `assert` jack of some trades
 * Introduce `assert_not`
 
 

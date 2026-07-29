@@ -67,6 +67,14 @@ class Probatio::Context
     do_assert(strings, 'matched') { |s| s.match?(rex) }
   end
 
+  def refute_match(*as)
+
+    strings, others = as.partition { |a| a.is_a?(String) }
+    rex = others.find { |o| o.is_a?(Regexp) } || strings.pop
+
+    do_assert(strings, 'not matched') { |s| ! s.match?(rex) }
+  end
+
   def assert_start_with(*as)
 
     fail ArgumentError.new(
@@ -127,6 +135,11 @@ class Probatio::Context
   def assert_hashy(*as)
 
     do_assert(as[0].to_a, 'hashy equal') { |k, v| k == v }
+  end
+
+  def refute_hashy(*as)
+
+    do_assert(as[0].to_a, 'hashy not equal') { |k, v| k != v }
   end
 
   def assert_instance_of(*as)
@@ -211,7 +224,15 @@ class Probatio::Context
 
   # Jack of all trade assert
   #
-  def assert(*as)
+  def assert(*as); jack(:assert, as); end
+
+  # Jack of all trade refute
+  #
+  def refute(*as); jack(:refute, as); end
+
+  protected
+
+  def jack(dir, as)
 
     count = {
       rexes: 0, hashes: 0, arrays: 0, strings: 0, scalars: 0, others: 0 }
@@ -229,26 +250,24 @@ class Probatio::Context
 
     if as.length == 1 && count[:hashes] == 1
 
-      assert_hashy(*as)
+      dir == :assert ? assert_hashy(*as) : refute_hashy(*as)
 
     elsif as.length == 1
 
-      assert_truthy(*as)
+      dir == :assert ? assert_truthy(*as) : assert_falsey(*as)
 
     elsif count[:rexes] == 1 && count[:strings] == as.length - 1
 
-      assert_match(*as)
+      dir == :assert ? assert_match(*as) : refute_match(*as)
 
     #elsif count[:arrays] > 0
-    #  assert_include(*as)
+    #  dir == :assert ? assert_include(*as) : refute_include(*as)
 
     else
 
-      assert_equal(*as)
+      dir == :assert ? assert_equal(*as) : refute(*as)
     end
   end
-
-  protected
 
   def do_assert(as, msg, &block)
 
