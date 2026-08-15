@@ -2,6 +2,9 @@
 # CHANGELOG.md
 
 
+## probatio 1.7.0 not yet released
+
+
 ## probatio 1.6.2 released 2026-07-29
 
 * Introduce `refute` as counterpart to `assert` jack of some trades

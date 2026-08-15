@@ -18,7 +18,7 @@ require 'probatio/more'
 
 module Probatio
 
-  VERSION = '1.6.2'
+  VERSION = '1.7.0'
 
   class << self
 
