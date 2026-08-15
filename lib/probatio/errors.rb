@@ -35,6 +35,7 @@ module Probatio
 
       [ @file, @line ]
     end
+    alias loca location
 
     def loc
 

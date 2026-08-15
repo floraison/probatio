@@ -267,6 +267,34 @@ class Probatio::Exitter
   end
 end
 
+class Probatio::Tracer
+
+  TRACE_OUT_PATH = '.probatio-trace.log'
+
+  def initialize
+
+    File.open(TRACE_OUT_PATH, 'wb') do |f|
+      f.puts("<!-- Probatio #{Probatio::VERSION} Tracer -->")
+    end
+  end
+
+  def record(ev)
+
+    File.open(TRACE_OUT_PATH, 'ab') do |f|
+      f.print(timestamp)
+      f.print('  ')
+      f.puts(ev.to_line)
+    end
+  end
+
+  protected
+
+  def timestamp
+
+    Time.now.iso8601(3)
+  end
+end
+
 Probatio.plug(Probatio::Recorder.new)
 Probatio.plug(Probatio::Chronometer.new)
 Probatio.plug(Probatio::DotReporter.new)
@@ -274,4 +302,5 @@ Probatio.plug(Probatio::VanillaSummarizer.new)
 Probatio.plug(Probatio::ProbaOutputter.new)
 Probatio.plug(Probatio::Beeper.new)
 Probatio.plug(Probatio::Exitter.new)
+Probatio.plug(Probatio::Tracer.new)
 

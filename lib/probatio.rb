@@ -323,6 +323,11 @@ module Probatio
       "#{@path}:#{line}"
     end
 
+    def loca
+
+      [ @path, line ]
+    end
+
     def to_s(opts={})
 
       col = Probatio.c
@@ -847,9 +852,10 @@ module Probatio
 
     def location
 
-      (error && error.respond_to?(:location) && error.location) ||
-      (node && node.location)
+      (error && error.loca) ||
+      (node && node.loca)
     end
+    alias loca location
 
     def path
 
@@ -866,7 +872,7 @@ module Probatio
       o << "\n  node=#{node.full_name.inspect}" if node
       o << "\n  node_type=#{node.type.inspect}" if node
       o << "\n  error=#{error.to_s.inspect}" if error
-      o << "\n  location=#{location.map(&:to_s).join(':').inspect}" if node
+      o << "\n  location=#{loca.map(&:to_s).join(':').inspect}" if node
       o << "\n  delta=\"#{Probatio.to_time_s(delta)}\"" if delta
       o << "\n  leave_delta=\"#{Probatio.to_time_s(led)}\"" if led
       o << " />"
@@ -876,7 +882,20 @@ module Probatio
 
     def to_h
 
-      { n: name, p: location[0], l: location[1], t: delta_s }
+      { n: name, p: loca[0], l: loca[1], t: delta_s }
+    end
+
+    def to_line
+
+      led = determine_leave_delta
+
+      [ "nl:#{node ? node.loca.join(':') : ''}",
+        "na:#{name.inspect}",
+        "no:#{node ? node.full_name.inspect : ''}",
+        "nt:#{node ? node.type.inspect : ''}",
+        "de:#{delta ? Probatio.to_time_s(delta) : ''}",
+        "ld:#{led ? Probatio.to_time_s(led) : ''}",
+          ].compact.join(' ')
     end
   end
 end

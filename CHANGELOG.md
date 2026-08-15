@@ -4,6 +4,8 @@
 
 ## probatio 1.7.0 not yet released
 
+* Introduce Probatio::Tracer
+
 
 ## probatio 1.6.2 released 2026-07-29
 
