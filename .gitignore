@@ -23,6 +23,8 @@ pkg/
 
 .chat.md
 .openai.*
+.claude*
+.klaude.*
 
 Gemfile.lock
 
