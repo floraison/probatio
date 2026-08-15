@@ -106,7 +106,7 @@ group 'core' do
   setup do
     # occurs once before tests and sub-groups in group 'core'
   end
-  teadowm do
+  teardowm do
     # occurs once after tests and sub-groups in group 'core'
   end
 

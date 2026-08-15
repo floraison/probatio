@@ -274,24 +274,14 @@ class Probatio::Tracer
   def initialize
 
     File.open(TRACE_OUT_PATH, 'wb') do |f|
-      f.puts("<!-- Probatio #{Probatio::VERSION} Tracer -->")
+      f.puts("aa Probatio #{Probatio::VERSION} Tracer")
     end
   end
 
   def record(ev)
 
-    File.open(TRACE_OUT_PATH, 'ab') do |f|
-      f.print(timestamp)
-      f.print('  ')
-      f.puts(ev.to_line)
-    end
-  end
-
-  protected
-
-  def timestamp
-
-    Time.now.iso8601(3)
+    File.open(TRACE_OUT_PATH, 'ab') { |f| ev.trace(f) }
+#puts; puts File.read(TRACE_OUT_PATH)
   end
 end
 

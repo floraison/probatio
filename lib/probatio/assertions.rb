@@ -283,14 +283,18 @@ class Probatio::Context
 
   def do_assert_(as, &block)
 
-    Probatio.despatch(:assertion_enter, self, @__child)
+    ast_meth = extract_assert_method(caller)
+    ast_loca = extract_file_and_line(caller)
+    amelo = [ ast_meth, ast_loca ]
+
+    Probatio.despatch(:assertion_enter, self, @__child, amelo)
 
     case r =
       begin; block.call; rescue => err; err; end
 
     when StandardError, Hash, String
 
-      aerr = make_assertion_error(as, r)
+      aerr = make_assertion_error(as, r, ast_meth, ast_loca)
 
       Probatio.despatch(:test_fail, self, @__child, aerr)
 
@@ -298,7 +302,7 @@ class Probatio::Context
 
     when Exception
 
-      Probatio.despatch(:test_exception, self, @__child, r)
+      Probatio.despatch(:test_exception, self, @__child, r, amelo)
 
       raise r
 
@@ -314,18 +318,12 @@ class Probatio::Context
   ensure
 
     #Probatio.despatch(:test_succeed, self, @__child)
-    Probatio.despatch(:assertion_leave, self, @__child)
+    Probatio.despatch(:assertion_leave, self, @__child, amelo)
   end
 
-  def make_assertion_error(arguments, result)
+  def make_assertion_error(arguments, result, ameth, aloc)
 
-    Probatio::AssertionError
-      .new(
-        extract_assert_method(caller),
-        arguments,
-        result,
-        @__child,
-        *extract_file_and_line(caller))
+    Probatio::AssertionError.new(ameth, arguments, result, @__child, *aloc)
   end
 
   def extract_file_and_line(backtrace)

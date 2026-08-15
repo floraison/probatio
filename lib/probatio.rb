@@ -802,12 +802,13 @@ module Probatio
 
   class Event
 
-    attr_reader :tstamp, :delta
-    attr_reader :name, :opts, :context, :group, :leaf, :error
+    attr_reader :wstamp, :tstamp, :delta
+    attr_reader :name, :opts, :context, :group, :leaf, :amelo, :error
     attr_accessor :leave_delta
 
     def initialize(name, details)
 
+      @wstamp = Time.now
       @tstamp, @delta = Probatio.monow_and_delta
 
       @name = name.to_s
@@ -815,6 +816,7 @@ module Probatio
       details.each do |d|
         case d
         when Hash then @opts = d
+        when Array then @amelo = d
         when Exception then @error = d
         when Probatio::Leaf then @leaf = d
         when Probatio::Group then @group = d
@@ -831,6 +833,20 @@ module Probatio
     def type; @name.split('_').first; end
       #
       # which, in the case of assertion != self.node.type ...
+
+    def typ
+
+      case type
+      when 'test' then 'tst'
+      when 'group' then 'grp'
+      when 'setup' then 'sup'
+      when 'before' then 'bfr'
+      when 'teardown' then 'tdo'
+      when 'assertion' then 'ast'
+      when 'start' then 'STA'
+      when 'over' then 'OVR'
+      else @name[0, 3]; end
+    end
 
     def node_full_name; node && node.full_name; end
 
@@ -853,13 +869,27 @@ module Probatio
     def location
 
       (error && error.loca) ||
-      (node && node.loca)
+      (amelo && amelo[1]) ||
+      (node && node.loca) ||
+      [ '', -1 ]
     end
     alias loca location
 
     def path
 
-      node && node.path
+      #node && node.path
+      loca[0]
+    end
+
+    def na
+
+      n = @name.split('_').map { |e| e[0, 1] }.join('').upcase
+      n.length > 1 ? n : n * 2
+    end
+
+    def wstamp_s
+
+      '%s.%03d' % [ @wstamp.strftime('%Y%m%d %H:%M:%S'), @wstamp.usec / 1000 ]
     end
 
     def to_s
@@ -873,6 +903,7 @@ module Probatio
       o << "\n  node_type=#{node.type.inspect}" if node
       o << "\n  error=#{error.to_s.inspect}" if error
       o << "\n  location=#{loca.map(&:to_s).join(':').inspect}" if node
+      o << "\n  wstamp=\"#{wstamp.iso8601(3)}\""
       o << "\n  delta=\"#{Probatio.to_time_s(delta)}\"" if delta
       o << "\n  leave_delta=\"#{Probatio.to_time_s(led)}\"" if led
       o << " />"
@@ -882,20 +913,28 @@ module Probatio
 
     def to_h
 
-      { n: name, p: loca[0], l: loca[1], t: delta_s }
+      { n: name, p: loca[0], l: loca[1], t: delta_s, w: wstamp_s }
     end
 
-    def to_line
+    def trace(out)
+
+      out << na << ' ' << wstamp_s << ' '
+      out << typ << ' ' if node
+      out << loca[0] << ':' << loca[1] << ' '
+
+      out << amelo[0] << ' ' if amelo
+      out << node.full_name.inspect << ' ' if node && ! amelo
+
+      out << 'ERROR:' << err.to_s.inspect << ' ' if error
+
+      out << 'd:' << Probatio.to_time_s(delta) << ' ' if delta
 
       led = determine_leave_delta
+      out << 'ld:' << Probatio.to_time_s(led) << ' ' if led
 
-      [ "nl:#{node ? node.loca.join(':') : ''}",
-        "na:#{name.inspect}",
-        "no:#{node ? node.full_name.inspect : ''}",
-        "nt:#{node ? node.type.inspect : ''}",
-        "de:#{delta ? Probatio.to_time_s(delta) : ''}",
-        "ld:#{led ? Probatio.to_time_s(led) : ''}",
-          ].compact.join(' ')
+      out << "\n"
+
+      out
     end
   end
 end
