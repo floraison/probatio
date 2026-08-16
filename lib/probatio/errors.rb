@@ -11,15 +11,15 @@ module Probatio
 
     alias path file
 
-    def initialize(assertion, arguments, error_or_message, test, file, line)
+    def initialize(ameloc, arguments, error_or_message, test)
 
-      @assertion = assertion
+      @assertion = ameloc[0]
+      @file, @line = ameloc[1]
+
       @arguments = arguments
 
       @test = test
 
-      @file = file
-      @line = line
 
       if error_or_message.is_a?(String)
         @msg = error_or_message

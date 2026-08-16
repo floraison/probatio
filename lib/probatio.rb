@@ -803,7 +803,7 @@ module Probatio
   class Event
 
     attr_reader :wstamp, :tstamp, :delta
-    attr_reader :name, :opts, :context, :group, :leaf, :amelo, :error
+    attr_reader :name, :opts, :context, :group, :leaf, :ameloc, :error
     attr_accessor :leave_delta
 
     def initialize(name, details)
@@ -816,7 +816,7 @@ module Probatio
       details.each do |d|
         case d
         when Hash then @opts = d
-        when Array then @amelo = d
+        when Array then @ameloc = d
         when Exception then @error = d
         when Probatio::Leaf then @leaf = d
         when Probatio::Group then @group = d
@@ -869,7 +869,7 @@ module Probatio
     def location
 
       (error && error.loca) ||
-      (amelo && amelo[1]) ||
+      (ameloc && ameloc[1]) ||
       (node && node.loca) ||
       [ '', -1 ]
     end
@@ -922,10 +922,10 @@ module Probatio
       out << typ << ' ' if node
       out << loca[0] << ':' << loca[1] << ' '
 
-      out << amelo[0] << ' ' if amelo
-      out << node.full_name.inspect << ' ' if node && ! amelo
+      out << ameloc[0] << ' ' if ameloc
+      out << node.full_name.inspect << ' ' if node && ! ameloc
 
-      out << 'ERROR:' << err.to_s.inspect << ' ' if error
+      out << 'ERROR:' << error.to_s.inspect << ' ' if error
 
       out << 'd:' << Probatio.to_time_s(delta) << ' ' if delta
 
