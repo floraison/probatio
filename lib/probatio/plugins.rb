@@ -273,6 +273,7 @@ class Probatio::Tracer
 
     File.open(Probatio.cpath, 'wb') do |f|
       f.puts("aa Probatio #{Probatio::VERSION} Tracer")
+      f.puts("aa ARGV #{ARGV.inspect}")
     end
   end
 
