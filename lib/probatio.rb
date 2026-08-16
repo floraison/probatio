@@ -173,6 +173,7 @@ module Probatio
 
     def epath; '.probatio-environments.rb'; end
     def opath; '.probatio-output.rb'; end
+    def cpath; '.probatio-trace.log'; end
     def tpath; '.test-point'; end
 
     protected

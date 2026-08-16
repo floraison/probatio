@@ -269,19 +269,17 @@ end
 
 class Probatio::Tracer
 
-  TRACE_OUT_PATH = '.probatio-trace.log'
-
   def initialize
 
-    File.open(TRACE_OUT_PATH, 'wb') do |f|
+    File.open(Probatio.cpath, 'wb') do |f|
       f.puts("aa Probatio #{Probatio::VERSION} Tracer")
     end
   end
 
   def record(ev)
 
-    File.open(TRACE_OUT_PATH, 'ab') { |f| ev.trace(f) }
-#puts; puts File.read(TRACE_OUT_PATH)
+    File.open(Probatio.cpath, 'ab') { |f| ev.trace(f) }
+#puts; puts File.read(Probatio.cpath)
   end
 end
 
