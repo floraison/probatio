@@ -280,6 +280,11 @@ class Probatio::Tracer
     end
   end
 
+  def on_pre(ev)
+
+    File.open(Probatio.cpath, 'ab') { |f| f.puts "PP --seed #{Probatio.seed}" }
+  end
+
   def record(ev)
 
     File.open(Probatio.cpath, 'ab') { |f| ev.trace(f) }
