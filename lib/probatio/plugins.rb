@@ -218,9 +218,12 @@ class Probatio::ProbaOutputter
       '  ')
 
     File.open(Probatio.opath, 'wb') do |o|
+
       o << '# ' << Probatio.opath << "\n"
       o << "{\n"
-      o << "argv: " << Cerata.horizontal_a_to_s(ARGV) << ",\n"
+      o << 'argv: ' << Cerata.horizontal_a_to_s(ARGV) << ",\n"
+      o << 'seed:           ' << Probatio.seed.to_s << ",\n"
+      o << 'aseed: " --seed ' << Probatio.seed.to_s << " \",\n"
       o << "failures:\n"
       #o << "  [\n"
       #fls.each { |fl| o << '  ' << fl << ",\n" }

@@ -4,6 +4,7 @@
 
 ## probatio 1.7.0 not yet released
 
+* Log seed: and aseed: in .probatio-output.rb
 * Introduce Probatio::Tracer
 
 
