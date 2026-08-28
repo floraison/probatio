@@ -5,6 +5,7 @@
 .vimgrep
 .vimspec
 .vimmarks
+.vimfuzz2
 
 .test-point
 
@@ -17,7 +18,7 @@ pkg/
 #.rspec.out
 #.bxsinfo.yaml
 #.bxsenvs.yaml
-.probatio-output.rb
+.probatio-*
 
 .todo.md
 
