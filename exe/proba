@@ -208,8 +208,12 @@ test_dir =
   is_directory_with_tests?('spec') ? 'spec' :
   'test'
 
-prev = Kernel.eval(File.read(Probatio.opath)) rescue { failures: [] }
-fails = prev[:failures].collect { |f| "#{f[:p]}:#{f[:l]}" }
+prev =
+  begin; Kernel.eval(File.read(Probatio.opath))
+  rescue Exception; { failures: [] }; end
+fails =
+  prev[:failures].collect { |f| "#{f[:p]}:#{f[:l]}" }
+
 #print 'fails:'; pp fails
   #
 tpoint = File.exist?(Probatio.tpath) ? File.read(Probatio.tpath).strip : nil
