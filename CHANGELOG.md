@@ -2,6 +2,9 @@
 # CHANGELOG.md
 
 
+## probatio 1.7.1 not yet released
+
+
 ## probatio 1.7.0 released 2026-10-14
 
 * Introduce `park(*args, &block)` to "park" groups and tests
