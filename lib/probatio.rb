@@ -623,6 +623,11 @@ module Probatio
 
       @children << Probatio::Test.new(self, @path, name.to_s, opts, block)
     end
+
+    def park(*args)
+
+      # simply ignore...
+    end
   end
 
   class Leaf < Node

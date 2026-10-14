@@ -209,6 +209,17 @@ group 'core' do
 
   group 'bravo' do
   end
+
+  park 'not now' do
+    #
+    # everything within a `park` will be silently discarded
+
+    group 'coco' do
+      test 'this or that' do
+        assert false
+      end
+    end
+  end
 end
 
 group 'core' do

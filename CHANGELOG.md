@@ -4,6 +4,7 @@
 
 ## probatio 1.7.0 not yet released
 
+* Introduce `park(*args, &block)` to "park" groups and tests
 * Log seed: and aseed: in .probatio-output.rb
 * Introduce Probatio::Tracer
 
