@@ -231,7 +231,10 @@ module Probatio
     attr_accessor :test
 
     def path; test.path; end
+
     def location; [ path, line ]; end
+    alias loca location
+
     def loc; location.map(&:to_s).join(':'); end
 
     def trail

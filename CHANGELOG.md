@@ -4,6 +4,8 @@
 
 ## probatio 1.7.3 not yet released
 
+* Ensure all errors have a #loca
+
 
 ## probatio 1.7.2 released 2026-10-16
 
