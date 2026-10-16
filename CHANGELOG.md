@@ -2,6 +2,9 @@
 # CHANGELOG.md
 
 
+## probatio 1.7.3 not yet released
+
+
 ## probatio 1.7.2 released 2026-10-16
 
 * Fix Error vs #loca and #loc
