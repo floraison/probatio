@@ -20,7 +20,6 @@ module Probatio
 
       @test = test
 
-
       if error_or_message.is_a?(String)
         @msg = error_or_message
       else

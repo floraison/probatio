@@ -874,7 +874,7 @@ module Probatio
 
     def location
 
-      (error && error.loc) ||
+      (error && error.loca) ||
       (ameloc && ameloc[1]) ||
       (node && node.loca) ||
       [ '', -1 ]

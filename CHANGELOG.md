@@ -4,6 +4,8 @@
 
 ## probatio 1.7.2 not yet released
 
+* Fix Error vs #loca and #loc
+
 
 ## probatio 1.7.1 released 2026-10-14
 
