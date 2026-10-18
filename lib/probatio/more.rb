@@ -55,9 +55,16 @@ module Probatio; class << self
 
   def term_width
 
-    (IO.console.winsize[1] rescue nil) ||
-    (`tput cols`.strip.to_i rescue nil) ||
-    80
+    #require 'io/console'
+
+    w =
+      (ENV['COLUMNS'].to_i rescue nil) ||
+      ($stdout.winsize[1] rescue nil) ||
+      (IO.console.winsize[1] rescue nil) ||
+      (`tput cols`.to_i rescue nil) ||
+      (`stty size`.split[1].to_i rescue nil)
+
+    w.is_a?(Integer) && w > 0 ? w : 80
   end
 end; end
 
