@@ -58,7 +58,7 @@ module Probatio; class << self
     #require 'io/console'
 
     w =
-      (ENV['COLUMNS'].to_i rescue nil) ||
+      ENV['COLUMNS'] ||
       ($stdout.winsize[1] rescue nil) ||
       (IO.console.winsize[1] rescue nil) ||
       (`tput cols`.to_i rescue nil) ||
